@@ -4,6 +4,7 @@ build/
 gradle-app.setting
 !gradle/wrapper/gradle-wrapper.jar
 **/build/
+**/out/
 .gradletasknamecache
 
 ### Java ###
