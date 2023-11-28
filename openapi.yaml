@@ -181,6 +181,14 @@ paths:
         '404':
           description: Customer not found
   /customer/{userId}/ongoingOrders:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
     put:
       tags:
         - Customer
