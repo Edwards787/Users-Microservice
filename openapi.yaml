@@ -13,27 +13,65 @@ tags:
   - name: Courier
 
 paths:
-  /user:
-    post:
+
+  #____USER____
+  /users:
+    get:
       tags:
         - User
-      summary: Create a new user account
-      description: Create a new account with date 
-      operationId: createAccount
-      requestBody: 
-        description: user data
+      summary: Finds all users
+      description: returns all users
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /user/byEmail/{email}:
+    parameters:
+      - name: email
+        in: path
+        description: email of the user
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - User
+      summary: Finds user by email
+      description: Finds user by email
+      operationId: getUserByEmail
+      requestBody:
+        description: email
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: string
         required: true
       responses:
         '200':
-          description: Successful operation         
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
-          description: Validation exception
-        '409':
-          description: User already exists
+          description: Request doesn't respect the schema
+        '404':
+          description: User not found
+  /user/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID
+        required: true
+        schema:
+          type: integer
+          format: int64
     get:
       tags:
         - user
@@ -51,51 +89,80 @@ paths:
           description: Unauthorised
         '404':
           description: User not found
-      security:
-        - bearerAuth: []
-    put: 
+
+  #____CUSTOMER____
+  /customers:
+    get:
       tags:
-        - User
-      summary: updates the user by token
-      description: updates the user by token
-      operationId: updateUserByToken
+        - Customer
+      summary: Finds all Customers
+      description: returns all customers
+      operationId: getAllCustomers
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'             
-        '401':
-          description: Unauthorised
-        '404':
-          description: User not found
-      security:
-        - bearerAuth: []
-
-  /customer/info:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+  /customer:
+    post:
+      tags:
+        - Customer
+      summary: Create a new Customer account
+      description: Create a new Customer account
+      operationId: createCustomer
+      requestBody:
+        description: customer data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRegisterRequestModel'
+        required: true
+      responses:
+        '201': #Created
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Request doesn't respect the schema
+        '409':
+          description: Customer with that email already exists
+  /customer/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
     put:
       tags:
         - Customer
       summary: Update the information of the current customer
-      description: Update the information of the current customer by providing new object
+      description: Update the information of the current customer by providing object with new info (null means stay the same)
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
+              $ref: '#/components/schemas/CustomerRegisterRequestModel'
       responses:
         '200':
-          description: succesful operation
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: []
+          description: Customer updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Customer not found
     get:
       tags:
         - Customer
-      summary: Get the information of the current customer
-      description: Get the information of the current customer by providing new object
+      summary: Get customer by id
+      description: Get customer by id
       responses:
         '200':
           description: succesful operation
@@ -103,11 +170,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Customer'
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
-  /customer/order:
+        '404':
+          description: Customer not found
+    delete:
+      tags:
+        - Customer
+      summary: Delete a customer by id
+      description: Delete a customer by id
+      responses:
+        '200':
+          description: Customer deleted
+        '404':
+          description: Customer not found
+  /customer/{userId}/ongoingOrders:
     put:
       tags:
         - Customer
@@ -123,11 +198,11 @@ paths:
                 format: int32
       responses:
         '200':
-          description: succesful operation
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
+          description: Order list updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Customer not found
     get:
       tags:
         - Customer
@@ -135,7 +210,7 @@ paths:
       description: Returns the list of current order Ids
       responses:
         '200':
-          description: succesful operation
+          description: Successful
           content:
             application/json:
               schema:
@@ -143,36 +218,65 @@ paths:
                 items:
                   type: integer
                   format: int32
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
-  /customer/feedback:
+        '404':
+          description: Customer not found
+
+  #____COURIER____
+  /couriers:
+    get:
+      tags:
+        - Courier
+      summary: Finds all Couriers
+      description: returns all couriers
+      operationId: getAllCouriers
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Courier'
+  /courier:
     post:
       tags:
-        - Customer
-      summary: Add feedback
-      description: Add feedback to courier / vendor
+        - Courier
+      summary: Create a new Courier account
+      description: Create a new Courier account
+      operationId: createCourier
       requestBody:
+        description: courier data
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Feedback'
+              $ref: '#/components/schemas/CourierRegisterRequestModel'
+        required: true
       responses:
-        '200':
-          description: succesful operation
+        '201': # Created
+          description: Courier created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courier'
         '400':
-          description: invalid feedback format
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
-  /courier/info:
+          description: Request doesn't respect the schema
+        '409':
+          description: Courier with that email already exists
+  /courier/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
     put:
       tags:
         - Courier
-      summary: Update the information of the current courier
-      description: Update the information of the current courier by providing new object
+      summary: Update the information of the current Courier
+      description: Update the information of the current courier by providing new object (null means stay the same)
       requestBody:
         content:
           application/json:
@@ -180,33 +284,49 @@ paths:
               $ref: '#/components/schemas/Courier'
       responses:
         '200':
-          description: succesful operation
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: []
+          description: Courier updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Courier not found
     get:
       tags:
         - Courier
-      summary: Get the information of the current courier
-      description: Get the information of the current courier by providing new object
+      summary: Get courier by id
+      description: Get courier by id
       responses:
         '200':
-          description: succesful operation
+          description: Courier found
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/Courier'
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
-  /courier/order:
+        '404':
+          description: Courier not found
+    delete:
+      tags:
+        - Courier
+      summary: Delete a courier by id
+      description: Delete a courier by id
+      responses:
+        '200':
+          description: Courier deleted
+        '404':
+          description: Courier not found
+  /courier/{userId}/pastOrders:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
     put:
       tags:
         - Courier
-      summary: Update the list of current orders
-      description: Update the list of current orders by providing a new list of orderIDs
+      summary: Update the list of past orders
+      description: Update the list of past orders by providing a new list of orderIDs
       requestBody:
         content:
           application/json:
@@ -217,220 +337,443 @@ paths:
                 format: int32
       responses:
         '200':
-          description: succesful operation
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
-    get:
-      tags:
-        - Courier
-      summary: Returns the list of current orders
-      description: Returns the list of current order Ids
-      responses:
-        '200':
-          description: succesful operation
-          content:
-            application/json:
-              schema:
-                items:
-                  type: integer
-                  format: int32
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
-  /courier/feedback:
-    get:
-      tags:
-        - Courier
-      summary: Get feedback
-      description: Get all received feedback
-      responses:
-        '200':
-          description: succesful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Feedback'
-        '401':
-          description: unauthorized
-      security:
-        - bearerAuth: [] 
-  /vendor:
-    post:
-      tags:
-        - Vendor
-      summary: Create a new Vendor account
-      description: Create a new Vendor account 
-      operationId: createVendor()
-      requestBody: 
-        description: vendor data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Vendor'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Vendor'          
-        '400':
-          description: Vendor already exists!
-        '405':
-          description: Validation exception
-    put:
-      tags:
-        - Courier
-      summary: Updates a wallet by courier user id
-      description: Updates a wallet by courier user id
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Wallet'
-      responses:
-        '200':
-          description: succesful operation
-        '401':
-          description: unauthorized
+          description: successful operation
         '404':
-          description: Wallet not found
-      security:
-        - bearerAuth: []
-
-  /feedback:
+          description: courier not found
     get:
       tags:
-        - Feedback
-      summary: Finds feedback by id
-      description: Finds feedback by id
-      operationId: getFeedbackByID
+        - Courier
+      summary: Returns the list of past orders
+      description: Returns the list of past order Ids
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Feedback'             
-        '401':
-          description: Unauthorised
-        '404':
-          description: Feedback not found
-      security:
-        - bearerAuth: []
-  /validation/{vendorID}:
+                items:
+                  type: integer
+                  format: int32
+
+  #____VENDOR____
+  /vendors:
+    get:
+      tags:
+        - Vendor
+      summary: Finds all Vendors
+      description: returns all vendors
+      operationId: getAllVendors
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vendor'
+  /vendor:
     post:
       tags:
         - Vendor
-      summary: post a validation document
-      description: post a validation document
+      summary: Create a new Vendor account
+      description: Create a new Vendor account
+      operationId: createVendor
+      requestBody:
+        description: vendor data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorRegisterRequestModel'
+        required: true
+      responses:
+        '201': # Created
+          description: Vendor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '400':
+          description: Request doesn't respect the schema
+        '409':
+          description: Vendor with that email already exists
+  /vendor/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of vendor
+        required: true
+        schema:
+          type: integer
+          format: int64
+    put:
+      tags:
+        - Vendor
+      summary: Update the information of the current Vendor
+      description: Update the information of the current vendor by providing new object (null means stay the same)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorRegisterRequestModel'
+      responses:
+        '200':
+          description: Vendor updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
+    get:
+      tags:
+        - Vendor
+      summary: Get the information of the current vendor
+      description: Get the information of the current vendor by providing id
+      responses:
+        '200':
+          description: Vendor found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '404':
+          description: Vendor not found
+    delete:
+      tags:
+        - Vendor
+      summary: Delete a vendor by id
+      description: Delete a vendor by id
+      responses:
+        '200':
+          description: Vendor deleted
+        '404':
+          description: Vendor not found
+  /vendor/byRadius:
+    get:
+      tags:
+        - Vendor
+      summary: Get vendors by radius
+      description: Get vendors by radius
+      operationId: getVendorsByRadius
       parameters:
-        - name: vendorID
-          in: path
-          description: ID of vendor 
+        - name: radius
+          in: query
+          description: radius in km
           required: true
           schema:
             type: integer
-            format: int64
+            format: int32
+        - name: latitude
+          in: query
+          description: location's latitude
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: longitude
+          in: query
+          description: location's longitude
+          required: true
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: Vendors found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vendor'
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Vendors not found
+  /vendor/{userId}/validation:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of vendor
+        required: true
+        schema:
+          type: integer
+          format: int64
+    post:
+      tags:
+        - Vendor
+      summary: Post a validation document
+      description: Post a validation document
       requestBody:
-        description: document proving that the restaurant belongs to a vendor
+        description: Document proving that the restaurant belongs to a vendor
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Validation'
         required: true
       responses:
-        '200':
-          description: Successful operation
+        '201': # Created
+          description: Validation uploaded
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Validation'          
+                $ref: '#/components/schemas/Validation'
         '400':
-          description: Invalid token supplied
-        '404':
-          description: Validation not found
-        '405':
-          description: Validation exception
-      security:
-       - bearerAuth: []
-  
+          description: Request doesn't respect the schema
     get:
       tags:
         - Vendor
-      summary: get a validation document
-      description: get validation document
-      # not sure how to have bith body and parameter
-      parameters:
-        - name: vendorID
-          in: path
-          description: ID of vendor 
-          required: true
-          schema:
-            type: integer
-            format: int64
+      summary: Get a validation document
+      description: Get validation document
       responses:
         '200':
-          description: Successful operation
+          description: Validation found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Validation'          
-        '400':
-          description: Invalid token supplied
+                $ref: '#/components/schemas/Validation'
         '404':
-          description: Validation not found
-        '405':
-          description: Validation exception
-          
-      security:
-       - bearerAuth: []  
+          description: Validation or vendor not found
     delete:
       tags:
         - Vendor
-      summary: delete a validation document
-      description: delete validation document
-      # not sure how to have bith body and parameter
-      parameters:
-        - name: vendorID
-          in: path
-          description: ID of vendor 
-          required: true
-          schema:
-            type: integer
-            format: int64
+      summary: Delete a validation document
+      description: Delete validation document
       responses:
         '200':
-          description: Successful operation
+          description: Validation deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Validation'          
-        '400':
-          description: Invalid token supplied
+                $ref: '#/components/schemas/Validation'
         '404':
-          description: Validation not found
-        '405':
-          description: Validation exception
-      security:
-        - bearerAuth: []
+          description: Validation or vendor not found
+
+  #____ADMIN____
+  /admin:
+    post:
+      tags:
+        - Admin
+      summary: Create a new Admin account
+      description: Create a new Admin account (only accessible by admins)
+      operationId: createAdmin
+      requestBody:
+        description: admin data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRegisterRequestModel'
+        required: true
+      responses:
+        '201': #Created
+          description: Admin created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+        '400':
+          description: Request doesn't respect the schema
+        '409':
+          description: Admin with that email already exists
+  /admin/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+    put:
+      tags:
+        - Admin
+      summary: Update the information of the current admin
+      description: Update the information of the current admin by providing object with new info (null means stay the same)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRegisterRequestModel'
+      responses:
+        '200':
+          description: Admin updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Admin not found
+    get:
+      tags:
+        - Admin
+      summary: Get the information of the current Admin
+      description: Get the information of the current Admin
+      responses:
+        '200':
+          description: Admin found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+        '404':
+          description: Admin not found
+    delete:
+      tags:
+        - Admin
+      summary: Delete an admin by id
+      description: Delete an admin by id
+      responses:
+        '200':
+          description: Admin deleted
+        '404':
+          description: Admin not found
+
+  #____FEEDBACK____
+  /feedbacks:
+    get:
+      tags:
+        - Feedback
+      summary: Get all feedbacks
+      description: Get all feedbacks
+      responses:
+        '200':
+          description: Feedbacks found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Feedback'
+  /feedback:
+    post:
+      tags:
+        - Feedback
+      summary: Post a feedback
+      description: Post a feedback
+      requestBody:
+        description: Feedback
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackRegisterRequestModel'
+        required: true
+      responses:
+        '201': # Created
+          description: Feedback uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+        '400':
+          description: Request doesn't respect the schema
+  /feedback/{feedbackId}:
+    parameters:
+      - name: feedbackId
+        in: path
+        description: feedback ID
+        required: true
+        schema:
+          type: integer
+          format: int32
+    get:
+      tags:
+        - Feedback
+      summary: Get a feedback
+      description: Get a feedback
+      responses:
+        '200':
+          description: Feedback found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+        '404':
+          description: Feedback not found
+    delete:
+      tags:
+        - Feedback
+      summary: Delete a feedback
+      description: Delete a feedback
+      responses:
+        '200':
+          description: Feedback deleted
+        '404':
+          description: Feedback not found
 
 components:
   schemas:
-    Validation:
+    #_______________REGISTER_REQUEST_MODELS____________________
+    UserRegisterRequestModel:
       type: object
+      required:
+        - email
+        - name
+        - surname
       properties:
-        document:
+        email:
           type: string
-          description: document proving that a restaurant belongs to a specific vendor
+        name:
+          type: string
+        surname:
+          type: string
+    CustomerRegisterRequestModel:
+      allOf:
+        - $ref: '#/components/schemas/UserRegisterRequestModel'
+        - type: object
+          required:
+            - homeAddress
+            - allergens
+            - paymentMethod
+          properties:
+            homeAddress:
+              type: string
+            allergens:
+              type: array
+              items:
+                type: string
+            paymentMethod:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentMethod'
+    VendorRegisterRequestModel:
+      allOf:
+        - $ref: '#/components/schemas/UserRegisterRequestModel'
+        - type: object
+          required:
+            - location
+            - openingTimes
+            - closingTimes
+          properties:
+            location:
+              type: string
+            openingTimes:
+              type: string
+            closingTimes:
+              type: string
+    CourierRegisterRequestModel:
+      allOf:
+        - $ref: '#/components/schemas/UserRegisterRequestModel'
+        - type: object
+          required:
+            - location
+          properties:
+            ibanNumber:
+              type: string
+    AdminRegisterRequestModel:
+      $ref: '#/components/schemas/UserRegisterRequestModel'
+    FeedbackRegisterRequestModel:
+      type: object
+      required:
+        - stars
+        - comment
+        - complaint
+      properties:
+        stars:
+          type: integer
+          format: int32
+        comment:
+          type: string
+        complaint:
+          type: boolean
+
+    #_______________DATABASE_MODELS____________________
     User:
       type: object
       properties:
@@ -443,16 +786,104 @@ components:
           format: int32
         email:
           type: string
+        role:
+          type: string
+          enum: [ customer, courier, vendor, admin ]
+        blocked:
+          type: boolean
+    Courier:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            activated:
+              type: boolean
+            rating:
+              type: number
+              format: float
+            pastOrders:
+              type: array
+              items:
+                type: integer
+                format: int32
+              description: array of ids of orders
+            wallet:
+              type: object
+              properties:
+                balance:
+                  type: number
+                  format: float
+                iban:
+                  type: string
+    Customer:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            homeAddress:
+              type: string
+            allergens:
+              type: array
+              items:
+                type: string
+            paymentMethod:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentMethod'
+            ongoingOrders:
+              type: array
+              items:
+                type: integer
+                format: int32
+              description: array of ids of orders
+    Vendor:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            activated:
+              type: boolean
+            location:
+              $ref: '#/components/schemas/Location'
+            opening time:
+              type: string
+    Admin:
+      $ref: '#/components/schemas/User'
+
+    #_______________OTHER_MODELS____________________
+    PaymentMethod:
+      type: object
+      properties:
+        creditCardNumber:
+          type: string
+        cardholderName:
+          type: string
+        date:
+          type: string
+        cvvCode:
+          type: integer
+          format: int32
+    Location:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: float
+        long:
+          type: number
+          format: float
+    Validation:
+      type: object
+      properties:
+        document:
+          type: string
+          description: Document proving that a restaurant belongs to a specific vendor
     Feedback:
       type: object
       properties:
         id:
           type: integer
           format: int32
-        orderId:
-          type: integer
-          format: int32
-          nullable: true
         stars:
           type: integer
           format: int32
@@ -460,87 +891,3 @@ components:
           type: string
         complaint:
           type: boolean
-    Courier:
-      type: object
-      properties:
-        userId:
-          type: integer
-          format: int32
-        rating:
-          type: number
-          format: float
-        pastOrders:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: array of ids of orders
-        feedback:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: array of ids of feedbacks
-    Customer:
-      type: object
-      properties:
-        userId:
-          type: integer
-          format: int32
-        homeAddress:
-          type: string
-        allergens:
-          type: array
-          items:
-            type: string
-        paymentMethod:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentMethod'
-        orderHistory:
-          items:
-            type: integer
-            format: int32
-          description: array of ids of orders
-
-    PaymentMethod:
-      type: object
-      properties:
-        credit card number:
-          type: string
-        cardholder name:
-          type: string
-        date:
-          type: string
-        cvv code:
-          type: integer
-          format: int32
-    Vendor:
-      type: object
-      properties:
-        userId:
-          type: integer
-          format: int32
-        location:
-          type: string
-        opening time:
-          type: string
-        feedbacks:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: list of ids
-    Wallet:
-      type: object
-      properties:
-          balance:
-            type: number
-            format: float
-          iban:
-            type: string
-  securitySchemes:
-    bearerAuth:   
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
