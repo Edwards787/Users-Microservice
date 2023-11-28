@@ -74,19 +74,17 @@ paths:
           format: int64
     get:
       tags:
-        - user
-      summary: Finds users by token
-      description: Finds users by token
-      operationId: getUserByToken
+        - User
+      summary: Finds user by id
+      description: Finds user by id
+      operationId: getUserById
       responses:
         '200':
-          description: successful operation
+          description: User found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'             
-        '401':
-          description: Unauthorised
+                $ref: '#/components/schemas/User'
         '404':
           description: User not found
 
@@ -100,7 +98,7 @@ paths:
       operationId: getAllCustomers
       responses:
         '200':
-          description: successful operation
+          description: Successful
           content:
             application/json:
               schema:
@@ -165,7 +163,7 @@ paths:
       description: Get customer by id
       responses:
         '200':
-          description: succesful operation
+          description: Successful
           content:
             application/json:
               schema:
