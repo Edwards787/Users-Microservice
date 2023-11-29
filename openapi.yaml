@@ -45,13 +45,6 @@ paths:
       summary: Finds user by email
       description: Finds user by email
       operationId: getUserByEmail
-      requestBody:
-        description: email
-        content:
-          application/json:
-            schema:
-              type: string
-        required: true
       responses:
         '200':
           description: User found
@@ -226,7 +219,228 @@ paths:
                   format: int32
         '404':
           description: Customer not found
-
+  /customer/{userId}/currentLocation:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+    get:
+      tags:
+        - Customer
+      summary: Returns current location of the customer
+      description: Returns current location of the customer
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: Customer not found
+    patch:
+      tags:
+        - Customer
+      summary: updates current location of a customer
+      description: updates current location of a customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: Customer not found
+  
+  
+  /customer/{userId}/savedOrder:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+    get:
+      tags:
+        - Customer
+      summary: Returns the saved past order
+      description: Returns the saved past order
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '404':
+          description: Customer not found
+    patch:
+      tags:
+        - Customer
+      summary: updates the saved past order
+      description: updates the saved past order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int64
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '404':
+          description: Customer not found
+  
+  /customer/{userId}/favRestaurants:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+    get:
+      tags:
+        - Customer
+      summary: returns a list of favourite restaurants
+      description: returns a list of favourite restaurants
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  format: int64
+        '404':
+          description: Customer not found
+    patch:
+      tags:
+        - Customer
+      summary: updates a list of favourite restaurants
+      description: updates a list of favourite restaurants
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: array
+                items:
+                  type: integer
+                  format: int64
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+        '404':
+          description: Customer not found
+  /customer/{userId}/favOrders:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+    get:
+      tags:
+        - Customer
+      summary: returns a list of favourite orders
+      description: returns a list of favourite orders
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  format: int64
+        '404':
+          description: Customer not found
+    patch:
+      tags:
+        - Customer
+      summary: updates a list of favourite orders
+      description: updates a list of favourite orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: array
+                items:
+                  type: integer
+                  format: int64
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+        '404':
+          description: Customer not found
+  /customer/{userId}/block:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      tags:
+        - Customer
+      summary: Block/unblock a customer
+      description: Block/unblock a customer
+      requestBody:
+        description: block/unblock a customer
+        content:
+          application/json:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        '201':
+          description: Updated succesfully
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/Customer'
+        '400':
+          description: Request doesn't respect the schema
   #____COURIER____
   /couriers:
     get:
@@ -360,7 +574,117 @@ paths:
                 items:
                   type: integer
                   format: int32
-
+  /courier/{userId}/ratings:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
+    get:
+      tags:
+        - Courier
+      summary: Returns the list of ratings
+      description: Returns the list of past order Ids
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rating'
+    patch:
+      tags:
+        - Courier
+      summary: Update the list of ratings
+      description: Update the list of ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rating'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rating'
+        '404':
+          description: courier not found
+  # This is only accessed by admin
+  /courier/{userId}/activation:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      tags:
+        - Courier
+      summary: Update activation of a courier
+      description: Update activation of a courier
+      requestBody:
+        description: Updates the activation of a courier
+        content:
+          application/json:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        '201': # Created
+          description: Updated succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courier'
+        '400':
+          description: Request doesn't respect the schema
+  # This is only accessed by admin
+  /courier/{userId}/block:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      tags:
+        - Courier
+      summary: Block/unblock a courier
+      description: Block/unblock a courier
+      requestBody:
+        description: block/unblock a courier
+        content:
+          application/json:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        '201': # Created
+          description: Updated succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courier'
+        '400':
+          description: Request doesn't respect the schema
   #____VENDOR____
   /vendors:
     get:
@@ -525,6 +849,27 @@ paths:
                 $ref: '#/components/schemas/Validation'
         '400':
           description: Request doesn't respect the schema
+    put:
+      tags:
+        - Vendor
+      summary: Update a validation document
+      description: Update a validation document
+      requestBody:
+        description: Document proving that the restaurant belongs to a vendor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Validation'
+        required: true
+      responses:
+        '201': # Created
+          description: Validation uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Validation'
+        '400':
+          description: Request doesn't respect the schema
     get:
       tags:
         - Vendor
@@ -553,7 +898,68 @@ paths:
                 $ref: '#/components/schemas/Validation'
         '404':
           description: Validation or vendor not found
-
+  # This is only accessed by admin
+  /vendor/{userId}/activation:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of vendor
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      tags:
+        - Vendor
+      summary: Update activation of a vendor
+      description: Update activation of a vendor
+      requestBody:
+        description: Updates the activation of a vendor
+        content:
+          application/json:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        '201': # Created
+          description: Updated succesfully
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/Vendor'
+        '400':
+          description: Request doesn't respect the schema
+  # This is only accessed by admin
+  /vendor/{userId}/block:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of vendor
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      tags:
+        - Vendor
+      summary: Block/unblock a vendor
+      description: Block/unblock a vendor
+      requestBody:
+        description: block/unblock a vendor
+        content:
+          application/json:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        '201': # Created
+          description: Updated succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '400':
+          description: Request doesn't respect the schema
   #____ADMIN____
   /admin:
     post:
@@ -804,9 +1210,10 @@ components:
           properties:
             activated:
               type: boolean
-            rating:
-              type: number
-              format: float
+            ratings:
+              type: array
+              items:
+                $ref: '#/components/schemas/Rating'
             pastOrders:
               type: array
               items:
@@ -842,6 +1249,16 @@ components:
                 type: integer
                 format: int32
               description: array of ids of orders
+            savedOrder:
+              type: integer
+              format: int32
+            favRestaurants:
+              type: array
+              items:
+                type: integer
+                format: int32
+            currentLocation:
+              $ref: '#/components/schemas/Location'
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -868,7 +1285,7 @@ components:
           type: string
         cvvCode:
           type: integer
-          format: int32
+          
     Location:
       type: object
       properties:
@@ -897,3 +1314,12 @@ components:
           type: string
         complaint:
           type: boolean
+    Rating:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int32
+        rating: 
+          type: number
+          format: float
