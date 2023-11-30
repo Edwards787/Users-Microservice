@@ -480,24 +480,6 @@ paths:
         schema:
           type: integer
           format: int64
-    put:
-      tags:
-        - Courier
-      summary: Update the list of past orders
-      description: Update the list of past orders by providing a new list of orderIDs
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: integer
-                format: int32
-      responses:
-        '200':
-          description: successful operation
-        '404':
-          description: courier not found
     get:
       tags:
         - Courier
@@ -1154,12 +1136,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Rating'
-            pastOrders:
-              type: array
-              items:
-                type: integer
-                format: int32
-              description: array of ids of orders
             wallet:
               type: object
               properties:
