@@ -979,7 +979,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FeedbackRegisterRequestModel'
+              $ref: '#/components/schemas/FeedbackPostRequestModel'
         required: true
       responses:
         '201': # Created
@@ -1084,13 +1084,16 @@ components:
               type: string
     AdminRegisterRequestModel:
       $ref: '#/components/schemas/UserRegisterRequestModel'
-    FeedbackRegisterRequestModel:
+    FeedbackPostRequestModel:
       type: object
       required:
         - stars
         - comment
         - complaint
       properties:
+        userId:
+          type: integer
+          format: int32
         stars:
           type: integer
           format: int32
@@ -1231,6 +1234,9 @@ components:
       type: object
       properties:
         id:
+          type: integer
+          format: int32
+        userId:
           type: integer
           format: int32
         stars:
