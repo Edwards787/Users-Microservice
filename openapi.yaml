@@ -262,6 +262,38 @@ paths:
           description: Successful
         '404':
           description: Customer not found
+  /customer/{userId}/requestRefund/{orderId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: orderId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+
+    put:
+      tags:
+        - Customer
+      summary: Request Refund
+      description: updates an order to want a refund
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: integer
+                format : int32
+        '404':
+          description: order not found
 
   /customer/{userId}/favRestaurants:
     parameters:
@@ -982,7 +1014,7 @@ paths:
           description: Admin deleted
         '404':
           description: Admin not found
-  /admin/refunds/{userid}:
+  /admin/{userid}/refunds:
     parameters:
       - name: userId
         in: path
@@ -1008,6 +1040,30 @@ paths:
                   format : int32
         '404':
           description: Request Error
+  /admin/{userId}/refund/{orderId}:
+    put:
+      tags:
+        - Admin
+      summary : Approve or decline a refund
+      description: Approve or decline a refund and do said refund
+      requestBody:
+        description: Refund or not
+        content:
+          application/json:
+            schema:
+              type: boolean
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+        '401':
+          description: Order Not found
+        '402':
+          description: Admin Not found
 
   #____FEEDBACK____
   /feedbacks:
