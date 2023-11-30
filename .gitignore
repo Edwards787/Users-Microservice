@@ -32,6 +32,7 @@ gradle-app.setting
 
 ### VS Code ###
 .vscode/
+.vs/
 
 ### MacOS ###
 *.DS_Store
