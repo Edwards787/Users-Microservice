@@ -182,26 +182,6 @@ paths:
         schema:
           type: integer
           format: int64
-    put:
-      tags:
-        - Customer
-      summary: Update the list of current orders
-      description: Update the list of current orders by providing a new list of orderIDs
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: integer
-                format: int32
-      responses:
-        '200':
-          description: Order list updated
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Customer not found
     get:
       tags:
         - Customer
@@ -1203,12 +1183,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/PaymentMethod'
-            ongoingOrders:
-              type: array
-              items:
-                type: integer
-                format: int32
-              description: array of ids of orders
             savedOrder:
               type: integer
               format: int32
