@@ -182,26 +182,6 @@ paths:
         schema:
           type: integer
           format: int64
-    put:
-      tags:
-        - Customer
-      summary: Update the list of current orders
-      description: Update the list of current orders by providing a new list of orderIDs
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: integer
-                format: int32
-      responses:
-        '200':
-          description: Order list updated
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Customer not found
     get:
       tags:
         - Customer
@@ -242,23 +222,6 @@ paths:
                 $ref: '#/components/schemas/Location'
         '404':
           description: Customer not found
-    put:
-      tags:
-        - Customer
-      summary: updates current location of a customer
-      description: updates current location of a customer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
-      responses:
-        '200':
-          description: Successful
-        '404':
-          description: Customer not found
-
-
   /customer/{userId}/savedOrder:
     parameters:
       - name: userId
@@ -299,6 +262,38 @@ paths:
           description: Successful
         '404':
           description: Customer not found
+  /customer/{userId}/requestRefund/{orderId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: orderId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+
+    put:
+      tags:
+        - Customer
+      summary: Request Refund
+      description: updates an order to want a refund
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: integer
+                format : int32
+        '404':
+          description: order not found
 
   /customer/{userId}/favRestaurants:
     parameters:
@@ -517,24 +512,6 @@ paths:
         schema:
           type: integer
           format: int64
-    put:
-      tags:
-        - Courier
-      summary: Update the list of past orders
-      description: Update the list of past orders by providing a new list of orderIDs
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: integer
-                format: int32
-      responses:
-        '200':
-          description: successful operation
-        '404':
-          description: courier not found
     get:
       tags:
         - Courier
@@ -576,21 +553,56 @@ paths:
     put:
       tags:
         - Courier
-      summary: Update the list of ratings
+      summary: Update the list of ratings (admin only)
       description: Update the list of ratings
       requestBody:
         content:
           application/json:
             schema:
-              items:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Rating'
+              type: object
+              properties:
+                userId:
+                  description: User Id of the user issuing the update
+                  type: integer
+                  format: int64
+                ratings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rating'
       responses:
         '200':
           description: successful operation
         '404':
           description: courier not found
+  /courier/{userId}/rate:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
+    post:
+        tags:
+            - Courier
+        summary: Post a rating
+        description: Post a rating
+        requestBody:
+          description: Rating
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+          required: true
+        responses:
+          '201': # Created
+            description: Rating uploaded
+          '400':
+            description: Request doesn't respect the schema
+          '404':
+            description: Courier not found
+
   # This is only accessed by admin
   /courier/{userId}/activation:
     parameters:
@@ -615,11 +627,7 @@ paths:
         required: true
       responses:
         '200':
-          description: Updated succesfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Courier'
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
@@ -806,17 +814,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Validation'
+              $ref: '#/components/schemas/ValidationRequestModel'
         required: true
       responses:
         '201': # Created
           description: Validation uploaded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Validation'
         '400':
           description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
     put:
       tags:
         - Vendor
@@ -827,13 +833,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Validation'
+              $ref: '#/components/schemas/ValidationRequestModel'
         required: true
       responses:
         '200':
           description: Validation uploaded
         '400':
           description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
     get:
       tags:
         - Vendor
@@ -856,13 +864,23 @@ paths:
       responses:
         '200':
           description: Validation deleted
+        '404':
+          description: Validation or vendor not found
+  /validations:
+    get:
+      tags:
+        - Vendor
+      summary: Get all validation documents
+      description: Get all validation documents
+      responses:
+        '200':
+          description: Validations found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Validation'
-        '404':
-          description: Validation or vendor not found
-  # This is only accessed by admin
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activation'
   /vendor/{userId}/activation:
     parameters:
       - name: userId
@@ -882,11 +900,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Block'
+              $ref: '#/components/schemas/Validation'
         required: true
       responses:
         '200':
-          description: Updated succesfully
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
@@ -996,6 +1014,69 @@ paths:
           description: Admin deleted
         '404':
           description: Admin not found
+  /admin/{userId}/refunds:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+    get:
+      tags:
+        - Admin
+      summary: Get a list of orders to be refunded
+      description: Get the list of orders that have the refund tag set to true
+      responses:
+        '200':
+          description: Orders found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type : integer
+                  format : int32
+        '404':
+          description: Request Error
+  /admin/{userId}/refund/{orderId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: orderId
+        in: path
+        description: user ID of admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+    put:
+      tags:
+        - Admin
+      summary : Approve or decline a refund
+      description: Approve or decline a refund and do said refund
+      requestBody:
+        description: Refund or not
+        content:
+          application/json:
+            schema:
+              type: boolean
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+        '404':
+          description: Order / Admin Not found
 
   #____FEEDBACK____
   /feedbacks:
@@ -1024,7 +1105,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FeedbackRegisterRequestModel'
+              $ref: '#/components/schemas/FeedbackPostRequestModel'
         required: true
       responses:
         '201': # Created
@@ -1095,7 +1176,7 @@ components:
             - paymentMethod
           properties:
             homeAddress:
-              type: string
+              $ref: '#/components/schemas/Address'
             allergens:
               type: array
               items:
@@ -1109,12 +1190,12 @@ components:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
         - type: object
           required:
-            - location
+            - address
             - openingTimes
             - closingTimes
           properties:
-            location:
-              type: string
+            address:
+              $ref: '#/components/schemas/Address'
             openingTimes:
               type: string
             closingTimes:
@@ -1123,20 +1204,21 @@ components:
       allOf:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
         - type: object
-          required:
-            - location
           properties:
             ibanNumber:
               type: string
     AdminRegisterRequestModel:
       $ref: '#/components/schemas/UserRegisterRequestModel'
-    FeedbackRegisterRequestModel:
+    FeedbackPostRequestModel:
       type: object
       required:
         - stars
         - comment
         - complaint
       properties:
+        userId:
+          type: integer
+          format: int32
         stars:
           type: integer
           format: int32
@@ -1144,6 +1226,14 @@ components:
           type: string
         complaint:
           type: boolean
+
+    ValidationRequestModel:
+      type: object
+      properties:
+        document:
+          type: string
+          description: Document proving that a restaurant belongs to a specific vendor
+
 
     #_______________DATABASE_MODELS____________________
     User:
@@ -1174,12 +1264,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Rating'
-            pastOrders:
-              type: array
-              items:
-                type: integer
-                format: int32
-              description: array of ids of orders
             wallet:
               type: object
               properties:
@@ -1194,7 +1278,7 @@ components:
         - type: object
           properties:
             homeAddress:
-              type: string
+              $ref: '#/components/schemas/Address'
             allergens:
               type: array
               items:
@@ -1203,12 +1287,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/PaymentMethod'
-            ongoingOrders:
-              type: array
-              items:
-                type: integer
-                format: int32
-              description: array of ids of orders
             savedOrder:
               type: integer
               format: int32
@@ -1217,8 +1295,6 @@ components:
               items:
                 type: integer
                 format: int32
-            currentLocation:
-              $ref: '#/components/schemas/Location'
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -1226,9 +1302,11 @@ components:
           properties:
             activated:
               type: boolean
-            location:
-              $ref: '#/components/schemas/Location'
-            opening time:
+            address:
+              $ref: '#/components/schemas/Address'
+            openingTimes:
+              type: string
+            closingTimes:
               type: string
     Admin:
       $ref: '#/components/schemas/User'
@@ -1246,6 +1324,19 @@ components:
         cvvCode:
           type: integer
 
+    Address:
+      type: object
+      properties:
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        postalCode:
+          type: string
+        coordinates:
+          $ref: '#/components/schemas/Location'
     Location:
       type: object
       properties:
@@ -1258,6 +1349,9 @@ components:
     Validation:
       type: object
       properties:
+        vendorId:
+          type: integer
+          format: int32
         document:
           type: string
           description: Document proving that a restaurant belongs to a specific vendor
@@ -1265,6 +1359,9 @@ components:
       type: object
       properties:
         id:
+          type: integer
+          format: int32
+        userId:
           type: integer
           format: int32
         stars:
