@@ -848,7 +848,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Validation'
+                  $ref: '#/components/schemas/Activation'
   /vendor/{userId}/activation:
     parameters:
       - name: userId
