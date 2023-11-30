@@ -242,7 +242,7 @@ paths:
                 $ref: '#/components/schemas/Location'
         '404':
           description: Customer not found
-    patch:
+    put:
       tags:
         - Customer
       summary: updates current location of a customer
@@ -255,14 +255,10 @@ paths:
       responses:
         '200':
           description: Successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Location'
         '404':
           description: Customer not found
-  
-  
+
+
   /customer/{userId}/savedOrder:
     parameters:
       - name: userId
@@ -287,7 +283,7 @@ paths:
                 format: int64
         '404':
           description: Customer not found
-    patch:
+    put:
       tags:
         - Customer
       summary: updates the saved past order
@@ -301,14 +297,9 @@ paths:
       responses:
         '200':
           description: Successful
-          content:
-            application/json:
-              schema:
-                type: integer
-                format: int64
         '404':
           description: Customer not found
-  
+
   /customer/{userId}/favRestaurants:
     parameters:
       - name: userId
@@ -335,7 +326,7 @@ paths:
                   format: int64
         '404':
           description: Customer not found
-    patch:
+    put:
       tags:
         - Customer
       summary: updates a list of favourite restaurants
@@ -344,20 +335,13 @@ paths:
         content:
           application/json:
             schema:
-                type: array
-                items:
-                  type: integer
-                  format: int64
+              type: array
+              items:
+                type: integer
+                format: int64
       responses:
         '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                  type: array
-                  items:
-                    type: integer
-                    format: int64
+          description: Successful operation
         '404':
           description: Customer not found
   /customer/{userId}/favOrders:
@@ -386,7 +370,7 @@ paths:
                   format: int64
         '404':
           description: Customer not found
-    patch:
+    put:
       tags:
         - Customer
       summary: updates a list of favourite orders
@@ -395,20 +379,13 @@ paths:
         content:
           application/json:
             schema:
-                type: array
-                items:
-                  type: integer
-                  format: int64
+              type: array
+              items:
+                type: integer
+                format: int64
       responses:
         '200':
           description: Successful
-          content:
-            application/json:
-              schema:
-                  type: array
-                  items:
-                    type: integer
-                    format: int64
         '404':
           description: Customer not found
   /customer/{userId}/block:
@@ -420,7 +397,7 @@ paths:
         schema:
           type: integer
           format: int64
-    patch:
+    put:
       tags:
         - Customer
       summary: Block/unblock a customer
@@ -430,17 +407,15 @@ paths:
         content:
           application/json:
             schema:
-              type: boolean
+              $ref: '#/components/schemas/Block'
         required: true
       responses:
-        '201':
+        '200':
           description: Updated succesfully
-          content:
-            application/json:
-              schema:
-                 $ref: '#/components/schemas/Customer'
         '400':
           description: Request doesn't respect the schema
+        '401':
+          description: Unauthorized - not an admin
   #____COURIER____
   /couriers:
     get:
@@ -598,7 +573,7 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Rating'
-    patch:
+    put:
       tags:
         - Courier
       summary: Update the list of ratings
@@ -608,19 +583,12 @@ paths:
           application/json:
             schema:
               items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Rating'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rating'
       responses:
         '200':
           description: successful operation
-          content:
-            application/json:
-              schema:
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Rating'
         '404':
           description: courier not found
   # This is only accessed by admin
@@ -633,7 +601,7 @@ paths:
         schema:
           type: integer
           format: int64
-    patch:
+    put:
       tags:
         - Courier
       summary: Update activation of a courier
@@ -643,10 +611,10 @@ paths:
         content:
           application/json:
             schema:
-              type: boolean
+              $ref: '#/components/schemas/Activation'
         required: true
       responses:
-        '201': # Created
+        '200':
           description: Updated succesfully
           content:
             application/json:
@@ -654,6 +622,8 @@ paths:
                 $ref: '#/components/schemas/Courier'
         '400':
           description: Request doesn't respect the schema
+        '401':
+          description: Unauthorized - not an admin
   # This is only accessed by admin
   /courier/{userId}/block:
     parameters:
@@ -664,7 +634,7 @@ paths:
         schema:
           type: integer
           format: int64
-    patch:
+    put:
       tags:
         - Courier
       summary: Block/unblock a courier
@@ -674,17 +644,15 @@ paths:
         content:
           application/json:
             schema:
-              type: boolean
+              $ref: '#/components/schemas/Block'
         required: true
       responses:
-        '201': # Created
+        '200':
           description: Updated succesfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Courier'
         '400':
           description: Request doesn't respect the schema
+        '401':
+          description: Unauthorized - not an admin
   #____VENDOR____
   /vendors:
     get:
@@ -862,12 +830,8 @@ paths:
               $ref: '#/components/schemas/Validation'
         required: true
       responses:
-        '201': # Created
+        '200':
           description: Validation uploaded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Validation'
         '400':
           description: Request doesn't respect the schema
     get:
@@ -908,7 +872,7 @@ paths:
         schema:
           type: integer
           format: int64
-    patch:
+    put:
       tags:
         - Vendor
       summary: Update activation of a vendor
@@ -918,17 +882,15 @@ paths:
         content:
           application/json:
             schema:
-              type: boolean
+              $ref: '#/components/schemas/Block'
         required: true
       responses:
-        '201': # Created
+        '200':
           description: Updated succesfully
-          content:
-            application/json:
-              schema:
-               $ref: '#/components/schemas/Vendor'
         '400':
           description: Request doesn't respect the schema
+        '401':
+          description: Unauthorized - not an admin
   # This is only accessed by admin
   /vendor/{userId}/block:
     parameters:
@@ -939,7 +901,7 @@ paths:
         schema:
           type: integer
           format: int64
-    patch:
+    put:
       tags:
         - Vendor
       summary: Block/unblock a vendor
@@ -949,17 +911,15 @@ paths:
         content:
           application/json:
             schema:
-              type: boolean
+              $ref: '#/components/schemas/Block'
         required: true
       responses:
-        '201': # Created
+        '200':
           description: Updated succesfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Vendor'
         '400':
           description: Request doesn't respect the schema
+        '401':
+          description: Unauthorized - not an admin
   #____ADMIN____
   /admin:
     post:
@@ -1285,7 +1245,7 @@ components:
           type: string
         cvvCode:
           type: integer
-          
+
     Location:
       type: object
       properties:
@@ -1320,6 +1280,21 @@ components:
         userId:
           type: integer
           format: int32
-        rating: 
-          type: number
-          format: float
+        rating:
+          type: integer
+          format: int32
+    Block:
+      type: object
+      properties:
+        block:
+          type: boolean
+        id:
+          type: integer
+    Activation:
+      type: object
+      properties:
+        activate:
+          type: boolean
+        id:
+          type: integer
+          format: int64
