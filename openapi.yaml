@@ -521,21 +521,56 @@ paths:
     put:
       tags:
         - Courier
-      summary: Update the list of ratings
+      summary: Update the list of ratings (admin only)
       description: Update the list of ratings
       requestBody:
         content:
           application/json:
             schema:
-              items:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Rating'
+              type: object
+              properties:
+                userId:
+                  description: User Id of the user issuing the update
+                  type: integer
+                  format: int64
+                ratings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rating'
       responses:
         '200':
           description: successful operation
         '404':
           description: courier not found
+  /courier/{userId}/rate:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
+    post:
+        tags:
+            - Courier
+        summary: Post a rating
+        description: Post a rating
+        requestBody:
+          description: Rating
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+          required: true
+        responses:
+          '201': # Created
+            description: Rating uploaded
+          '400':
+            description: Request doesn't respect the schema
+          '404':
+            description: Courier not found
+
   # This is only accessed by admin
   /courier/{userId}/activation:
     parameters:
