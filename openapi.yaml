@@ -1109,7 +1109,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
         - type: object
-          required:
           properties:
             ibanNumber:
               type: string
