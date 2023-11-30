@@ -1014,7 +1014,7 @@ paths:
           description: Admin deleted
         '404':
           description: Admin not found
-  /admin/{userid}/refunds:
+  /admin/{userId}/refunds:
     parameters:
       - name: userId
         in: path
@@ -1041,6 +1041,21 @@ paths:
         '404':
           description: Request Error
   /admin/{userId}/refund/{orderId}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: orderId
+        in: path
+        description: user ID of admin
+        required: true
+        schema:
+          type: integer
+          format: int64
     put:
       tags:
         - Admin
