@@ -1075,10 +1075,8 @@ paths:
               schema:
                 type: integer
                 format: int32
-        '401':
-          description: Order Not found
-        '402':
-          description: Admin Not found
+        '404':
+          description: Order / Admin Not found
 
   #____FEEDBACK____
   /feedbacks:
