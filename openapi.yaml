@@ -222,23 +222,6 @@ paths:
                 $ref: '#/components/schemas/Location'
         '404':
           description: Customer not found
-    put:
-      tags:
-        - Customer
-      summary: updates current location of a customer
-      description: updates current location of a customer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
-      responses:
-        '200':
-          description: Successful
-        '404':
-          description: Customer not found
-
-
   /customer/{userId}/savedOrder:
     parameters:
       - name: userId
@@ -1075,7 +1058,7 @@ components:
             - paymentMethod
           properties:
             homeAddress:
-              type: string
+              $ref: '#/components/schemas/Address'
             allergens:
               type: array
               items:
@@ -1089,12 +1072,12 @@ components:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
         - type: object
           required:
-            - location
+            - address
             - openingTimes
             - closingTimes
           properties:
-            location:
-              type: string
+            address:
+              $ref: '#/components/schemas/Address'
             openingTimes:
               type: string
             closingTimes:
@@ -1104,7 +1087,6 @@ components:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
         - type: object
           required:
-            - location
           properties:
             ibanNumber:
               type: string
@@ -1174,7 +1156,7 @@ components:
         - type: object
           properties:
             homeAddress:
-              type: string
+              $ref: '#/components/schemas/Address'
             allergens:
               type: array
               items:
@@ -1191,8 +1173,6 @@ components:
               items:
                 type: integer
                 format: int32
-            currentLocation:
-              $ref: '#/components/schemas/Location'
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -1200,9 +1180,11 @@ components:
           properties:
             activated:
               type: boolean
-            location:
-              $ref: '#/components/schemas/Location'
-            opening time:
+            address:
+              $ref: '#/components/schemas/Address'
+            openingTimes:
+              type: string
+            closingTimes:
               type: string
     Admin:
       $ref: '#/components/schemas/User'
@@ -1220,6 +1202,19 @@ components:
         cvvCode:
           type: integer
 
+    Address:
+      type: object
+      properties:
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        postalCode:
+          type: string
+        coordinates:
+          $ref: '#/components/schemas/Location'
     Location:
       type: object
       properties:
