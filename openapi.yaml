@@ -560,11 +560,7 @@ paths:
         required: true
       responses:
         '200':
-          description: Updated succesfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Courier'
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
@@ -837,11 +833,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Block'
+              $ref: '#/components/schemas/Validation'
         required: true
       responses:
         '200':
-          description: Updated succesfully
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
