@@ -982,6 +982,32 @@ paths:
           description: Admin deleted
         '404':
           description: Admin not found
+  /admin/refunds/{userid}:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+    get:
+      tags:
+        - Admin
+      summary: Get a list of orders to be refunded
+      description: Get the list of orders that have the refund tag set to true
+      responses:
+        '200':
+          description: Orders found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type : integer
+                  format : int32
+        '404':
+          description: Request Error
 
   #____FEEDBACK____
   /feedbacks:
