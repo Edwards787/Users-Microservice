@@ -769,17 +769,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Validation'
+              $ref: '#/components/schemas/ValidationRequestModel'
         required: true
       responses:
         '201': # Created
           description: Validation uploaded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Validation'
         '400':
           description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
     put:
       tags:
         - Vendor
@@ -790,13 +788,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Validation'
+              $ref: '#/components/schemas/ValidationRequestModel'
         required: true
       responses:
         '200':
           description: Validation uploaded
         '400':
           description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
     get:
       tags:
         - Vendor
@@ -819,13 +819,23 @@ paths:
       responses:
         '200':
           description: Validation deleted
+        '404':
+          description: Validation or vendor not found
+  /validations:
+    get:
+      tags:
+        - Vendor
+      summary: Get all validation documents
+      description: Get all validation documents
+      responses:
+        '200':
+          description: Validations found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Validation'
-        '404':
-          description: Validation or vendor not found
-  # This is only accessed by admin
+                type: array
+                items:
+                  $ref: '#/components/schemas/Validation'
   /vendor/{userId}/activation:
     parameters:
       - name: userId
@@ -1107,6 +1117,14 @@ components:
         complaint:
           type: boolean
 
+    ValidationRequestModel:
+      type: object
+      properties:
+        document:
+          type: string
+          description: Document proving that a restaurant belongs to a specific vendor
+
+
     #_______________DATABASE_MODELS____________________
     User:
       type: object
@@ -1227,6 +1245,9 @@ components:
     Validation:
       type: object
       properties:
+        vendorId:
+          type: integer
+          format: int32
         document:
           type: string
           description: Document proving that a restaurant belongs to a specific vendor
