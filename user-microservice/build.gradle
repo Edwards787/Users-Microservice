@@ -143,7 +143,7 @@ pitest {
 apply plugin: 'org.openapi.generator'
 openApiGenerate {
 	generatorName.set("spring")
-	inputSpec.set("$rootDir/user-microservice/src/main/resources/user-api.yaml")
+	inputSpec.set("$projectDir/src/main/resources/user-api.yaml")
 	outputDir.set("$buildDir/generated")
 	apiPackage.set("nl.tudelft.sem.yumyumnow.users.api")
 	modelPackage.set("nl.tudelft.sem.yumyumnow.users.model")
