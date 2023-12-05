@@ -89,7 +89,7 @@ paths:
       tags:
         - Customer
       summary: Finds all Customers
-      description: Returns a list of all Customer objects in the database
+      description: Returns a list of all 'Customer' objects in the database
       operationId: getAllCustomers
       responses:
         '200':
@@ -105,7 +105,7 @@ paths:
       tags:
         - Customer
       summary: Create a new Customer account
-      description: Create a new Customer account, by providing the necessary data (some other information will be set up by the server)
+      description: Create a new Customer account, by providing the necessary data (some other information such as id will be set up by the server)
       operationId: createCustomer
       requestBody:
         description: customer data
@@ -139,7 +139,7 @@ paths:
       tags:
         - Customer
       summary: Update the information of the current customer
-      description: Update the information of the current customer by providing object with new info (null means stay the same)
+      description: Update the information of the current customer by providing a new object, with updated fields (same as with create, fields such as id should not be provided)
       operationId: updateCustomer
       requestBody:
         content:
