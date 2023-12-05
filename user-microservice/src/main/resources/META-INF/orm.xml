@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+        http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" version="2.2">
+    <entity class="nl.tudelft.sem.yumyumnow.users.model.User" name="User">
+        <table name="users"/>
+        <inheritance strategy="JOINED"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="nl.tudelft.sem.yumyumnow.users.model.Customer" name="Customer">
+        <table name="customer_data"/>
+        <primary-key-join-column name="id"/>
+        <attributes>
+            <element-collection name="allergens">
+                <column name="allergens"/>
+                <collection-table name="customer_allergens">
+                    <join-column name="customer_id"/>
+                </collection-table>
+            </element-collection>
+            <element-collection name="favRestaurants">
+                <column name="fav_restaurants"/>
+                <collection-table name="customer_favrestaurants">
+                    <join-column name="customer_id"/>
+                </collection-table>
+            </element-collection>
+            <element-collection name="paymentMethod">
+                <collection-table name="customer_paymentmenthods">
+                    <join-column name="customer_id"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+
+    <entity class="nl.tudelft.sem.yumyumnow.users.model.Courier" name="Courier">
+        <table name="courier_data"/>
+        <primary-key-join-column name="id"/>
+        <attributes>
+            <element-collection name="ratings">
+                <collection-table name="courier_ratings">
+                    <join-column name="courier_id"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+
+    <entity class="nl.tudelft.sem.yumyumnow.users.model.Vendor" name="Vendor">
+        <table name="vendor_data"/>
+        <primary-key-join-column name="id"/>
+    </entity>
+
+    <entity class="nl.tudelft.sem.yumyumnow.users.model.Admin" name="Admin">
+        <table name="admin_data"/>
+        <primary-key-join-column name="id"/>
+    </entity>
+
+    <entity class="nl.tudelft.sem.yumyumnow.users.model.Feedback" name="Feedback">
+        <table name="feedback"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="nl.tudelft.sem.yumyumnow.users.model.Validation" name="Validation">
+        <table name="validation"/>
+        <attributes>
+            <id name="vendorId"/>
+        </attributes>
+    </entity>
+
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Location"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Wallet"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Rating"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.PaymentMethod"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Address">
+        <attributes>
+            <embedded name="coordinates"/>
+        </attributes>
+    </embeddable>
+</entity-mappings>
