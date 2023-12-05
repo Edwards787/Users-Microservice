@@ -1169,44 +1169,44 @@ components:
     CustomerRegisterRequestModel:
       allOf:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
-        - type: object
-          required:
-            - homeAddress
-            - allergens
-            - paymentMethod
-          properties:
-            homeAddress:
-              $ref: '#/components/schemas/Address'
-            allergens:
-              type: array
-              items:
-                type: string
-            paymentMethod:
-              type: array
-              items:
-                $ref: '#/components/schemas/PaymentMethod'
+      type: object
+      required:
+        - homeAddress
+        - allergens
+        - paymentMethod
+      properties:
+        homeAddress:
+          $ref: '#/components/schemas/Address'
+        allergens:
+          type: array
+          items:
+            type: string
+        paymentMethod:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
     VendorRegisterRequestModel:
       allOf:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
-        - type: object
-          required:
-            - address
-            - openingTimes
-            - closingTimes
-          properties:
-            address:
-              $ref: '#/components/schemas/Address'
-            openingTimes:
-              type: string
-            closingTimes:
-              type: string
+      type: object
+      required:
+        - address
+        - openingTimes
+        - closingTimes
+      properties:
+        address:
+          $ref: '#/components/schemas/Address'
+        openingTimes:
+          type: string
+        closingTimes:
+          type: string
     CourierRegisterRequestModel:
       allOf:
         - $ref: '#/components/schemas/UserRegisterRequestModel'
-        - type: object
-          properties:
-            ibanNumber:
-              type: string
+      type: object
+      properties:
+        ibanNumber:
+          type: string
     AdminRegisterRequestModel:
       $ref: '#/components/schemas/UserRegisterRequestModel'
     FeedbackPostRequestModel:
@@ -1237,6 +1237,13 @@ components:
 
     #_______________DATABASE_MODELS____________________
     User:
+      discriminator:
+        propertyName: role
+        mapping:
+          customer: "#/components/schemas/Customer"
+          courier: "#/components/schemas/Courier"
+          vendor: "#/components/schemas/Vendor"
+          admin: "#/components/schemas/Admin"
       type: object
       properties:
         name:
@@ -1256,60 +1263,55 @@ components:
     Courier:
       allOf:
         - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            activated:
-              type: boolean
-            ratings:
-              type: array
-              items:
-                $ref: '#/components/schemas/Rating'
-            wallet:
-              type: object
-              properties:
-                balance:
-                  type: number
-                  format: float
-                iban:
-                  type: string
+      type: object
+      properties:
+        activated:
+          type: boolean
+        ratings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rating'
+        wallet:
+          $ref: '#/components/schemas/Wallet'
     Customer:
       allOf:
         - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            homeAddress:
-              $ref: '#/components/schemas/Address'
-            allergens:
-              type: array
-              items:
-                type: string
-            paymentMethod:
-              type: array
-              items:
-                $ref: '#/components/schemas/PaymentMethod'
-            savedOrder:
-              type: integer
-              format: int64
-            favRestaurants:
-              type: array
-              items:
-                type: integer
-                format: int64
+      type: object
+      properties:
+        homeAddress:
+          $ref: '#/components/schemas/Address'
+        allergens:
+          type: array
+          items:
+            type: string
+        paymentMethod:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+        savedOrder:
+          type: integer
+          format: int64
+        favRestaurants:
+          type: array
+          items:
+            type: integer
+            format: int64
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            activated:
-              type: boolean
-            address:
-              $ref: '#/components/schemas/Address'
-            openingTimes:
-              type: string
-            closingTimes:
-              type: string
+      type: object
+      properties:
+        activated:
+          type: boolean
+        address:
+          $ref: '#/components/schemas/Address'
+        openingTimes:
+          type: string
+        closingTimes:
+          type: string
     Admin:
-      $ref: '#/components/schemas/User'
+      allOf:
+        - $ref: '#/components/schemas/User'
 
     #_______________OTHER_MODELS____________________
     PaymentMethod:
@@ -1323,7 +1325,14 @@ components:
           type: string
         cvvCode:
           type: integer
-
+    Wallet:
+      type: object
+      properties:
+        balance:
+          type: number
+          format: float
+        iban:
+          type: string
     Address:
       type: object
       properties:
