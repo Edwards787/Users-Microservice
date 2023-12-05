@@ -29,7 +29,7 @@
                     <join-column name="customer_id"/>
                 </collection-table>
             </element-collection>
-            <element-collection name="paymentMethod">
+            <element-collection name="paymentMethods">
                 <collection-table name="customer_paymentmenthods">
                     <join-column name="customer_id"/>
                 </collection-table>

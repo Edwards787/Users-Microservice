@@ -15,12 +15,12 @@ tags:
 paths:
 
   #____USER____
-  /users:
+  /user/all:
     get:
       tags:
         - User
-      summary: Finds all users
-      description: returns all users
+      summary: Returns all users
+      description: Returns a list of all 'User' objects currently present in the database
       operationId: getAllUsers
       responses:
         '200':
@@ -35,15 +35,16 @@ paths:
     parameters:
       - name: email
         in: path
-        description: email of the user
+        description: Email of the user to be retrieved
         required: true
         schema:
           type: string
+        example: "johndoe@example.com"
     get:
       tags:
         - User
       summary: Finds user by email
-      description: Finds user by email
+      description: Finds user by email, returning a complete matching 'User' object
       operationId: getUserByEmail
       responses:
         '200':
@@ -60,16 +61,17 @@ paths:
     parameters:
       - name: userId
         in: path
-        description: user ID
+        description: user ID corresponding to value in database
         required: true
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - User
       summary: Finds user by id
-      description: Finds user by id
+      description: Finds user by id, returning a complete matching 'User' object
       operationId: getUserById
       responses:
         '200':
@@ -82,12 +84,12 @@ paths:
           description: User not found
 
   #____CUSTOMER____
-  /customers:
+  /customer/all:
     get:
       tags:
         - Customer
       summary: Finds all Customers
-      description: returns all customers
+      description: Returns a list of all Customer objects in the database
       operationId: getAllCustomers
       responses:
         '200':
@@ -103,14 +105,14 @@ paths:
       tags:
         - Customer
       summary: Create a new Customer account
-      description: Create a new Customer account
+      description: Create a new Customer account, by providing the necessary data (some other information will be set up by the server)
       operationId: createCustomer
       requestBody:
         description: customer data
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CustomerRegisterRequestModel'
+              $ref: '#/components/schemas/CustomerRequestModel'
         required: true
       responses:
         '201': #Created
@@ -132,16 +134,18 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Customer
       summary: Update the information of the current customer
       description: Update the information of the current customer by providing object with new info (null means stay the same)
+      operationId: updateCustomer
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CustomerRegisterRequestModel'
+              $ref: '#/components/schemas/CustomerRequestModel'
       responses:
         '200':
           description: Customer updated
@@ -154,6 +158,7 @@ paths:
         - Customer
       summary: Get customer by id
       description: Get customer by id
+      operationId: getCustomerById
       responses:
         '200':
           description: Successful
@@ -168,6 +173,7 @@ paths:
         - Customer
       summary: Delete a customer by id
       description: Delete a customer by id
+      operationId: deleteCustomer
       responses:
         '200':
           description: Customer deleted
@@ -182,11 +188,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Customer
       summary: Returns the list of current orders
       description: Returns the list of current order Ids
+      operationId: getCurrentOrderIdsForUser
       responses:
         '200':
           description: Successful
@@ -197,6 +205,9 @@ paths:
                 items:
                   type: integer
                   format: int64
+              example:
+                - 1
+                - 2
         '404':
           description: Customer not found
   /customer/{userId}/currentLocation:
@@ -208,11 +219,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Customer
       summary: Returns current location of the customer
       description: Returns current location of the customer
+      operationId: getCurrentLocationForUser
       responses:
         '200':
           description: Successful
@@ -231,11 +244,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Customer
       summary: Returns the saved past order
       description: Returns the saved past order
+      operationId: getPastSavedOrderIdForUser
       responses:
         '200':
           description: Successful
@@ -244,6 +259,7 @@ paths:
               schema:
                 type: integer
                 format: int64
+              example: 1
         '404':
           description: Customer not found
     put:
@@ -251,12 +267,14 @@ paths:
         - Customer
       summary: updates the saved past order
       description: updates the saved past order
+      operationId: updatePastSavedOrderIdForUser
       requestBody:
         content:
           application/json:
             schema:
               type: integer
               format: int64
+            example: 1
       responses:
         '200':
           description: Successful
@@ -271,6 +289,7 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
       - name: orderId
         in: path
         description: user ID of customer
@@ -278,23 +297,19 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
 
     put:
       tags:
         - Customer
       summary: Request Refund
       description: updates an order to want a refund
+      operationId: requestRefundByCustomerIdForOrderId
       responses:
         '200':
           description: Successful
-          content:
-            application/json:
-              schema:
-                type: integer
-                format : int64
         '404':
           description: order not found
-
   /customer/{userId}/favRestaurants:
     parameters:
       - name: userId
@@ -304,11 +319,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Customer
       summary: returns a list of favourite restaurants
       description: returns a list of favourite restaurants
+      operationId: getFavouriteVendorIdsForCustomer
       responses:
         '200':
           description: Successful
@@ -319,6 +336,9 @@ paths:
                 items:
                   type: integer
                   format: int64
+              example:
+                - 1
+                - 2
         '404':
           description: Customer not found
     put:
@@ -326,6 +346,7 @@ paths:
         - Customer
       summary: updates a list of favourite restaurants
       description: updates a list of favourite restaurants
+      operationId: updateFavouriteVendorIdsForCustomer
       requestBody:
         content:
           application/json:
@@ -334,6 +355,9 @@ paths:
               items:
                 type: integer
                 format: int64
+            example:
+              - 1
+              - 2
       responses:
         '200':
           description: Successful operation
@@ -348,11 +372,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Customer
       summary: returns a list of favourite orders
       description: returns a list of favourite orders
+      operationId: getFavouriteOrderIdsForCustomer
       responses:
         '200':
           description: Successful
@@ -363,6 +389,9 @@ paths:
                 items:
                   type: integer
                   format: int64
+              example:
+                - 1
+                - 2
         '404':
           description: Customer not found
     put:
@@ -370,6 +399,7 @@ paths:
         - Customer
       summary: updates a list of favourite orders
       description: updates a list of favourite orders
+      operationId: updateFavouriteOrderIdsForCustomer
       requestBody:
         content:
           application/json:
@@ -378,6 +408,9 @@ paths:
               items:
                 type: integer
                 format: int64
+            example: 
+              - 1
+              - 2
       responses:
         '200':
           description: Successful
@@ -392,17 +425,19 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Customer
       summary: Block/unblock a customer
       description: Block/unblock a customer
+      operationId: updateCustomerBlockStatus
       requestBody:
         description: block/unblock a customer
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Block'
+              $ref: '#/components/schemas/BlockRequestModel'
         required: true
       responses:
         '200':
@@ -411,8 +446,9 @@ paths:
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
+
   #____COURIER____
-  /couriers:
+  /courier/all:
     get:
       tags:
         - Courier
@@ -440,7 +476,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CourierRegisterRequestModel'
+              $ref: '#/components/schemas/CourierRequestModel'
         required: true
       responses:
         '201': # Created
@@ -462,11 +498,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Courier
       summary: Update the information of the current Courier
       description: Update the information of the current courier by providing new object (null means stay the same)
+      operationId: updateCourier
       requestBody:
         content:
           application/json:
@@ -484,6 +522,7 @@ paths:
         - Courier
       summary: Get courier by id
       description: Get courier by id
+      operationId: getCourierById
       responses:
         '200':
           description: Courier found
@@ -498,6 +537,7 @@ paths:
         - Courier
       summary: Delete a courier by id
       description: Delete a courier by id
+      operationId: deleteCourier
       responses:
         '200':
           description: Courier deleted
@@ -512,11 +552,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Courier
       summary: Returns the list of past orders
       description: Returns the list of past order Ids
+      operationId: getPastOrderIdsForCourier
       responses:
         '200':
           description: successful operation
@@ -526,6 +568,9 @@ paths:
                 items:
                   type: integer
                   format: int64
+              example:
+                - 1
+                - 2
   /courier/{userId}/ratings:
     parameters:
       - name: userId
@@ -535,11 +580,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Courier
       summary: Returns the list of ratings
       description: Returns the list of past order Ids
+      operationId: getRatingsForCourier
       responses:
         '200':
           description: successful operation
@@ -555,6 +602,7 @@ paths:
         - Courier
       summary: Update the list of ratings (admin only)
       description: Update the list of ratings
+      operationId: updateRatingsForCourier
       requestBody:
         content:
           application/json:
@@ -569,6 +617,11 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Rating'
+            example:
+              userId: 0
+              ratings:
+                - userId: 1
+                  rating: 5
       responses:
         '200':
           description: successful operation
@@ -583,11 +636,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     post:
         tags:
             - Courier
         summary: Post a rating
         description: Post a rating
+        operationId: rateCourier
         requestBody:
           description: Rating
           content:
@@ -602,7 +657,6 @@ paths:
             description: Request doesn't respect the schema
           '404':
             description: Courier not found
-
   # This is only accessed by admin
   /courier/{userId}/activation:
     parameters:
@@ -613,17 +667,19 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Courier
       summary: Update activation of a courier
       description: Update activation of a courier
+      operationId: updateCourierActivationStatus
       requestBody:
         description: Updates the activation of a courier
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Activation'
+              $ref: '#/components/schemas/ActivationRequestModel'
         required: true
       responses:
         '200':
@@ -642,17 +698,19 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Courier
       summary: Block/unblock a courier
       description: Block/unblock a courier
+      operationId: updateCourierBlockStatus
       requestBody:
         description: block/unblock a courier
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Block'
+              $ref: '#/components/schemas/BlockRequestModel'
         required: true
       responses:
         '200':
@@ -661,8 +719,9 @@ paths:
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
+
   #____VENDOR____
-  /vendors:
+  /vendor/all:
     get:
       tags:
         - Vendor
@@ -690,7 +749,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VendorRegisterRequestModel'
+              $ref: '#/components/schemas/VendorRequestModel'
         required: true
       responses:
         '201': # Created
@@ -712,16 +771,18 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Vendor
       summary: Update the information of the current Vendor
       description: Update the information of the current vendor by providing new object (null means stay the same)
+      operationId: updateVendor
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VendorRegisterRequestModel'
+              $ref: '#/components/schemas/VendorRequestModel'
       responses:
         '200':
           description: Vendor updated
@@ -734,6 +795,7 @@ paths:
         - Vendor
       summary: Get the information of the current vendor
       description: Get the information of the current vendor by providing id
+      operationId: getVendorById
       responses:
         '200':
           description: Vendor found
@@ -748,6 +810,7 @@ paths:
         - Vendor
       summary: Delete a vendor by id
       description: Delete a vendor by id
+      operationId: deleteVendor
       responses:
         '200':
           description: Vendor deleted
@@ -768,6 +831,7 @@ paths:
           schema:
             type: integer
             format: int64
+          example: 5
         - name: latitude
           in: query
           description: location's latitude
@@ -775,6 +839,7 @@ paths:
           schema:
             type: number
             format: float
+          example: 41.902782
         - name: longitude
           in: query
           description: location's longitude
@@ -782,6 +847,7 @@ paths:
           schema:
             type: number
             format: float
+          example: 21.496366
       responses:
         '200':
           description: Vendors found
@@ -804,11 +870,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     post:
       tags:
         - Vendor
       summary: Post a validation document
       description: Post a validation document
+      operationId: uploadValidationByVendor
       requestBody:
         description: Document proving that the restaurant belongs to a vendor
         content:
@@ -828,6 +896,7 @@ paths:
         - Vendor
       summary: Update a validation document
       description: Update a validation document
+      operationId: updateValidationByVendor
       requestBody:
         description: Document proving that the restaurant belongs to a vendor
         content:
@@ -847,6 +916,7 @@ paths:
         - Vendor
       summary: Get a validation document
       description: Get validation document
+      operationId: getValidationByVendor
       responses:
         '200':
           description: Validation found
@@ -861,17 +931,19 @@ paths:
         - Vendor
       summary: Delete a validation document
       description: Delete validation document
+      operationId: deleteValidationByVendor
       responses:
         '200':
           description: Validation deleted
         '404':
           description: Validation or vendor not found
-  /validations:
+  /validation/all:
     get:
       tags:
         - Vendor
       summary: Get all validation documents
       description: Get all validation documents
+      operationId: getAllValidations
       responses:
         '200':
           description: Validations found
@@ -880,7 +952,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Activation'
+                  $ref: '#/components/schemas/ActivationRequestModel'
+  # This is only accessed by admin
   /vendor/{userId}/activation:
     parameters:
       - name: userId
@@ -890,11 +963,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Vendor
       summary: Update activation of a vendor
       description: Update activation of a vendor
+      operationId: updateVendorActivationStatus
       requestBody:
         description: Updates the activation of a vendor
         content:
@@ -919,17 +994,19 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Vendor
       summary: Block/unblock a vendor
       description: Block/unblock a vendor
+      operationId: updateVendorBlockStatus
       requestBody:
         description: block/unblock a vendor
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Block'
+              $ref: '#/components/schemas/BlockRequestModel'
         required: true
       responses:
         '200':
@@ -938,6 +1015,8 @@ paths:
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
+
+
   #____ADMIN____
   /admin:
     post:
@@ -951,7 +1030,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminRegisterRequestModel'
+              $ref: '#/components/schemas/AdminRequestModel'
         required: true
       responses:
         '201': #Created
@@ -973,16 +1052,18 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     put:
       tags:
         - Admin
       summary: Update the information of the current admin
       description: Update the information of the current admin by providing object with new info (null means stay the same)
+      operationId: updateAdmin
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminRegisterRequestModel'
+              $ref: '#/components/schemas/AdminRequestModel'
       responses:
         '200':
           description: Admin updated
@@ -995,6 +1076,7 @@ paths:
         - Admin
       summary: Get the information of the current Admin
       description: Get the information of the current Admin
+      operationId: getAdminById
       responses:
         '200':
           description: Admin found
@@ -1009,6 +1091,7 @@ paths:
         - Admin
       summary: Delete an admin by id
       description: Delete an admin by id
+      operationId: deleteAdmin
       responses:
         '200':
           description: Admin deleted
@@ -1023,11 +1106,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Admin
       summary: Get a list of orders to be refunded
       description: Get the list of orders that have the refund tag set to true
+      operationId: getRefundRequests
       responses:
         '200':
           description: Orders found
@@ -1038,6 +1123,9 @@ paths:
                 items:
                   type : integer
                   format : int64
+              example:
+                - 1
+                - 2
         '404':
           description: Request Error
   /admin/{userId}/refund/{orderId}:
@@ -1049,6 +1137,7 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
       - name: orderId
         in: path
         description: user ID of admin
@@ -1056,11 +1145,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 2
     put:
       tags:
         - Admin
       summary : Approve or decline a refund
       description: Approve or decline a refund and do said refund
+      operationId: updateRefundRequestStatus
       requestBody:
         description: Refund or not
         content:
@@ -1079,12 +1170,13 @@ paths:
           description: Order / Admin Not found
 
   #____FEEDBACK____
-  /feedbacks:
+  /feedback/all:
     get:
       tags:
         - Feedback
       summary: Get all feedbacks
       description: Get all feedbacks
+      operationId: getAllFeedbacks
       responses:
         '200':
           description: Feedbacks found
@@ -1100,12 +1192,13 @@ paths:
         - Feedback
       summary: Post a feedback
       description: Post a feedback
+      operationId: createFeedback
       requestBody:
         description: Feedback
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FeedbackPostRequestModel'
+              $ref: '#/components/schemas/FeedbackRequestModel'
         required: true
       responses:
         '201': # Created
@@ -1125,11 +1218,13 @@ paths:
         schema:
           type: integer
           format: int64
+        example: 1
     get:
       tags:
         - Feedback
       summary: Get a feedback
       description: Get a feedback
+      operationId: getFeedbackById
       responses:
         '200':
           description: Feedback found
@@ -1144,6 +1239,7 @@ paths:
         - Feedback
       summary: Delete a feedback
       description: Delete a feedback
+      operationId: deleteFeedback
       responses:
         '200':
           description: Feedback deleted
@@ -1152,8 +1248,8 @@ paths:
 
 components:
   schemas:
-    #_______________REGISTER_REQUEST_MODELS____________________
-    UserRegisterRequestModel:
+    #_______________REQUEST_MODELS____________________
+    UserRequestModel:
       type: object
       required:
         - email
@@ -1166,14 +1262,18 @@ components:
           type: string
         surname:
           type: string
-    CustomerRegisterRequestModel:
+      example:
+        email: "johndoe@example.com"
+        name: "John"
+        surname: "Doe"
+    CustomerRequestModel:
       allOf:
-        - $ref: '#/components/schemas/UserRegisterRequestModel'
+        - $ref: '#/components/schemas/UserRequestModel'
       type: object
       required:
         - homeAddress
         - allergens
-        - paymentMethod
+        - paymentMethods
       properties:
         homeAddress:
           $ref: '#/components/schemas/Address'
@@ -1181,13 +1281,34 @@ components:
           type: array
           items:
             type: string
-        paymentMethod:
+        paymentMethods:
           type: array
           items:
             $ref: '#/components/schemas/PaymentMethod'
-    VendorRegisterRequestModel:
+      example:
+        email: "johndoe@example.com"
+        name: "John"
+        surname: "Doe"
+        homeAddress:
+          address: "Via Roma 1"
+          city: "Roma"
+          country: "Italy"
+          postalCode: "00100"
+          coordinates:
+            lat: 41.902782
+            long: 12.496366
+        allergens:
+          items:
+            - "nuts"
+        paymentMethods:
+          items:
+            - creditCardNumber: "1234567890123456"
+              cardholderName: "John Doe"
+              date: "01/01/2021"
+              cvvCode: 123
+    VendorRequestModel:
       allOf:
-        - $ref: '#/components/schemas/UserRegisterRequestModel'
+        - $ref: '#/components/schemas/UserRequestModel'
       type: object
       required:
         - address
@@ -1200,16 +1321,41 @@ components:
           type: string
         closingTimes:
           type: string
-    CourierRegisterRequestModel:
+      example:
+        name: John
+        surname: Doe
+        email: "johndoe@example.com"
+        address:
+          address: "Via Roma 1"
+          city: "Roma"
+          country: "Italy"
+          postalCode: "00100"
+          coordinates:
+            lat: 41.902782
+            long: 12.496366
+        openingTimes: "mon-fri 10:00, sat-sun 12:00"
+        closingTimes: "mon-fri 20:00, sat-sun 22:00"
+    CourierRequestModel:
       allOf:
-        - $ref: '#/components/schemas/UserRegisterRequestModel'
+        - $ref: '#/components/schemas/UserRequestModel'
       type: object
       properties:
         ibanNumber:
           type: string
-    AdminRegisterRequestModel:
-      $ref: '#/components/schemas/UserRegisterRequestModel'
-    FeedbackPostRequestModel:
+      example:
+        name: John
+        surname: Doe
+        email: "johndoe@example.com"
+        ibanNumber: "IT60X0542811101000000123455"
+    AdminRequestModel:
+      allOf:
+        - $ref: '#/components/schemas/UserRequestModel'
+      example:
+        name: John
+        surname: Doe
+        email: "johndoe@example.com"
+
+    FeedbackRequestModel:
       type: object
       required:
         - stars
@@ -1226,14 +1372,45 @@ components:
           type: string
         complaint:
           type: boolean
-
+      example:
+        userId: 0
+        stars: 5
+        comment: "This is an example comment"
+        complaint: false
     ValidationRequestModel:
       type: object
       properties:
         document:
           type: string
           description: Document proving that a restaurant belongs to a specific vendor
+      example:
+        document: "VGhlcmUgaXMgbm8gZnJlZSBsdW5jaA=="
 
+    BlockRequestModel:
+      type: object
+      properties:
+        block:
+          type: boolean
+        id:
+          type: integer
+          description: id of the user that is making the change
+          format: int64
+      example:
+        block: true
+        id: 14
+
+    ActivationRequestModel:
+      type: object
+      properties:
+        activate:
+          type: boolean
+        id:
+          type: integer
+          description: id of the user that is making the change
+          format: int64
+      example:
+        activate: true
+        id: 14
 
     #_______________DATABASE_MODELS____________________
     User:
@@ -1260,6 +1437,13 @@ components:
           enum: [ customer, courier, vendor, admin ]
         blocked:
           type: boolean
+      example:
+        name: John
+        surname: Doe
+        id: 0
+        email: "johndoe@example.com"
+        role: customer
+        blocked: false
     Courier:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -1273,6 +1457,21 @@ components:
             $ref: '#/components/schemas/Rating'
         wallet:
           $ref: '#/components/schemas/Wallet'
+      example:
+        name: John
+        surname: Doe
+        id: 0
+        email: "johndoe@example.com"
+        role: courier
+        blocked: false
+        activated: true
+        ratings:
+          items:
+            - userId: 10
+              rating: 5
+        wallet:
+          balance: 0
+          iban: "IT60X0542811101000000123455"
     Customer:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -1284,7 +1483,7 @@ components:
           type: array
           items:
             type: string
-        paymentMethod:
+        paymentMethods:
           type: array
           items:
             $ref: '#/components/schemas/PaymentMethod'
@@ -1296,6 +1495,35 @@ components:
           items:
             type: integer
             format: int64
+      example:
+        name: John
+        surname: Doe
+        id: 0
+        email: "johndoe@example.com"
+        role: courier
+        blocked: false
+        homeAddress:
+          address: "Via Roma 1"
+          city: "Roma"
+          country: "Italy"
+          postalCode: "00100"
+          coordinates:
+            lat: 41.902782
+            long: 12.496366
+        allergens:
+          items:
+            - "nuts"
+        paymentMethods:
+          items:
+            - creditCardNumber: "1234567890123456"
+              cardholderName: "John Doe"
+              date: "01/01/2021"
+              cvvCode: 123
+        savedOrder: 42
+        favRestaurants:
+          items:
+            - 1
+            - 2
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -1309,9 +1537,34 @@ components:
           type: string
         closingTimes:
           type: string
+      example:
+        name: John
+        surname: Doe
+        id: 0
+        email: "johndoe@example.com"
+        role: courier
+        blocked: false
+        activated: true
+        address: 
+          address: "Via Roma 1"
+          city: "Roma"
+          country: "Italy"
+          postalCode: "00100"
+          coordinates:
+            lat: 41.902782
+            long: 12.496366
+        openingTimes: "mon-fri 10:00, sat-sun 12:00"
+        closingTimes: "mon-fri 20:00, sat-sun 22:00"
     Admin:
       allOf:
         - $ref: '#/components/schemas/User'
+      example:
+        name: John
+        surname: Doe
+        id: 0
+        email: "johndoe@example.com"
+        role: courier
+        blocked: false
 
     #_______________OTHER_MODELS____________________
     PaymentMethod:
@@ -1325,6 +1578,12 @@ components:
           type: string
         cvvCode:
           type: integer
+          format: int64
+      example:
+        creditCardNumber: "1234567890123456"
+        cardholderName: "John Doe"
+        date: "01/01/2021"
+        cvvCode: 123
     Wallet:
       type: object
       properties:
@@ -1333,6 +1592,9 @@ components:
           format: float
         iban:
           type: string
+      example:
+        balance: 0
+        iban: "IT60X0542811101000000123455"
     Address:
       type: object
       properties:
@@ -1346,6 +1608,14 @@ components:
           type: string
         coordinates:
           $ref: '#/components/schemas/Location'
+      example:
+        address: "Urtes namai"
+        city: "Klaipeda"
+        country: "Lithuania"
+        postalCode: "LT696969"
+        coordinates:
+          lat: 69.0
+          long: 69.0
     Location:
       type: object
       properties:
@@ -1355,6 +1625,9 @@ components:
         long:
           type: number
           format: float
+      example:
+        lat: 52.0022
+        long: 4.3736
     Validation:
       type: object
       properties:
@@ -1364,6 +1637,9 @@ components:
         document:
           type: string
           description: Document proving that a restaurant belongs to a specific vendor
+      example:
+        vendorId: 1234
+        document: "string"
     Feedback:
       type: object
       properties:
@@ -1380,6 +1656,12 @@ components:
           type: string
         complaint:
           type: boolean
+      example:
+        id: 123
+        userId: 123
+        stars: 5
+        comment: "This is an example comment"
+        complaint: false
     Rating:
       type: object
       properties:
@@ -1389,18 +1671,6 @@ components:
         rating:
           type: integer
           format: int64
-    Block:
-      type: object
-      properties:
-        block:
-          type: boolean
-        id:
-          type: integer
-    Activation:
-      type: object
-      properties:
-        activate:
-          type: boolean
-        id:
-          type: integer
-          format: int64
+      example:
+        userId: 1
+        rating: 5
