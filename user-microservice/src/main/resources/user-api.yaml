@@ -196,7 +196,7 @@ paths:
                 type: array
                 items:
                   type: integer
-                  format: int32
+                  format: int64
         '404':
           description: Customer not found
   /customer/{userId}/currentLocation:
@@ -291,7 +291,7 @@ paths:
             application/json:
               schema:
                 type: integer
-                format : int32
+                format : int64
         '404':
           description: order not found
 
@@ -525,7 +525,7 @@ paths:
               schema:
                 items:
                   type: integer
-                  format: int32
+                  format: int64
   /courier/{userId}/ratings:
     parameters:
       - name: userId
@@ -767,7 +767,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: int32
+            format: int64
         - name: latitude
           in: query
           description: location's latitude
@@ -1037,7 +1037,7 @@ paths:
                 type: array
                 items:
                   type : integer
-                  format : int32
+                  format : int64
         '404':
           description: Request Error
   /admin/{userId}/refund/{orderId}:
@@ -1074,7 +1074,7 @@ paths:
             application/json:
               schema:
                 type: integer
-                format: int32
+                format: int64
         '404':
           description: Order / Admin Not found
 
@@ -1124,7 +1124,7 @@ paths:
         required: true
         schema:
           type: integer
-          format: int32
+          format: int64
     get:
       tags:
         - Feedback
@@ -1218,10 +1218,10 @@ components:
       properties:
         userId:
           type: integer
-          format: int32
+          format: int64
         stars:
           type: integer
-          format: int32
+          format: int64
         comment:
           type: string
         complaint:
@@ -1245,7 +1245,7 @@ components:
           type: string
         id:
           type: integer
-          format: int32
+          format: int64
         email:
           type: string
         role:
@@ -1289,12 +1289,12 @@ components:
                 $ref: '#/components/schemas/PaymentMethod'
             savedOrder:
               type: integer
-              format: int32
+              format: int64
             favRestaurants:
               type: array
               items:
                 type: integer
-                format: int32
+                format: int64
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
@@ -1351,7 +1351,7 @@ components:
       properties:
         vendorId:
           type: integer
-          format: int32
+          format: int64
         document:
           type: string
           description: Document proving that a restaurant belongs to a specific vendor
@@ -1360,13 +1360,13 @@ components:
       properties:
         id:
           type: integer
-          format: int32
+          format: int64
         userId:
           type: integer
-          format: int32
+          format: int64
         stars:
           type: integer
-          format: int32
+          format: int64
         comment:
           type: string
         complaint:
@@ -1376,10 +1376,10 @@ components:
       properties:
         userId:
           type: integer
-          format: int32
+          format: int64
         rating:
           type: integer
-          format: int32
+          format: int64
     Block:
       type: object
       properties:
