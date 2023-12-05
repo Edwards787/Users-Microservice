@@ -441,7 +441,7 @@ paths:
         required: true
       responses:
         '200':
-          description: Updated succesfully
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
@@ -722,7 +722,7 @@ paths:
         required: true
       responses:
         '200':
-          description: Updated succesfully
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
