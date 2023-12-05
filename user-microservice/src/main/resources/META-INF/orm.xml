@@ -75,13 +75,9 @@
         </attributes>
     </entity>
 
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Address"/>
     <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Location"/>
     <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Wallet"/>
     <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Rating"/>
     <embeddable class="nl.tudelft.sem.yumyumnow.users.model.PaymentMethod"/>
-    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Address">
-        <attributes>
-            <embedded name="coordinates"/>
-        </attributes>
-    </embeddable>
 </entity-mappings>
