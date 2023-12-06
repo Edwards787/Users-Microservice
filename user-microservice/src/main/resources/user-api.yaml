@@ -363,59 +363,6 @@ paths:
           description: Successful operation
         '404':
           description: Customer not found
-  /customer/{userId}/favOrders:
-    parameters:
-      - name: userId
-        in: path
-        description: user ID of customer
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 1
-    get:
-      tags:
-        - Customer
-      summary: Returns a list of favourite orders
-      description: Returns a list of the ids of the favourite orders of the customer with the provided id
-      operationId: getFavouriteOrderIdsForCustomer
-      responses:
-        '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: integer
-                  format: int64
-              example:
-                - 1
-                - 2
-        '404':
-          description: Customer not found
-    put:
-      tags:
-        - Customer
-      summary: Updates a list of favourite orders
-      description: Updates a list of favourite orders with the ids provided
-      operationId: updateFavouriteOrderIdsForCustomer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: integer
-                format: int64
-            example: 
-              - 1
-              - 2
-      responses:
-        '200':
-          description: Successful
-        '404':
-          description: Customer not found
   /customer/{userId}/block:
     parameters:
       - name: userId
