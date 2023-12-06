@@ -1311,14 +1311,12 @@ components:
             lat: 41.902782
             long: 12.496366
         allergens:
-          items:
-            - "nuts"
+          - "nuts"
         paymentMethods:
-          items:
-            - creditCardNumber: "1234567890123456"
-              cardholderName: "John Doe"
-              date: "01/01/2021"
-              cvvCode: 123
+          - creditCardNumber: "1234567890123456"
+            cardholderName: "John Doe"
+            date: "01/01/2021"
+            cvvCode: 123
     VendorRequestModel:
       allOf:
         - $ref: '#/components/schemas/UserRequestModel'
@@ -1479,9 +1477,8 @@ components:
         blocked: false
         activated: true
         ratings:
-          items:
-            - userId: 10
-              rating: 5
+          - userId: 10
+            rating: 5
         wallet:
           balance: 0
           iban: "IT60X0542811101000000123455"
@@ -1524,19 +1521,16 @@ components:
             lat: 41.902782
             long: 12.496366
         allergens:
-          items:
-            - "nuts"
+          - "nuts"
         paymentMethods:
-          items:
-            - creditCardNumber: "1234567890123456"
-              cardholderName: "John Doe"
-              date: "01/01/2021"
-              cvvCode: 123
+          - creditCardNumber: "1234567890123456"
+            cardholderName: "John Doe"
+            date: "01/01/2021"
+            cvvCode: 123
         savedOrder: 42
         favRestaurants:
-          items:
-            - 1
-            - 2
+          - 1
+          - 2
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
