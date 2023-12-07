@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 public class AdminController implements AdminApi {
 
     private final AdminService adminService;
-
     @Autowired
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
@@ -19,11 +18,8 @@ public class AdminController implements AdminApi {
 
     @Override
     public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
-        Admin admin = adminService.createAdmin(adminRequestModel);
-
-        return ResponseEntity.ok(admin);
+        return adminService.createAdmin(adminRequestModel);
     }
-
 
     @Override
     public ResponseEntity<Admin> getAdminById(Long adminId){
@@ -31,7 +27,9 @@ public class AdminController implements AdminApi {
         return ResponseEntity.ok(admin);
     }
 
-
-
-
+    @Override
+    public ResponseEntity<Void> deleteAdmin(Long adminId){
+        adminService.deleteAdminById(adminId);
+        return null;
+    }
 }
