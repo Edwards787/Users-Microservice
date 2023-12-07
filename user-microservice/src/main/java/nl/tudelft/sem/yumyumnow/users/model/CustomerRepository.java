@@ -18,5 +18,4 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
      * Check if an existing user already uses an id.
      */
     boolean existsById(Long id);
-
 }
