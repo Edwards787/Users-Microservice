@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
+
 @Service
 public class AdminService {
     AdminRepository adminRepository;
@@ -30,5 +33,8 @@ public class AdminService {
         return admin;
     }
 
-
+    public Admin getAdminById(Long adminId){
+        Optional<Admin> admin = adminRepository.findById(adminId);
+        return admin.get();
+    }
 }

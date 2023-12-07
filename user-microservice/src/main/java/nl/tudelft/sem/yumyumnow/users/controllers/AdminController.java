@@ -23,4 +23,15 @@ public class AdminController implements AdminApi {
 
         return ResponseEntity.ok(admin);
     }
+
+
+    @Override
+    public ResponseEntity<Admin> getAdminById(Long adminId){
+        Admin admin = adminService.getAdminById(adminId);
+        return ResponseEntity.ok(admin);
+    }
+
+
+
+
 }
