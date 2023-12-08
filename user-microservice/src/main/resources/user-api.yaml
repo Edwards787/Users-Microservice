@@ -150,11 +150,19 @@ paths:
                 $ref: '#/components/schemas/Customer'
         '404':
           description: Customer not found
-  /customer/{userId}/payment:
+  /customer/{userId1}/{userId2}/payment:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
         description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer who is making the call
         required: true
         schema:
           type: integer
