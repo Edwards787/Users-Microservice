@@ -168,11 +168,29 @@ paths:
                 $ref: '#/components/schemas/Customer'
         '404':
           description: Customer not found
+  /customer/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of customer that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer that is deleting the user
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     delete:
       tags:
         - Customer
       summary: Delete a customer by id
-      description: Delete a customer object, corresponding to the id provided
+      description: Delete a customer object, corresponding to the id provided. Only the admin or the user himself can delete the acocunt
       operationId: deleteCustomer
       responses:
         '200':
@@ -481,11 +499,29 @@ paths:
                 $ref: '#/components/schemas/Courier'
         '404':
           description: Courier not found
+  /courier/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of courier that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of user that is deleting the courier (could be either admin or the user himself)
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     delete:
       tags:
         - Courier
       summary: Delete a courier by id
-      description: Delete a courier by the id provided
+      description: Delete a courier by the id provided. Only admin or the user himself can delete it's account
       operationId: deleteCourier
       responses:
         '200':
@@ -762,11 +798,29 @@ paths:
                 $ref: '#/components/schemas/Vendor'
         '404':
           description: Vendor not found
+  /vendor/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of vendor that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of user that is deleting the vendor. Only admins or the user himself can delete the account.
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     delete:
       tags:
         - Vendor
       summary: Delete a vendor by id
-      description: Delete a vendor by the id provided
+      description: Delete a vendor by the id provided. Only admins or the user himself can delete the account.
       operationId: deleteVendor
       responses:
         '200':
@@ -883,11 +937,29 @@ paths:
                 $ref: '#/components/schemas/Validation'
         '404':
           description: Validation or vendor not found
+  /vendor/{userId1}/{userId2}/validation:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of vendor
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of user that is trying to delete the validation document
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     delete:
       tags:
         - Vendor
       summary: Delete a validation document
-      description: Delete the validation document provided by the vendor with the id provided
+      description: Delete the validation document provided by the vendor with the id provided. Only the vendor himself or admin can delete the document
       operationId: deleteValidationByVendor
       responses:
         '200':
@@ -1046,11 +1118,29 @@ paths:
                 $ref: '#/components/schemas/Admin'
         '404':
           description: Admin not found
+  /admin/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of admin that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of admin that is deleting the admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     delete:
       tags:
         - Admin
       summary: Delete an admin by id
-      description: Delete an admin by id provided
+      description: Delete an admin by id provided. Only the admin himself or another admin can delete an admin
       operationId: deleteAdmin
       responses:
         '200':
@@ -1194,11 +1284,29 @@ paths:
                 $ref: '#/components/schemas/Feedback'
         '404':
           description: Feedback not found
+  /feedback/{feedbackId}/{userId}:
+    parameters:
+      - name: feedbackId
+        in: path
+        description: feedback ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId
+        in: path
+        description: Id of the user that is deleting the feedback. Only the user himself or the admin can delete the feedback
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     delete:
       tags:
         - Feedback
       summary: Delete a feedback
-      description: Delete a feedback by specifying its id
+      description: Delete a feedback by specifying its id. Only the user himself or the admin can delete the feedback.
       operationId: deleteFeedback
       responses:
         '200':
