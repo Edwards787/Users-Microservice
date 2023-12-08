@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Controller
 public class AdminController implements AdminApi {
 
@@ -35,4 +37,10 @@ public class AdminController implements AdminApi {
     public ResponseEntity<Void> updateAdmin(Long userId, AdminRequestModel adminRequestModel){
         return adminService.updateAdminById(userId, adminRequestModel);
     }
+
+    @Override
+    public ResponseEntity<List<Long>> getRefundRequests(Long userId){
+        return adminService.getRefundRequests(userId);
+    }
+
 }
