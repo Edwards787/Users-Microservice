@@ -150,6 +150,50 @@ paths:
                 $ref: '#/components/schemas/Customer'
         '404':
           description: Customer not found
+  /customer/{userId}/payment:
+    parameters:
+      - name: userId
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+    get:
+      tags:
+        - Customer
+      summary: Get customer's payment method by id
+      description: Returns a single Payment object, corresponding to the user with the id provided
+      operationId: getCustomerPaymentById
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        '404':
+          description: Customer not found
+    put:
+      tags:
+        - Customer
+      summary: Update customer's payment method by id
+      description: Update the payment method of the customer with the id provided, by providing a new Payment object
+      operationId: updateCustomerPaymentById
+      requestBody:
+        description: Payment object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '200':
+          description: Successful
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Customer not found
   /customer/{userId1}/{userId2}:
     parameters:
       - name: userId1
@@ -1424,7 +1468,6 @@ components:
       required:
         - homeAddress
         - allergens
-        - paymentMethods
       properties:
         homeAddress:
           $ref: '#/components/schemas/Address'
@@ -1432,10 +1475,6 @@ components:
           type: array
           items:
             type: string
-        paymentMethods:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentMethod'
       example:
         email: "johndoe@example.com"
         name: "John"
@@ -1450,11 +1489,6 @@ components:
             long: 12.496366
         allergens:
           - "nuts"
-        paymentMethods:
-          - creditCardNumber: "1234567890123456"
-            cardholderName: "John Doe"
-            date: "01/01/2021"
-            cvvCode: 123
     VendorRequestModel:
       allOf:
         - $ref: '#/components/schemas/UserRequestModel'
@@ -1605,10 +1639,6 @@ components:
           type: array
           items:
             type: string
-        paymentMethods:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentMethod'
         savedOrder:
           type: integer
           format: int64
@@ -1634,11 +1664,6 @@ components:
             long: 12.496366
         allergens:
           - "nuts"
-        paymentMethods:
-          - creditCardNumber: "1234567890123456"
-            cardholderName: "John Doe"
-            date: "01/01/2021"
-            cvvCode: 123
         savedOrder: 42
         favRestaurants:
           - 1
