@@ -32,7 +32,6 @@ public class CustomerController implements CustomerApi {
         customer.setBlocked(false);
         customer.setHomeAddress(customerRequestModel.getHomeAddress());
         customer.setFavRestaurants(new ArrayList<>());
-        customer.setPaymentMethods(customerRequestModel.getPaymentMethods());
         customer.setName(customerRequestModel.getName());
         customer.setSurname(customerRequestModel.getSurname());
         customer.setRole(User.RoleEnum.CUSTOMER);
