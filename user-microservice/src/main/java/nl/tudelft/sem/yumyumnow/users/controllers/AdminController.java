@@ -23,13 +23,16 @@ public class AdminController implements AdminApi {
 
     @Override
     public ResponseEntity<Admin> getAdminById(Long adminId){
-        Admin admin = adminService.getAdminById(adminId);
-        return ResponseEntity.ok(admin);
+        return adminService.getAdminById(adminId);
     }
 
     @Override
     public ResponseEntity<Void> deleteAdmin(Long adminId){
-        adminService.deleteAdminById(adminId);
-        return null;
+        return adminService.deleteAdminById(adminId);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateAdmin(Long userId, AdminRequestModel adminRequestModel){
+        return adminService.updateAdminById(userId, adminRequestModel);
     }
 }
