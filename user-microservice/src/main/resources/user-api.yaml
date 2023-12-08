@@ -135,24 +135,6 @@ paths:
           type: integer
           format: int64
         example: 1
-    put:
-      tags:
-        - Customer
-      summary: Update the information of the current customer
-      description: Update the information of the current customer by providing a new object, with updated fields (same as with create, fields such as id should not be provided)
-      operationId: updateCustomer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CustomerRequestModel'
-      responses:
-        '200':
-          description: Customer updated
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Customer not found
     get:
       tags:
         - Customer
@@ -186,6 +168,24 @@ paths:
           type: integer
           format: int64
         example: 2
+    put:
+      tags:
+        - Customer
+      summary: Update the information of the customer
+      description: Update the information of the current customer by providing a new object, with updated fields (same as with create, fields such as id should not be provided). Only the user himself or the admin can make the change.
+      operationId: updateCustomer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRequestModel'
+      responses:
+        '200':
+          description: Customer updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Customer not found
     delete:
       tags:
         - Customer
@@ -280,11 +280,29 @@ paths:
               example: 1
         '404':
           description: Customer not found
+  /customer/{userId1}/{userId2}/savedOrder:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Customer
       summary: Updates the saved past order
-      description: Updates the saved past order by providing the id of the new order to be saved
+      description: Updates the saved past order by providing the id of the new order to be saved. Only the user himself or the admin can update the past order.
       operationId: updatePastSavedOrderIdForUser
       requestBody:
         content:
@@ -298,11 +316,19 @@ paths:
           description: Successful
         '404':
           description: Customer not found
-  /customer/{userId}/requestRefund/{orderId}:
+  /customer/{userId1}/{userId2}/requestRefund/{orderId}:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of customer
+        description: user ID of customer who is asking for refund
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer who is making the call
         required: true
         schema:
           type: integer
@@ -316,12 +342,11 @@ paths:
           type: integer
           format: int64
         example: 1
-
     put:
       tags:
         - Customer
       summary: Request Refund
-      description: Request a refund for the order with the provided id, placed by the customer with the provided id
+      description: Request a refund for the order with the provided id, placed by the customer with the provided id. Only the user himself or the admin can ask for the refund on his behalf.
       operationId: requestRefundByCustomerIdForOrderId
       responses:
         '200':
@@ -359,11 +384,29 @@ paths:
                 - 2
         '404':
           description: Customer not found
+  /customer/{userId1}/{userId2}/favRestaurants:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of customer whose favourite restaurants are being updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer who is updating the favourite restaurants
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Customer
       summary: Updates a list of favourite restaurants
-      description: Updates a list of favourite vendors with the ids provided
+      description: Updates a list of favourite vendors with the id provided. Only the user himself or the admin can do that.
       operationId: updateFavouriteVendorIdsForCustomer
       requestBody:
         content:
@@ -381,28 +424,36 @@ paths:
           description: Successful operation
         '404':
           description: Customer not found
-  /customer/{userId}/block:
+  /customer/{userId1}/{userId2}/block:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of customer
+        description: user ID of customer that is being blocked
         required: true
         schema:
           type: integer
           format: int64
         example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer that is blocking the customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Customer
       summary: Block/unblock a customer
-      description: Updates the status of a customer to be blocked / unblocked (operation only accessible by admins - checked by the id of the user issuing the request)
+      description: Updates the status of a customer to be blocked / unblocked. Operation only accessible by admins.
       operationId: updateCustomerBlockStatus
       requestBody:
-        description: Model containing the blocked status and the id of the user issuing the request
+        description: Model containing the blocked status
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlockRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
@@ -466,24 +517,6 @@ paths:
           type: integer
           format: int64
         example: 1
-    put:
-      tags:
-        - Courier
-      summary: Update the information of the current Courier
-      description: Update the information of the current courier by providing a new object, with updated fields (same as with create, fields such as id should not be provided)
-      operationId: updateCourier
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Courier'
-      responses:
-        '200':
-          description: Courier updated
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Courier not found
     get:
       tags:
         - Courier
@@ -526,6 +559,24 @@ paths:
       responses:
         '200':
           description: Courier deleted
+        '404':
+          description: Courier not found
+    put:
+      tags:
+        - Courier
+      summary: Update the information of the current Courier
+      description: Update the information of the current courier by providing a new object, with updated fields (same as with create, fields such as id should not be provided). Only the user himself or the admin can update the user.
+      operationId: updateCourier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Courier'
+      responses:
+        '200':
+          description: Courier updated
+        '400':
+          description: Request doesn't respect the schema
         '404':
           description: Courier not found
   /courier/{userId}/pastOrders:
@@ -586,6 +637,24 @@ paths:
                     $ref: '#/components/schemas/Rating'
         '404':
           description: Courier not found
+  /courier/{userId1}/{userId2}/ratings:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of courier whose ratings are being updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of courier who is issuing an update
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Courier
@@ -596,21 +665,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userId:
-                  description: User Id of the user issuing the update
-                  type: integer
-                  format: int64
-                ratings:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Rating'
-            example:
-              userId: 0
-              ratings:
-                - userId: 1
-                  rating: 5
+              $ref: '#/components/schemas/Rating'
       responses:
         '200':
           description: successful operation
@@ -640,18 +695,25 @@ paths:
                 $ref: '#/components/schemas/Rating'
           required: true
         responses:
-          '201': # Created
+          '201':
             description: Rating uploaded
           '400':
             description: Request doesn't respect the schema
           '404':
             description: Courier not found
-  # This is only accessed by admin
-  /courier/{userId}/activation:
+  /courier/{userId1}/{userId2}/activation:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
         description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is being updated
         required: true
         schema:
           type: integer
@@ -668,7 +730,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActivationRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
@@ -679,10 +741,9 @@ paths:
           description: Unauthorized - not an admin
         '404':
           description: Courier not found
-  # This is only accessed by admin
-  /courier/{userId}/block:
+  /courier/{userId1}/{userId2}/block:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
         description: user ID of courier
         required: true
@@ -690,6 +751,14 @@ paths:
           type: integer
           format: int64
         example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Courier
@@ -701,7 +770,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlockRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
@@ -765,24 +834,6 @@ paths:
           type: integer
           format: int64
         example: 1
-    put:
-      tags:
-        - Vendor
-      summary: Update the information of the current Vendor
-      description: Update the information of the current vendor by providing a new object, with updated fields (same as with create, fields such as id should not be provided)
-      operationId: updateVendor
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VendorRequestModel'
-      responses:
-        '200':
-          description: Vendor updated
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Vendor not found
     get:
       tags:
         - Vendor
@@ -816,6 +867,24 @@ paths:
           type: integer
           format: int64
         example: 2
+    put:
+      tags:
+        - Vendor
+      summary: Update the information of the current Vendor
+      description: Update the information of the current vendor by providing a new object, with updated fields (same as with create, fields such as id should not be provided). Only the vendor himself or the admin can issue the change.
+      operationId: updateVendor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorRequestModel'
+      responses:
+        '200':
+          description: Vendor updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
     delete:
       tags:
         - Vendor
@@ -902,26 +971,6 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Vendor not found
-    put:
-      tags:
-        - Vendor
-      summary: Update a validation document
-      description: Update a validation document by providing a new one
-      operationId: updateValidationByVendor
-      requestBody:
-        description: Document proving that the restaurant belongs to a vendor
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ValidationRequestModel'
-        required: true
-      responses:
-        '200':
-          description: Validation uploaded
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Vendor not found
     get:
       tags:
         - Vendor
@@ -955,6 +1004,26 @@ paths:
           type: integer
           format: int64
         example: 2
+    put:
+      tags:
+        - Vendor
+      summary: Update a validation document
+      description: Update a validation document by providing a new one
+      operationId: updateValidationByVendor
+      requestBody:
+        description: Document proving that the restaurant belongs to a vendor. Only the vendor himself or the admin can issue the change.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequestModel'
+        required: true
+      responses:
+        '200':
+          description: Validation uploaded
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
     delete:
       tags:
         - Vendor
@@ -982,17 +1051,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Validation'
-  # This is only accessed by admin
-  /vendor/{userId}/activation:
+  /vendor/{userId1}/{userId2}/activation:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of vendor
+        description: user ID of vendor whose activation is being changed
         required: true
         schema:
           type: integer
           format: int64
         example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Vendor
@@ -1000,11 +1076,11 @@ paths:
       description: Update the activation status of a vendor, by providing the id of the vendor as a parameter, the id of the user issuing the request and the new activation status (operation only accessible by admins)
       operationId: updateVendorActivationStatus
       requestBody:
-        description: Model containing the activation status and the id of the user issuing the request
+        description: Model containing the activation status
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActivationRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
@@ -1016,16 +1092,24 @@ paths:
         '404':
           description: Vendor not found
   # This is only accessed by admin
-  /vendor/{userId}/block:
+  /vendor/{userId1}/{userId2}/block:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of vendor
+        description: user ID of vendor that is being blocked/unblocked
         required: true
         schema:
           type: integer
           format: int64
         example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Vendor
@@ -1033,11 +1117,11 @@ paths:
       description: Update the blocked status of a vendor, by providing the id of the vendor as a parameter, the id of the user issuing the request and the new blocked status (operation only accessible by admins)
       operationId: updateVendorBlockStatus
       requestBody:
-        description: Model containing the blocked status and the id of the user issuing the request
+        description: Model containing the blocked status
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlockRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
@@ -1048,7 +1132,6 @@ paths:
           description: Unauthorized - not an admin
         '404':
           description: Vendor not found
-
   #____ADMIN____
   /admin:
     post:
@@ -1085,24 +1168,6 @@ paths:
           type: integer
           format: int64
         example: 1
-    put:
-      tags:
-        - Admin
-      summary: Update the information of the current admin
-      description: Update the information of the current admin by providing a new object, with updated fields (same as with create, fields such as id should not be provided), operation only accessible by admins
-      operationId: updateAdmin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminRequestModel'
-      responses:
-        '200':
-          description: Admin updated
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Admin not found
     get:
       tags:
         - Admin
@@ -1136,6 +1201,24 @@ paths:
           type: integer
           format: int64
         example: 2
+    put:
+      tags:
+        - Admin
+      summary: Update the information of the current admin
+      description: Update the information of the current admin by providing a new object, with updated fields (same as with create, fields such as id should not be provided), operation only accessible by admins
+      operationId: updateAdmin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRequestModel'
+      responses:
+        '200':
+          description: Admin updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Admin not found
     delete:
       tags:
         - Admin
@@ -1190,7 +1273,7 @@ paths:
         example: 1
       - name: orderId
         in: path
-        description: user ID of admin
+        description: user ID of admin. Only admins can get access to the list
         required: true
         schema:
           type: integer
@@ -1451,32 +1534,6 @@ components:
           description: Document proving that a restaurant belongs to a specific vendor
       example:
         document: "VGhlcmUgaXMgbm8gZnJlZSBsdW5jaA=="
-
-    BlockRequestModel:
-      type: object
-      properties:
-        block:
-          type: boolean
-        id:
-          type: integer
-          description: id of the user that is making the change
-          format: int64
-      example:
-        block: true
-        id: 14
-
-    ActivationRequestModel:
-      type: object
-      properties:
-        activate:
-          type: boolean
-        id:
-          type: integer
-          description: id of the user that is making the change
-          format: int64
-      example:
-        activate: true
-        id: 14
 
     #_______________DATABASE_MODELS____________________
     User:
