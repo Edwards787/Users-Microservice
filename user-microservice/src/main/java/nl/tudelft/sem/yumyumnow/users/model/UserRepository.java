@@ -1,6 +1,8 @@
-package nl.tudelft.sem.yumyumnow.users.repositories;
+package nl.tudelft.sem.yumyumnow.users.model;
 
 import java.util.Optional;
+
+import nl.tudelft.sem.yumyumnow.users.repositories.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Repository;
  * A DDD repository for quering and persisting user aggregate roots.
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<nl.tudelft.sem.yumyumnow.users.repositories.User, Long> {
     /**
      * Find user by id.
      */

@@ -1,5 +1,6 @@
-package nl.tudelft.sem.yumyumnow.users.repositories;
+package nl.tudelft.sem.yumyumnow.users.model;
 
+import nl.tudelft.sem.yumyumnow.users.repositories.Courier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

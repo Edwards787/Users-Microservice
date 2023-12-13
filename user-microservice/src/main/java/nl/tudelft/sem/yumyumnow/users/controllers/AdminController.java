@@ -1,8 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.api.AdminApi;
-import nl.tudelft.sem.yumyumnow.users.repositories.Admin;
-import nl.tudelft.sem.yumyumnow.users.repositories.AdminRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +16,10 @@ public class AdminController implements AdminApi {
         this.adminService = adminService;
     }
 
-//    @Override
-//    public ResponseEntity<Admin> getAdminById(Long adminId){
-//        return adminService.getAdminById(adminId);
-//    }
+    @Override
+    public ResponseEntity<Admin> getAdminById(Long adminId){
+        return adminService.getAdminById(adminId);
+    }
 //
 //    @Override
 //    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
