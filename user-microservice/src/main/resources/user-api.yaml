@@ -89,7 +89,7 @@ paths:
       tags:
         - Customer
       summary: Finds all Customers
-      description: Returns a list of all Customer objects in the database
+      description: Returns a list of all 'Customer' objects in the database
       operationId: getAllCustomers
       responses:
         '200':
@@ -105,7 +105,7 @@ paths:
       tags:
         - Customer
       summary: Create a new Customer account
-      description: Create a new Customer account, by providing the necessary data (some other information will be set up by the server)
+      description: Create a new Customer account, by providing the necessary data (some other information such as id will be set up by the server)
       operationId: createCustomer
       requestBody:
         description: customer data
@@ -135,11 +135,96 @@ paths:
           type: integer
           format: int64
         example: 1
+    get:
+      tags:
+        - Customer
+      summary: Get customer by id
+      description: Returns a single customer object, corresponding to the id provided
+      operationId: getCustomerById
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+  /customer/{userId1}/{userId2}/payment:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer who is making the call
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+    get:
+      tags:
+        - Customer
+      summary: Get customer's payment method by id
+      description: Returns a single Payment object, corresponding to the user with the id provided
+      operationId: getCustomerPaymentById
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        '404':
+          description: Customer not found
     put:
       tags:
         - Customer
-      summary: Update the information of the current customer
-      description: Update the information of the current customer by providing object with new info (null means stay the same)
+      summary: Update customer's payment method by id
+      description: Update the payment method of the customer with the id provided, by providing a new Payment object
+      operationId: updateCustomerPaymentById
+      requestBody:
+        description: Payment object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '200':
+          description: Successful
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Customer not found
+  /customer/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of customer that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer that is deleting the user
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
+    put:
+      tags:
+        - Customer
+      summary: Update the information of the customer
+      description: Update the information of the current customer by providing a new object, with updated fields (same as with create, fields such as id should not be provided). Only the user himself or the admin can make the change.
       operationId: updateCustomer
       requestBody:
         content:
@@ -153,26 +238,11 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Customer not found
-    get:
-      tags:
-        - Customer
-      summary: Get customer by id
-      description: Get customer by id
-      operationId: getCustomerById
-      responses:
-        '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
-        '404':
-          description: Customer not found
     delete:
       tags:
         - Customer
       summary: Delete a customer by id
-      description: Delete a customer by id
+      description: Delete a customer object, corresponding to the id provided. Only the admin or the user himself can delete the acocunt
       operationId: deleteCustomer
       responses:
         '200':
@@ -193,7 +263,7 @@ paths:
       tags:
         - Customer
       summary: Returns the list of current orders
-      description: Returns the list of current order Ids
+      description: Returns a list containing the ids of the ongoing (unfinished) orders of the customer with the id provided
       operationId: getCurrentOrderIdsForUser
       responses:
         '200':
@@ -224,7 +294,7 @@ paths:
       tags:
         - Customer
       summary: Returns current location of the customer
-      description: Returns current location of the customer
+      description: Returns current location of the customer with the provided id, in the form of a Location object, containing latitude and longitude
       operationId: getCurrentLocationForUser
       responses:
         '200':
@@ -249,7 +319,7 @@ paths:
       tags:
         - Customer
       summary: Returns the saved past order
-      description: Returns the saved past order
+      description: Returns a the id of a past order the customer with the id provided has saved (to quickly place the same order again)
       operationId: getPastSavedOrderIdForUser
       responses:
         '200':
@@ -262,11 +332,29 @@ paths:
               example: 1
         '404':
           description: Customer not found
+  /customer/{userId1}/{userId2}/savedOrder:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of customer
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Customer
-      summary: updates the saved past order
-      description: updates the saved past order
+      summary: Updates the saved past order
+      description: Updates the saved past order by providing the id of the new order to be saved. Only the user himself or the admin can update the past order.
       operationId: updatePastSavedOrderIdForUser
       requestBody:
         content:
@@ -280,11 +368,19 @@ paths:
           description: Successful
         '404':
           description: Customer not found
-  /customer/{userId}/requestRefund/{orderId}:
+  /customer/{userId1}/{userId2}/requestRefund/{orderId}:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of customer
+        description: user ID of customer who is asking for refund
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer who is making the call
         required: true
         schema:
           type: integer
@@ -298,16 +394,15 @@ paths:
           type: integer
           format: int64
         example: 1
-
     put:
       tags:
         - Customer
       summary: Request Refund
-      description: updates an order to want a refund
+      description: Request a refund for the order with the provided id, placed by the customer with the provided id. Only the user himself or the admin can ask for the refund on his behalf.
       operationId: requestRefundByCustomerIdForOrderId
       responses:
         '200':
-          description: Successful
+          description: The refund request was successfully placed and is being processed
         '404':
           description: order not found
   /customer/{userId}/favRestaurants:
@@ -323,8 +418,8 @@ paths:
     get:
       tags:
         - Customer
-      summary: returns a list of favourite restaurants
-      description: returns a list of favourite restaurants
+      summary: Returns a list of favourite restaurants
+      description: Returns a list of the ids of the favourite vendors of the customer with the provided id
       operationId: getFavouriteVendorIdsForCustomer
       responses:
         '200':
@@ -341,11 +436,29 @@ paths:
                 - 2
         '404':
           description: Customer not found
+  /customer/{userId1}/{userId2}/favRestaurants:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of customer whose favourite restaurants are being updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of customer who is updating the favourite restaurants
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Customer
-      summary: updates a list of favourite restaurants
-      description: updates a list of favourite restaurants
+      summary: Updates a list of favourite restaurants
+      description: Updates a list of favourite vendors with the id provided. Only the user himself or the admin can do that.
       operationId: updateFavouriteVendorIdsForCustomer
       requestBody:
         content:
@@ -363,89 +476,46 @@ paths:
           description: Successful operation
         '404':
           description: Customer not found
-  /customer/{userId}/favOrders:
+  /customer/{userId1}/{userId2}/block:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of customer
+        description: user ID of customer that is being blocked
         required: true
         schema:
           type: integer
           format: int64
         example: 1
-    get:
-      tags:
-        - Customer
-      summary: returns a list of favourite orders
-      description: returns a list of favourite orders
-      operationId: getFavouriteOrderIdsForCustomer
-      responses:
-        '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: integer
-                  format: int64
-              example:
-                - 1
-                - 2
-        '404':
-          description: Customer not found
-    put:
-      tags:
-        - Customer
-      summary: updates a list of favourite orders
-      description: updates a list of favourite orders
-      operationId: updateFavouriteOrderIdsForCustomer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: integer
-                format: int64
-            example: 
-              - 1
-              - 2
-      responses:
-        '200':
-          description: Successful
-        '404':
-          description: Customer not found
-  /customer/{userId}/block:
-    parameters:
-      - name: userId
+      - name: userId2
         in: path
-        description: user ID of customer
+        description: user ID of customer that is blocking the customer
         required: true
         schema:
           type: integer
           format: int64
-        example: 1
+        example: 2
     put:
       tags:
         - Customer
       summary: Block/unblock a customer
-      description: Block/unblock a customer
+      description: Updates the status of a customer to be blocked / unblocked. Operation only accessible by admins.
       operationId: updateCustomerBlockStatus
       requestBody:
-        description: block/unblock a customer
+        description: Model containing the blocked status
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlockRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
-          description: Updated succesfully
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
+        '404':
+          description: Customer not found
 
   #____COURIER____
   /courier/all:
@@ -453,7 +523,7 @@ paths:
       tags:
         - Courier
       summary: Finds all Couriers
-      description: returns all couriers
+      description: Returns a list of all 'Courier' objects in the database
       operationId: getAllCouriers
       responses:
         '200':
@@ -469,10 +539,10 @@ paths:
       tags:
         - Courier
       summary: Create a new Courier account
-      description: Create a new Courier account
+      description: Create a new Courier account by providing the necessary data (some other information such as id will be set up by the server)
       operationId: createCourier
       requestBody:
-        description: courier data
+        description: Courier data
         content:
           application/json:
             schema:
@@ -499,11 +569,55 @@ paths:
           type: integer
           format: int64
         example: 1
+    get:
+      tags:
+        - Courier
+      summary: Get courier by id
+      description: Get the information of the courier by providing its id
+      operationId: getCourierById
+      responses:
+        '200':
+          description: Courier found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courier'
+        '404':
+          description: Courier not found
+  /courier/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of courier that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of user that is deleting the courier (could be either admin or the user himself)
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
+    delete:
+      tags:
+        - Courier
+      summary: Delete a courier by id
+      description: Delete a courier by the id provided. Only admin or the user himself can delete it's account
+      operationId: deleteCourier
+      responses:
+        '200':
+          description: Courier deleted
+        '404':
+          description: Courier not found
     put:
       tags:
         - Courier
       summary: Update the information of the current Courier
-      description: Update the information of the current courier by providing new object (null means stay the same)
+      description: Update the information of the current courier by providing a new object, with updated fields (same as with create, fields such as id should not be provided). Only the user himself or the admin can update the user.
       operationId: updateCourier
       requestBody:
         content:
@@ -515,32 +629,6 @@ paths:
           description: Courier updated
         '400':
           description: Request doesn't respect the schema
-        '404':
-          description: Courier not found
-    get:
-      tags:
-        - Courier
-      summary: Get courier by id
-      description: Get courier by id
-      operationId: getCourierById
-      responses:
-        '200':
-          description: Courier found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Courier'
-        '404':
-          description: Courier not found
-    delete:
-      tags:
-        - Courier
-      summary: Delete a courier by id
-      description: Delete a courier by id
-      operationId: deleteCourier
-      responses:
-        '200':
-          description: Courier deleted
         '404':
           description: Courier not found
   /courier/{userId}/pastOrders:
@@ -557,7 +645,7 @@ paths:
       tags:
         - Courier
       summary: Returns the list of past orders
-      description: Returns the list of past order Ids
+      description: Returns the list of past order Ids completed by the courier with the provided id
       operationId: getPastOrderIdsForCourier
       responses:
         '200':
@@ -571,6 +659,8 @@ paths:
               example:
                 - 1
                 - 2
+        '404':
+          description: Courier not found
   /courier/{userId}/ratings:
     parameters:
       - name: userId
@@ -585,7 +675,7 @@ paths:
       tags:
         - Courier
       summary: Returns the list of ratings
-      description: Returns the list of past order Ids
+      description: Returns the list of ratings for the courier with the provided id (a rating is an object containing the id of the user who issued the rating and the rating itself)
       operationId: getRatingsForCourier
       responses:
         '200':
@@ -597,31 +687,37 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Rating'
+        '404':
+          description: Courier not found
+  /courier/{userId1}/{userId2}/ratings:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of courier whose ratings are being updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of courier who is issuing an update
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Courier
-      summary: Update the list of ratings (admin only)
-      description: Update the list of ratings
+      summary: Update the list of ratings
+      description: Update the list of ratings of the courier with the provided id (a rating is an object containing the id of the user who issued the rating and the rating itself); operation only accessible by admins
       operationId: updateRatingsForCourier
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userId:
-                  description: User Id of the user issuing the update
-                  type: integer
-                  format: int64
-                ratings:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Rating'
-            example:
-              userId: 0
-              ratings:
-                - userId: 1
-                  rating: 5
+              $ref: '#/components/schemas/Rating'
       responses:
         '200':
           description: successful operation
@@ -641,28 +737,35 @@ paths:
         tags:
             - Courier
         summary: Post a rating
-        description: Post a rating
+        description: Post a rating for the courier with the provided id, by providing the id of the user issuing the rating and the rating itself
         operationId: rateCourier
         requestBody:
-          description: Rating
+          description: Rating model, containing the id of the user issuing the rating and the rating itself
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Rating'
           required: true
         responses:
-          '201': # Created
+          '201':
             description: Rating uploaded
           '400':
             description: Request doesn't respect the schema
           '404':
             description: Courier not found
-  # This is only accessed by admin
-  /courier/{userId}/activation:
+  /courier/{userId1}/{userId2}/activation:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
         description: user ID of courier
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is being updated
         required: true
         schema:
           type: integer
@@ -672,14 +775,14 @@ paths:
       tags:
         - Courier
       summary: Update activation of a courier
-      description: Update activation of a courier
+      description: Update the activation status of a courier, by providing the id of the courier as a parameter, the id of the user issuing the request and the new activation status (operation only accessible by admins)
       operationId: updateCourierActivationStatus
       requestBody:
-        description: Updates the activation of a courier
+        description: Model containing the activation status and the id of the user issuing the request
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActivationRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
@@ -688,10 +791,11 @@ paths:
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
-  # This is only accessed by admin
-  /courier/{userId}/block:
+        '404':
+          description: Courier not found
+  /courier/{userId1}/{userId2}/block:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
         description: user ID of courier
         required: true
@@ -699,26 +803,36 @@ paths:
           type: integer
           format: int64
         example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Courier
       summary: Block/unblock a courier
-      description: Block/unblock a courier
+      description: Update the blocked status of a courier, by providing the id of the courier as a parameter, the id of the user issuing the request and the new blocked status (operation only accessible by admins)
       operationId: updateCourierBlockStatus
       requestBody:
-        description: block/unblock a courier
+        description: Model containing the blocked status and the id of the user issuing the request
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlockRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
-          description: Updated succesfully
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
+        '404':
+          description: Courier not found
 
   #____VENDOR____
   /vendor/all:
@@ -726,7 +840,7 @@ paths:
       tags:
         - Vendor
       summary: Finds all Vendors
-      description: returns all vendors
+      description: Returns a list of all 'Vendor' objects in the database
       operationId: getAllVendors
       responses:
         '200':
@@ -742,7 +856,7 @@ paths:
       tags:
         - Vendor
       summary: Create a new Vendor account
-      description: Create a new Vendor account
+      description: Create a new Vendor account, by providing the necessary data (some other information such as id will be set up by the server)
       operationId: createVendor
       requestBody:
         description: vendor data
@@ -772,24 +886,6 @@ paths:
           type: integer
           format: int64
         example: 1
-    put:
-      tags:
-        - Vendor
-      summary: Update the information of the current Vendor
-      description: Update the information of the current vendor by providing new object (null means stay the same)
-      operationId: updateVendor
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VendorRequestModel'
-      responses:
-        '200':
-          description: Vendor updated
-        '400':
-          description: Request doesn't respect the schema
-        '404':
-          description: Vendor not found
     get:
       tags:
         - Vendor
@@ -805,11 +901,47 @@ paths:
                 $ref: '#/components/schemas/Vendor'
         '404':
           description: Vendor not found
+  /vendor/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of vendor that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of user that is deleting the vendor. Only admins or the user himself can delete the account.
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
+    put:
+      tags:
+        - Vendor
+      summary: Update the information of the current Vendor
+      description: Update the information of the current vendor by providing a new object, with updated fields (same as with create, fields such as id should not be provided). Only the vendor himself or the admin can issue the change.
+      operationId: updateVendor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorRequestModel'
+      responses:
+        '200':
+          description: Vendor updated
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Vendor not found
     delete:
       tags:
         - Vendor
       summary: Delete a vendor by id
-      description: Delete a vendor by id
+      description: Delete a vendor by the id provided. Only admins or the user himself can delete the account.
       operationId: deleteVendor
       responses:
         '200':
@@ -821,7 +953,7 @@ paths:
       tags:
         - Vendor
       summary: Get vendors by radius
-      description: Get vendors by radius
+      description: Get all the vendors within a certain radius from a location (given by latitude and longitude)
       operationId: getVendorsByRadius
       parameters:
         - name: radius
@@ -875,7 +1007,7 @@ paths:
       tags:
         - Vendor
       summary: Post a validation document
-      description: Post a validation document
+      description: Post a validation document for certify that the vendor actually owns the restaurant he is claiming to own
       operationId: uploadValidationByVendor
       requestBody:
         description: Document proving that the restaurant belongs to a vendor
@@ -891,14 +1023,47 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Vendor not found
+    get:
+      tags:
+        - Vendor
+      summary: Get a validation document
+      description: Get validation document by providing vendor id
+      operationId: getValidationByVendor
+      responses:
+        '200':
+          description: Validation found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Validation'
+        '404':
+          description: Validation or vendor not found
+  /vendor/{userId1}/{userId2}/validation:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of vendor
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of user that is trying to delete the validation document
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Vendor
       summary: Update a validation document
-      description: Update a validation document
+      description: Update a validation document by providing a new one
       operationId: updateValidationByVendor
       requestBody:
-        description: Document proving that the restaurant belongs to a vendor
+        description: Document proving that the restaurant belongs to a vendor. Only the vendor himself or the admin can issue the change.
         content:
           application/json:
             schema:
@@ -911,26 +1076,11 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Vendor not found
-    get:
-      tags:
-        - Vendor
-      summary: Get a validation document
-      description: Get validation document
-      operationId: getValidationByVendor
-      responses:
-        '200':
-          description: Validation found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Validation'
-        '404':
-          description: Validation or vendor not found
     delete:
       tags:
         - Vendor
       summary: Delete a validation document
-      description: Delete validation document
+      description: Delete the validation document provided by the vendor with the id provided. Only the vendor himself or admin can delete the document
       operationId: deleteValidationByVendor
       responses:
         '200':
@@ -942,7 +1092,7 @@ paths:
       tags:
         - Vendor
       summary: Get all validation documents
-      description: Get all validation documents
+      description: Get all validation documents (only accessible by admins)
       operationId: getAllValidations
       responses:
         '200':
@@ -952,30 +1102,37 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ActivationRequestModel'
-  # This is only accessed by admin
-  /vendor/{userId}/activation:
+                  $ref: '#/components/schemas/Validation'
+  /vendor/{userId1}/{userId2}/activation:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of vendor
+        description: user ID of vendor whose activation is being changed
         required: true
         schema:
           type: integer
           format: int64
         example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Vendor
       summary: Update activation of a vendor
-      description: Update activation of a vendor
+      description: Update the activation status of a vendor, by providing the id of the vendor as a parameter, the id of the user issuing the request and the new activation status (operation only accessible by admins)
       operationId: updateVendorActivationStatus
       requestBody:
-        description: Updates the activation of a vendor
+        description: Model containing the activation status
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Validation'
+              type: boolean
         required: true
       responses:
         '200':
@@ -984,46 +1141,56 @@ paths:
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
+        '404':
+          description: Vendor not found
   # This is only accessed by admin
-  /vendor/{userId}/block:
+  /vendor/{userId1}/{userId2}/block:
     parameters:
-      - name: userId
+      - name: userId1
         in: path
-        description: user ID of vendor
+        description: user ID of vendor that is being blocked/unblocked
         required: true
         schema:
           type: integer
           format: int64
         example: 1
+      - name: userId2
+        in: path
+        description: ID of the user that is making the change
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Vendor
       summary: Block/unblock a vendor
-      description: Block/unblock a vendor
+      description: Update the blocked status of a vendor, by providing the id of the vendor as a parameter, the id of the user issuing the request and the new blocked status (operation only accessible by admins)
       operationId: updateVendorBlockStatus
       requestBody:
-        description: block/unblock a vendor
+        description: Model containing the blocked status
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlockRequestModel'
+              type: boolean
         required: true
       responses:
         '200':
-          description: Updated succesfully
+          description: Updated successfully
         '400':
           description: Request doesn't respect the schema
         '401':
           description: Unauthorized - not an admin
-
-
+        '404':
+          description: Vendor not found
   #____ADMIN____
   /admin:
     post:
       tags:
         - Admin
       summary: Create a new Admin account
-      description: Create a new Admin account (only accessible by admins)
+      description: Create a new Admin account, by providing the necessary data (some other information such as id will be set up by the server), operation only accessible by admins
       operationId: createAdmin
       requestBody:
         description: admin data
@@ -1053,11 +1220,44 @@ paths:
           type: integer
           format: int64
         example: 1
+    get:
+      tags:
+        - Admin
+      summary: Get the information of the current Admin
+      description: Get the information of the current Admin by providing id
+      operationId: getAdminById
+      responses:
+        '200':
+          description: Admin found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+        '404':
+          description: Admin not found
+  /admin/{userId1}/{userId2}:
+    parameters:
+      - name: userId1
+        in: path
+        description: user ID of admin that is being deleted
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId2
+        in: path
+        description: user ID of admin that is deleting the admin
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     put:
       tags:
         - Admin
       summary: Update the information of the current admin
-      description: Update the information of the current admin by providing object with new info (null means stay the same)
+      description: Update the information of the current admin by providing a new object, with updated fields (same as with create, fields such as id should not be provided), operation only accessible by admins
       operationId: updateAdmin
       requestBody:
         content:
@@ -1071,26 +1271,11 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Admin not found
-    get:
-      tags:
-        - Admin
-      summary: Get the information of the current Admin
-      description: Get the information of the current Admin
-      operationId: getAdminById
-      responses:
-        '200':
-          description: Admin found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Admin'
-        '404':
-          description: Admin not found
     delete:
       tags:
         - Admin
       summary: Delete an admin by id
-      description: Delete an admin by id
+      description: Delete an admin by id provided. Only the admin himself or another admin can delete an admin
       operationId: deleteAdmin
       responses:
         '200':
@@ -1111,7 +1296,7 @@ paths:
       tags:
         - Admin
       summary: Get a list of orders to be refunded
-      description: Get the list of orders that have the refund tag set to true
+      description: Get the list of ids of orders that have the refund tag set to true
       operationId: getRefundRequests
       responses:
         '200':
@@ -1140,7 +1325,7 @@ paths:
         example: 1
       - name: orderId
         in: path
-        description: user ID of admin
+        description: user ID of admin. Only admins can get access to the list
         required: true
         schema:
           type: integer
@@ -1150,7 +1335,7 @@ paths:
       tags:
         - Admin
       summary : Approve or decline a refund
-      description: Approve or decline a refund and do said refund
+      description: Approve or decline a refund and do process said refund
       operationId: updateRefundRequestStatus
       requestBody:
         description: Refund or not
@@ -1175,7 +1360,7 @@ paths:
       tags:
         - Feedback
       summary: Get all feedbacks
-      description: Get all feedbacks
+      description: Get all feedbacks in the database
       operationId: getAllFeedbacks
       responses:
         '200':
@@ -1191,7 +1376,7 @@ paths:
       tags:
         - Feedback
       summary: Post a feedback
-      description: Post a feedback
+      description: Post a feedback by providing the necessary data (some other information such as id will be set up by the server)
       operationId: createFeedback
       requestBody:
         description: Feedback
@@ -1223,7 +1408,7 @@ paths:
       tags:
         - Feedback
       summary: Get a feedback
-      description: Get a feedback
+      description: Get a feedback by specifying its id
       operationId: getFeedbackById
       responses:
         '200':
@@ -1234,11 +1419,29 @@ paths:
                 $ref: '#/components/schemas/Feedback'
         '404':
           description: Feedback not found
+  /feedback/{feedbackId}/{userId}:
+    parameters:
+      - name: feedbackId
+        in: path
+        description: feedback ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: userId
+        in: path
+        description: Id of the user that is deleting the feedback. Only the user himself or the admin can delete the feedback
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 2
     delete:
       tags:
         - Feedback
       summary: Delete a feedback
-      description: Delete a feedback
+      description: Delete a feedback by specifying its id. Only the user himself or the admin can delete the feedback.
       operationId: deleteFeedback
       responses:
         '200':
@@ -1273,7 +1476,6 @@ components:
       required:
         - homeAddress
         - allergens
-        - paymentMethods
       properties:
         homeAddress:
           $ref: '#/components/schemas/Address'
@@ -1281,10 +1483,6 @@ components:
           type: array
           items:
             type: string
-        paymentMethods:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentMethod'
       example:
         email: "johndoe@example.com"
         name: "John"
@@ -1298,14 +1496,7 @@ components:
             lat: 41.902782
             long: 12.496366
         allergens:
-          items:
-            - "nuts"
-        paymentMethods:
-          items:
-            - creditCardNumber: "1234567890123456"
-              cardholderName: "John Doe"
-              date: "01/01/2021"
-              cvvCode: 123
+          - "nuts"
     VendorRequestModel:
       allOf:
         - $ref: '#/components/schemas/UserRequestModel'
@@ -1386,32 +1577,6 @@ components:
       example:
         document: "VGhlcmUgaXMgbm8gZnJlZSBsdW5jaA=="
 
-    BlockRequestModel:
-      type: object
-      properties:
-        block:
-          type: boolean
-        id:
-          type: integer
-          description: id of the user that is making the change
-          format: int64
-      example:
-        block: true
-        id: 14
-
-    ActivationRequestModel:
-      type: object
-      properties:
-        activate:
-          type: boolean
-        id:
-          type: integer
-          description: id of the user that is making the change
-          format: int64
-      example:
-        activate: true
-        id: 14
-
     #_______________DATABASE_MODELS____________________
     User:
       discriminator:
@@ -1466,9 +1631,8 @@ components:
         blocked: false
         activated: true
         ratings:
-          items:
-            - userId: 10
-              rating: 5
+          - userId: 10
+            rating: 5
         wallet:
           balance: 0
           iban: "IT60X0542811101000000123455"
@@ -1483,10 +1647,6 @@ components:
           type: array
           items:
             type: string
-        paymentMethods:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentMethod'
         savedOrder:
           type: integer
           format: int64
@@ -1511,19 +1671,11 @@ components:
             lat: 41.902782
             long: 12.496366
         allergens:
-          items:
-            - "nuts"
-        paymentMethods:
-          items:
-            - creditCardNumber: "1234567890123456"
-              cardholderName: "John Doe"
-              date: "01/01/2021"
-              cvvCode: 123
+          - "nuts"
         savedOrder: 42
         favRestaurants:
-          items:
-            - 1
-            - 2
+          - 1
+          - 2
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'
