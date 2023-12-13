@@ -23,8 +23,8 @@ public class CustomerController implements CustomerApi {
         this.customerService = customerService;
     }
 
-    @Override
-    public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
-        return customerService.createCustomer(customerRequestModel);
-    }
+//    @Override
+//    public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
+//        return customerService.createCustomer(customerRequestModel);
+//    }
 }

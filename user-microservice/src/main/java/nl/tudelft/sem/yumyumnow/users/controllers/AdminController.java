@@ -17,15 +17,15 @@ public class AdminController implements AdminApi {
         this.adminService = adminService;
     }
 
-    @Override
-    public ResponseEntity<Admin> getAdminById(Long adminId){
-        return adminService.getAdminById(adminId);
-    }
-
-    @Override
-    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
-        return adminService.createAdmin(adminRequestModel);
-    }
+//    @Override
+//    public ResponseEntity<Admin> getAdminById(Long adminId){
+//        return adminService.getAdminById(adminId);
+//    }
+//
+//    @Override
+//    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
+//        return adminService.createAdmin(adminRequestModel);
+//    }
 }
 
 
