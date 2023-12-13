@@ -1,7 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.model.CustomerRepository;
-import nl.tudelft.sem.yumyumnow.users.repositories.*;
+import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
+import nl.tudelft.sem.yumyumnow.users.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class CustomerService {
     }
 
     public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
-        // Liitle demo
+        // Little demo
         Customer customer = new Customer();
 
         customer.setAllergens(customerRequestModel.getAllergens());

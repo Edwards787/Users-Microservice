@@ -1,7 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.repositories.Admin;
-import nl.tudelft.sem.yumyumnow.users.model.AdminRepository;
+import nl.tudelft.sem.yumyumnow.users.model.Admin;
+import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import org.springframework.beans.factory.annotation.Autowired;

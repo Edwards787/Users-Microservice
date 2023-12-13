@@ -1,6 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.model.VendorRepository;
+import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class VendorService {
