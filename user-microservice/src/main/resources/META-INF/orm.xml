@@ -3,7 +3,7 @@
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
         http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" version="2.2">
-    <entity class="nl.tudelft.sem.yumyumnow.users.model.User" name="User">
+    <entity class="nl.tudelft.sem.yumyumnow.users.repositories.User" name="User">
         <table name="users"/>
         <inheritance strategy="JOINED"/>
         <attributes>
@@ -13,7 +13,7 @@
         </attributes>
     </entity>
 
-    <entity class="nl.tudelft.sem.yumyumnow.users.model.Customer" name="Customer">
+    <entity class="nl.tudelft.sem.yumyumnow.users.repositories.Customer" name="Customer">
         <table name="customer_data"/>
         <primary-key-join-column name="id"/>
         <attributes>
@@ -37,7 +37,7 @@
         </attributes>
     </entity>
 
-    <entity class="nl.tudelft.sem.yumyumnow.users.model.Courier" name="Courier">
+    <entity class="nl.tudelft.sem.yumyumnow.users.repositories.Courier" name="Courier">
         <table name="courier_data"/>
         <primary-key-join-column name="id"/>
         <attributes>
@@ -49,17 +49,17 @@
         </attributes>
     </entity>
 
-    <entity class="nl.tudelft.sem.yumyumnow.users.model.Vendor" name="Vendor">
+    <entity class="nl.tudelft.sem.yumyumnow.users.repositories.Vendor" name="Vendor">
         <table name="vendor_data"/>
         <primary-key-join-column name="id"/>
     </entity>
 
-    <entity class="nl.tudelft.sem.yumyumnow.users.model.Admin" name="Admin">
+    <entity class="nl.tudelft.sem.yumyumnow.users.repositories.Admin" name="Admin">
         <table name="admin_data"/>
         <primary-key-join-column name="id"/>
     </entity>
 
-    <entity class="nl.tudelft.sem.yumyumnow.users.model.Feedback" name="Feedback">
+    <entity class="nl.tudelft.sem.yumyumnow.users.repositories.Feedback" name="Feedback">
         <table name="feedback"/>
         <attributes>
             <id name="id">
@@ -68,16 +68,16 @@
         </attributes>
     </entity>
 
-    <entity class="nl.tudelft.sem.yumyumnow.users.model.Validation" name="Validation">
+    <entity class="nl.tudelft.sem.yumyumnow.users.repositories.Validation" name="Validation">
         <table name="validation"/>
         <attributes>
             <id name="vendorId"/>
         </attributes>
     </entity>
 
-    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Address"/>
-    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Location"/>
-    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Wallet"/>
-    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Rating"/>
-    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.PaymentMethod"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.repositories.Address"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.repositories.Location"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.repositories.Wallet"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.repositories.Rating"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.repositories.PaymentMethod"/>
 </entity-mappings>
