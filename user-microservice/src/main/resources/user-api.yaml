@@ -183,6 +183,8 @@ paths:
                 $ref: '#/components/schemas/PaymentMethod'
         '404':
           description: Customer not found
+        '403':
+          description: Unauthorized
     put:
       tags:
         - Customer
@@ -202,6 +204,8 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Customer not found
+        '403':
+          description: Unauthorized
   /customer/{userId1}/{userId2}:
     parameters:
       - name: userId1
@@ -238,6 +242,8 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Customer not found
+        '403':
+          description: Unauthorized
     delete:
       tags:
         - Customer
@@ -249,6 +255,8 @@ paths:
           description: Customer deleted
         '404':
           description: Customer not found
+        '403':
+          description: Unauthorized
   /customer/{userId}/ongoingOrders:
     parameters:
       - name: userId
@@ -368,6 +376,8 @@ paths:
           description: Successful
         '404':
           description: Customer not found
+        '403':
+          description: Unauthorized
   /customer/{userId1}/{userId2}/requestRefund/{orderId}:
     parameters:
       - name: userId1
@@ -405,6 +415,8 @@ paths:
           description: The refund request was successfully placed and is being processed
         '404':
           description: order not found
+        '403':
+          description: Unauthorized
   /customer/{userId}/favRestaurants:
     parameters:
       - name: userId
@@ -476,6 +488,8 @@ paths:
           description: Successful operation
         '404':
           description: Customer not found
+        '403':
+          description: Unauthorized
   /customer/{userId1}/{userId2}/block:
     parameters:
       - name: userId1
@@ -512,8 +526,8 @@ paths:
           description: Updated successfully
         '400':
           description: Request doesn't respect the schema
-        '401':
-          description: Unauthorized - not an admin
+        '403':
+          description: Unauthorized
         '404':
           description: Customer not found
 
@@ -613,6 +627,8 @@ paths:
           description: Courier deleted
         '404':
           description: Courier not found
+        '403':
+          description: Unauthorized
     put:
       tags:
         - Courier
@@ -631,6 +647,8 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Courier not found
+        '403':
+          description: Unauthorized
   /courier/{userId}/pastOrders:
     parameters:
       - name: userId
@@ -723,6 +741,8 @@ paths:
           description: successful operation
         '404':
           description: courier not found
+        '403':
+          description: Unauthorized
   /courier/{userId}/rate:
     parameters:
       - name: userId
@@ -734,25 +754,25 @@ paths:
           format: int64
         example: 1
     post:
-        tags:
-            - Courier
-        summary: Post a rating
-        description: Post a rating for the courier with the provided id, by providing the id of the user issuing the rating and the rating itself
-        operationId: rateCourier
-        requestBody:
-          description: Rating model, containing the id of the user issuing the rating and the rating itself
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Rating'
-          required: true
-        responses:
-          '201':
-            description: Rating uploaded
-          '400':
-            description: Request doesn't respect the schema
-          '404':
-            description: Courier not found
+      tags:
+        - Courier
+      summary: Post a rating
+      description: Post a rating for the courier with the provided id, by providing the id of the user issuing the rating and the rating itself
+      operationId: rateCourier
+      requestBody:
+        description: Rating model, containing the id of the user issuing the rating and the rating itself
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+        required: true
+      responses:
+        '201':
+          description: Rating uploaded
+        '400':
+          description: Request doesn't respect the schema
+        '404':
+          description: Courier not found
   /courier/{userId1}/{userId2}/activation:
     parameters:
       - name: userId1
@@ -789,8 +809,8 @@ paths:
           description: Updated successfully
         '400':
           description: Request doesn't respect the schema
-        '401':
-          description: Unauthorized - not an admin
+        '403':
+          description: Unauthorized
         '404':
           description: Courier not found
   /courier/{userId1}/{userId2}/block:
@@ -829,8 +849,8 @@ paths:
           description: Updated successfully
         '400':
           description: Request doesn't respect the schema
-        '401':
-          description: Unauthorized - not an admin
+        '403':
+          description: Unauthorized
         '404':
           description: Courier not found
 
@@ -937,6 +957,8 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Vendor not found
+        '403':
+          description: Unauthorized
     delete:
       tags:
         - Vendor
@@ -948,6 +970,8 @@ paths:
           description: Vendor deleted
         '404':
           description: Vendor not found
+        '403':
+          description: Unauthorized
   /vendor/byRadius:
     get:
       tags:
@@ -1076,6 +1100,8 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Vendor not found
+        '403':
+          description: Unauthorized
     delete:
       tags:
         - Vendor
@@ -1087,6 +1113,8 @@ paths:
           description: Validation deleted
         '404':
           description: Validation or vendor not found
+        '403':
+          description: Unauthorized
   /validation/all:
     get:
       tags:
@@ -1139,8 +1167,8 @@ paths:
           description: Updated successfully
         '400':
           description: Request doesn't respect the schema
-        '401':
-          description: Unauthorized - not an admin
+        '403':
+          description: Unauthorized
         '404':
           description: Vendor not found
   # This is only accessed by admin
@@ -1180,8 +1208,8 @@ paths:
           description: Updated successfully
         '400':
           description: Request doesn't respect the schema
-        '401':
-          description: Unauthorized - not an admin
+        '403':
+          description: Unauthorized
         '404':
           description: Vendor not found
   #____ADMIN____
@@ -1271,6 +1299,8 @@ paths:
           description: Request doesn't respect the schema
         '404':
           description: Admin not found
+        '403':
+          description: Unauthorized
     delete:
       tags:
         - Admin
@@ -1281,7 +1311,9 @@ paths:
         '200':
           description: Admin deleted
         '404':
-          description: Admin not found
+          description: Admin not
+        '403':
+          description: Unauthorized
   /admin/{userId}/refunds:
     parameters:
       - name: userId
@@ -1697,7 +1729,7 @@ components:
         role: courier
         blocked: false
         activated: true
-        address: 
+        address:
           address: "Via Roma 1"
           city: "Roma"
           country: "Italy"
