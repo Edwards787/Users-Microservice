@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Optional;
 
 @Service
@@ -25,9 +28,9 @@ public class AdminService {
         else return ResponseEntity.status(HttpStatus.OK).body(admin.get());
     }
 
-    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
+    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel) {
         if (adminRequestModel == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+           throw new StatusException(HttpStatus.BAD_REQUEST, "No admin request model present");
 
         if (adminRequestModel.getName() == null || adminRequestModel.getSurname() == null || adminRequestModel.getEmail() == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
