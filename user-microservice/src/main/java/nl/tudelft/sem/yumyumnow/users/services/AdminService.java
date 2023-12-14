@@ -29,12 +29,21 @@ public class AdminService {
         else return ResponseEntity.status(HttpStatus.OK).body(admin.get());
     }
 
-    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel) {
+    public Admin createAdmin(AdminRequestModel adminRequestModel) {
         if (adminRequestModel == null)
            throw new StatusException(HttpStatus.BAD_REQUEST, "No admin request model present");
 
         if (adminRequestModel.getSurname().equals("") || adminRequestModel.getSurname() == null)
             throw new StatusException(HttpStatus.BAD_REQUEST, "No surname provided");
+
+        if (adminRequestModel.getEmail().equals("") || adminRequestModel.getEmail() == null)
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No email provided");
+
+        if (adminRequestModel.getName().equals("") || adminRequestModel.getName() == null)
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No name provided");
+
+        if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent())
+            throw new StatusException(HttpStatus.CONFLICT, "User with this email address already exists");
 
         Admin admin = new Admin();
         admin.setBlocked(false);
@@ -43,13 +52,10 @@ public class AdminService {
         admin.setEmail(adminRequestModel.getEmail());
         admin.setRole(User.RoleEnum.ADMIN);
 
-        if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent())
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-
         Admin response = adminRepository.saveAndFlush(admin);
         admin.setId(response.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(admin);
+        return admin;
     }
 
 

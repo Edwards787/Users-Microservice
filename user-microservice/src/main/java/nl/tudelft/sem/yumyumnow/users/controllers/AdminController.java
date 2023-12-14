@@ -6,10 +6,12 @@ import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -41,13 +43,13 @@ public class AdminController implements AdminApi {
     }
 
     public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
-        ResponseEntity<Admin> responseEntity;
+        Admin admin;
         try {
-            responseEntity = adminService.createAdmin(adminRequestModel);
+            admin = adminService.createAdmin(adminRequestModel);
         }
         catch (StatusException e){
             throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
         }
-        return responseEntity;
+        return ResponseEntity.created(URI.create("")).body(admin);
     }
 }
