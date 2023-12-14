@@ -39,7 +39,12 @@ checkStyle-user-microservice:
   stage: staticAnalysis
   script:
     gradle user-microservice:checkstyleMain user-microservice:checkStyleTest -DfailCheckstyle
+  after_script:
+    - config/gitlab-ci/parse-checkstyle.sh -c user-microservice/build/reports/checkstyle/main.xml gl-code-quality-report.json
   allow_failure: true
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 
 PMD-user-microservice:
   extends:
