@@ -10,6 +10,6 @@ gradle_build:
     name: build
     expire_in: 6 hours
     paths:
-      - build/
+      - user-microservice/build/
   script:
     - gradle build testClasses

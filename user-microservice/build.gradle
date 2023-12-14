@@ -111,6 +111,10 @@ checkstyle {
 	ignoreFailures = false // Set to true if you want the build to ignore Checkstyle failures
 	showViolations = true // Set to true to display Checkstyle violations in the console
 
+	if(System.properties.containsKey("failCheckstyle")){
+		maxWarnings = 0
+	}
+
 	checkstyleMain {
 		source = project.sourceSets.main.allJava.filter { file ->
 			// Exclude directories or files associated with generated code
@@ -131,6 +135,11 @@ checkstyle {
 pmd {
 	incrementalAnalysis = true
 	ignoreFailures = true
+
+	if(System.properties.containsKey("failPMD")){
+		ignoreFailures = false
+		maxFailures = 0
+	}
 	// Exclude specific rules or files/directories
 	pmdMain {
 		source = project.sourceSets.main.allJava.filter { file ->

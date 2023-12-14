@@ -38,9 +38,8 @@ checkStyle-user-microservice:
     - gradle_build
   stage: staticAnalysis
   script:
-    gradle user-microservice:checkstyleMain user-microservice:checkStyleTest
+    gradle user-microservice:checkstyleMain user-microservice:checkStyleTest -DfailCheckstyle
   allow_failure: true
-
 
 PMD-user-microservice:
   extends:
@@ -51,7 +50,7 @@ PMD-user-microservice:
     - gradle_build
   stage: staticAnalysis
   script:
-    gradle user-microservice:pmdMain
+    gradle user-microservice:pmdMain -DfailPMD
   allow_failure: true
 
 test-user-microservice:
@@ -66,4 +65,8 @@ test-user-microservice:
     - gradle user-microservice:test user-microservice:jacocoTestReport
     - cat user-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
+  artifacts:
+    when: always
+    reports:
+      junit: user-microservice/build/test-results/test/**/TEST-*.xml
 
