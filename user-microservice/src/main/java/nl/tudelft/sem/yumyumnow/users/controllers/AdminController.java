@@ -29,18 +29,17 @@ public class AdminController implements AdminApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteAdmin(Long adminId){
-        return adminService.deleteAdminById(adminId);
+    public ResponseEntity<Void> deleteAdmin(Long userId1, Long userId2){
+        return adminService.deleteAdminById(userId1, userId2);
     }
 
     @Override
-    public ResponseEntity<Void> updateAdmin(Long userId, AdminRequestModel adminRequestModel){
-        return adminService.updateAdminById(userId, adminRequestModel);
+    public ResponseEntity<Void> updateAdmin(Long userId1, Long userId2, AdminRequestModel adminRequestModel){
+        return adminService.updateAdminById(userId1, userId2, adminRequestModel);
     }
 
     @Override
     public ResponseEntity<List<Long>> getRefundRequests(Long userId){
         return adminService.getRefundRequests(userId);
     }
-
 }
