@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  * A DDD repository for quering and persisting user aggregate roots.
  */
 @Repository
-public interface CustomerRepository extends JpaRepository<nl.tudelft.sem.yumyumnow.users.model.Customer, Long> {
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
     /**
      * Find user by id.
      */
