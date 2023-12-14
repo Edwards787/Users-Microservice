@@ -1,0 +1,15 @@
+package nl.tudelft.sem.yumyumnow.users.services;
+
+import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class VendorService {
+
+    private final VendorRepository vendorRepository;
+    @Autowired
+    public VendorService(VendorRepository vendorRepository){
+        this.vendorRepository = vendorRepository;
+    }
+}
