@@ -1,5 +1,4 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
-
 import nl.tudelft.sem.yumyumnow.users.api.AdminApi;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
