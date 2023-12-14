@@ -22,25 +22,25 @@ public class AdminService {
         this.adminRepository = adminRepository;
     }
 
-    public ResponseEntity<Admin> getAdminById(Long adminId){
+    public Admin getAdminById(Long adminId){
         Optional<Admin> admin = adminRepository.findById(adminId);
-
-        if (admin.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        else return ResponseEntity.status(HttpStatus.OK).body(admin.get());
+        if (admin.isEmpty())
+            throw new StatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        else return admin.get();
     }
 
     public Admin createAdmin(AdminRequestModel adminRequestModel) {
         if (adminRequestModel == null)
            throw new StatusException(HttpStatus.BAD_REQUEST, "No admin request model present");
 
-        if (adminRequestModel.getSurname().equals("") || adminRequestModel.getSurname() == null)
+        if (adminRequestModel.getName() == null || adminRequestModel.getName().equals(""))
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No name provided");
+
+        if (adminRequestModel.getSurname() == null || adminRequestModel.getSurname().equals(""))
             throw new StatusException(HttpStatus.BAD_REQUEST, "No surname provided");
 
-        if (adminRequestModel.getEmail().equals("") || adminRequestModel.getEmail() == null)
+        if (adminRequestModel.getEmail() == null || adminRequestModel.getEmail().equals(""))
             throw new StatusException(HttpStatus.BAD_REQUEST, "No email provided");
-
-        if (adminRequestModel.getName().equals("") || adminRequestModel.getName() == null)
-            throw new StatusException(HttpStatus.BAD_REQUEST, "No name provided");
 
         if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent())
             throw new StatusException(HttpStatus.CONFLICT, "User with this email address already exists");
@@ -58,46 +58,48 @@ public class AdminService {
         return admin;
     }
 
-
-    public ResponseEntity<Admin> getAdminById(long adminId){
-        Optional<Admin> admin = adminRepository.findById(adminId);
-
-        if (admin.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        else return ResponseEntity.status(HttpStatus.OK).body(admin.get());
-    }
-
-    public ResponseEntity<Void> deleteAdminById(long adminId1, long adminId2){
-        // Need to add additional status codes for unauthorised actions in the API. That I missed.
-        if (getAdminById(adminId2).getStatusCode().is4xxClientError()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public void deleteAdminById(Long adminId1, Long adminId2){
+        if (adminId1 == 0)
+            throw new StatusException(HttpStatus.valueOf(403), "Initial admin cannot be deleted");
+        try{
+            Admin admin = getAdminById(adminId2);
+        } catch (StatusException exception){
+            throw new StatusException(HttpStatus.valueOf(403), "Unauthorized");
         }
-
         try {
             adminRepository.deleteById(adminId1);
-            return ResponseEntity.ok().build();
         } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
+            throw new StatusException(HttpStatus.NOT_FOUND, "User not found");
         }
     }
 
-    public ResponseEntity<Void> updateAdminById(Long adminId1, Long adminId2, AdminRequestModel adminRequestModel){
-        if (getAdminById(adminId2).getStatusCode().is4xxClientError()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public void updateAdminById(Long adminId1, Long adminId2, AdminRequestModel adminRequestModel){
+        Admin admin;
+        if (adminRequestModel == null)
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No admin update model present");
+        if (adminRequestModel.getName() == null || adminRequestModel.getName().equals(""))
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No name provided");
+        if (adminRequestModel.getSurname() == null || adminRequestModel.getSurname().equals(""))
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No surname provided");
+        if (adminRequestModel.getEmail() == null || adminRequestModel.getEmail().equals(""))
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No email provided");
+
+        try{
+            admin = getAdminById(adminId2);
+        } catch (StatusException exception){
+            throw new StatusException(HttpStatus.valueOf(403), "Unauthorized");
         }
 
-        Optional<Admin> admin = adminRepository.findById(adminId1);
-        if (admin.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        if (adminRequestModel == null || adminRequestModel.getEmail() == null
-            || adminRequestModel.getName() == null || adminRequestModel.getSurname() == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try{
+            admin = getAdminById(adminId1);
+        } catch (StatusException exception){
+            throw new StatusException(HttpStatus.valueOf(404), "Admin not found");
+        }
 
-        Admin adminReal = admin.get();
-        adminReal.setEmail(adminRequestModel.getEmail());
-        adminReal.setName(adminRequestModel.getName());
-        adminReal.setSurname(adminRequestModel.getSurname());
-        adminRepository.saveAndFlush(adminReal);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        admin.setEmail(adminRequestModel.getEmail());
+        admin.setName(adminRequestModel.getName());
+        admin.setSurname(adminRequestModel.getSurname());
+        adminRepository.saveAndFlush(admin);
     }
 
     public ResponseEntity<List<Long>> getRefundRequests(Long userId) {

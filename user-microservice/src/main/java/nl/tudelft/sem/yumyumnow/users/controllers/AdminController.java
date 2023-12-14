@@ -24,22 +24,34 @@ public class AdminController implements AdminApi {
         this.adminService = adminService;
     }
     public ResponseEntity<Admin> getAdminById(Long adminId){
-        return adminService.getAdminById(adminId);
+        Admin admin;
+        try {
+            admin = adminService.getAdminById(adminId);
+        }
+        catch (StatusException e){
+            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        }
+        return ResponseEntity.ok(admin);
     }
 
     @Override
     public ResponseEntity<Void> deleteAdmin(Long userId1, Long userId2){
-        return adminService.deleteAdminById(userId1, userId2);
+        try{
+            adminService.deleteAdminById(userId1, userId2);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(StatusException e){
+            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        }
     }
 
     @Override
     public ResponseEntity<Void> updateAdmin(Long userId1, Long userId2, AdminRequestModel adminRequestModel){
-        return adminService.updateAdminById(userId1, userId2, adminRequestModel);
-    }
-
-    @Override
-    public ResponseEntity<List<Long>> getRefundRequests(Long userId){
-        return adminService.getRefundRequests(userId);
+        try{
+            adminService.updateAdminById(userId1, userId2, adminRequestModel);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(StatusException e){
+            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        }
     }
 
     public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
@@ -51,5 +63,10 @@ public class AdminController implements AdminApi {
             throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
         }
         return ResponseEntity.created(URI.create("")).body(admin);
+    }
+
+    @Override
+    public ResponseEntity<List<Long>> getRefundRequests(Long userId){
+        return adminService.getRefundRequests(userId);
     }
 }
