@@ -1,6 +1,8 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
 import nl.tudelft.sem.yumyumnow.users.model.*;
+import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -14,18 +16,25 @@ import java.util.Optional;
 
 @Service
 public class AdminService {
-    AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
     @Autowired
     public AdminService(AdminRepository adminRepository){
         this.adminRepository = adminRepository;
     }
 
-    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
-        if (adminRequestModel == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Admin> getAdminById(Long adminId){
+        Optional<Admin> admin = adminRepository.findById(adminId);
 
-        if (adminRequestModel.getName() == null || adminRequestModel.getSurname() == null || adminRequestModel.getEmail() == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (admin.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else return ResponseEntity.status(HttpStatus.OK).body(admin.get());
+    }
+
+    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel) {
+        if (adminRequestModel == null)
+           throw new StatusException(HttpStatus.BAD_REQUEST, "No admin request model present");
+
+        if (adminRequestModel.getSurname().equals("") || adminRequestModel.getSurname() == null)
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No surname provided");
 
         Admin admin = new Admin();
         admin.setBlocked(false);
@@ -42,6 +51,7 @@ public class AdminService {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(admin);
     }
+
 
     public ResponseEntity<Admin> getAdminById(long adminId){
         Optional<Admin> admin = adminRepository.findById(adminId);
