@@ -1311,7 +1311,7 @@ paths:
         '200':
           description: Admin deleted
         '404':
-          description: Admin not
+          description: Admin not found
         '403':
           description: Unauthorized
   /admin/{userId}/refunds:

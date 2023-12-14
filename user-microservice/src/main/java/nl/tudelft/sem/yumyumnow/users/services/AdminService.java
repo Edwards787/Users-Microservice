@@ -32,8 +32,9 @@ public class AdminService {
         if (adminRequestModel == null)
            throw new StatusException(HttpStatus.BAD_REQUEST, "No admin request model present");
 
-        if (adminRequestModel.getName() == null || adminRequestModel.getSurname() == null || adminRequestModel.getEmail() == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (adminRequestModel.getSurname().equals("") || adminRequestModel.getSurname() == null)
+            throw new StatusException(HttpStatus.BAD_REQUEST, "No surname provided");
+
 
         Admin admin = new Admin();
         admin.setBlocked(false);
