@@ -15,6 +15,7 @@ unescape_html() {
 
 parse_checkstyle () {
     local checkstyle_path=$1
+    local output_directory=$2
 
     local errors=()
     local current_file=""
@@ -42,7 +43,7 @@ parse_checkstyle () {
             errors+=("$error_data")
         elif [[ $TAG_NAME = "file" ]] ; then
             eval local $ATTRIBUTES
-            current_file=$(echo "$name" | sed 's/\\/\//g')
+            current_file=$(realpath --relative-to="$output_directory" "$(echo "$name" | sed 's/\\/\//g')")
         fi
     done < "$checkstyle_path"
 
@@ -85,4 +86,4 @@ fi
 
 echo "Parsing checkstyle output file"
 
-parse_checkstyle "$checkstyle_path" > "$output_path"
+parse_checkstyle "$checkstyle_path" "$output_directory" > "$output_path"
