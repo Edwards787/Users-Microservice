@@ -83,4 +83,6 @@ if [ ! -w "${output_directory}" ]; then
     exit 1
 fi
 
+echo "Parsing checkstyle output file"
+
 parse_checkstyle "$checkstyle_path" > "$output_path"

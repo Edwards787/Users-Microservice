@@ -40,8 +40,7 @@ checkStyle-user-microservice:
   script:
     gradle user-microservice:checkstyleMain user-microservice:checkStyleTest -DfailCheckstyle
   after_script:
-    - echo $CODE_QUALITY_DISABLED
-    - config/gitlab-ci/parse-checkstyle.sh -c user-microservice/build/reports/checkstyle/main.xml gl-code-quality-report.json
+    - bash config/gitlab-ci/parse-checkstyle.sh -c user-microservice/build/reports/checkstyle/main.xml gl-code-quality-report.json
   allow_failure: true
   artifacts:
     reports:
