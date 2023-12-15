@@ -74,4 +74,18 @@ test-user-microservice:
     when: always
     reports:
       junit: user-microservice/build/test-results/test/**/TEST-*.xml
+    paths:
+      - user-microservice/build/reports/jacoco/test/jacocoTestReport.xml
 
+coverage-report:
+  stage: test
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.9
+  script:
+    # convert report from jacoco to cobertura, using relative project path
+    - python /opt/cover2cover.py $PWD/user-microservice/build/reports/jacoco/test/jacocoTestReport.xml $PWD/user-microservice/src/main/java/ > cobertura.xml
+  needs: ["test-user-microservice"]
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura.xml

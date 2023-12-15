@@ -85,6 +85,13 @@ jacoco {
 	toolVersion = "0.8.7" // Use the desired version of JaCoCo
 }
 
+jacocoTestReport{
+	reports {
+		xml.enabled(true)
+		html.enabled(true)
+	}
+}
+
 jacocoTestCoverageVerification() {
 	dependsOn test
 	violationRules {
