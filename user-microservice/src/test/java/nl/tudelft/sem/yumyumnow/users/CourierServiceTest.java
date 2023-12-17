@@ -236,6 +236,242 @@ public class CourierServiceTest {
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
     }
 
+    @Test
+    public void testUpdateCourier_Success_UserIsOwner() {
 
+        Long courierId = 1L;
+        Long userId = 1L;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        Courier courierUpdate = new Courier();
+        courierUpdate.setName("UpdatedName");
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+
+
+        ResponseEntity<Void> response = courierService.updateCourier(courierId, userId, courierUpdate);
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, times(1)).save(mockCourier);
+        verify(courierRepository, times(1)).flush();
+
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
+
+        assertEquals("UpdatedName", mockCourier.getName());
+    }
+
+    @Test
+    public void testUpdateCourier_Success_AdminAuthorized() {
+
+
+        Long courierId = 1L;
+        Long userId = 2L;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        Courier courierUpdate = new Courier();
+        courierUpdate.setName("UpdatedName");
+
+        User mockAdmin = new User();
+        mockAdmin.setId(userId);
+        mockAdmin.setRole(User.RoleEnum.ADMIN);
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
+
+
+        ResponseEntity<Void> response = courierService.updateCourier(courierId, userId, courierUpdate);
+
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, times(1)).save(mockCourier);
+        verify(courierRepository, times(1)).flush();
+
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
+
+        assertEquals("UpdatedName", mockCourier.getName());
+    }
+
+    @Test
+    public void testUpdateCourier_NotFound() {
+
+        Long courierId = 1L;
+        Long userId = 1L;
+
+        Courier courierUpdate = new Courier();
+        courierUpdate.setName("UpdatedName");
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.empty());
+
+        StatusException exception = assertThrows(StatusException.class,
+                () -> courierService.updateCourier(courierId, userId, courierUpdate));
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, never()).save(any(Courier.class));
+        verify(courierRepository, never()).flush();
+
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+
+    }
+
+    @Test
+    public void testUpdateCourier_Unauthorized() {
+
+        Long courierId = 1L;
+        Long userId = 3L;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        Courier courierUpdate = new Courier();
+        courierUpdate.setName("UpdatedName");
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+
+        StatusException exception = assertThrows(StatusException.class,
+                () -> courierService.updateCourier(courierId, userId, courierUpdate));
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, never()).save(any(Courier.class));
+        verify(courierRepository, never()).flush();
+
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+
+    }
+
+    @Test
+    public void testUpdateCourierActivationStatus_Success_AdminAuthorized() {
+
+        Long courierId = 1L;
+        Long userId = 2L;
+        Boolean activationStatus = true;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        User mockAdmin = new User();
+        mockAdmin.setId(userId);
+        mockAdmin.setRole(User.RoleEnum.ADMIN);
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
+
+
+        ResponseEntity<Void> response = courierService.updateCourierActivationStatus(courierId, userId, activationStatus);
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, times(1)).save(mockCourier);
+        verify(courierRepository, times(1)).flush();
+
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
+
+        assertEquals(activationStatus, mockCourier.getActivated());
+    }
+
+    @Test
+    public void testUpdateCourierActivationStatus_NotFound() {
+
+        Long courierId = 1L;
+        Long userId = 2L;
+        Boolean activationStatus = true;
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.empty());
+
+
+        StatusException exception = assertThrows(StatusException.class,
+                () -> courierService.updateCourierActivationStatus(courierId, userId, activationStatus));
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, never()).save(any(Courier.class));
+        verify(courierRepository, never()).flush();
+
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+
+    }
+    @Test
+    public void testUpdateCourierActivationStatus_Unauthorized() {
+
+        Long courierId = 1L;
+        Long userId = 3L;
+        Boolean activationStatus = true;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+
+        StatusException exception = assertThrows(StatusException.class,
+                () -> courierService.updateCourierActivationStatus(courierId, userId, activationStatus));
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, never()).save(any(Courier.class));
+        verify(courierRepository, never()).flush();
+
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+
+    }
+
+    @Test
+    public void testUpdateCourierActivationStatus_NonAdminUser() {
+
+        Long courierId = 1L;
+        Long userId = 4L;
+        Boolean activationStatus = true;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        User mockUser = new User();
+        mockUser.setRole(User.RoleEnum.COURIER);
+        mockUser.setId(userId);
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+
+
+        StatusException exception = assertThrows(StatusException.class,
+                () -> courierService.updateCourierActivationStatus(courierId, userId, activationStatus));
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, never()).save(any(Courier.class));
+        verify(courierRepository, never()).flush();
+
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+
+    }
 
 }
