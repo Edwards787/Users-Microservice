@@ -131,4 +131,16 @@ public class CourierController implements CourierApi {
         }
         return responseEntity;
     }
+
+    @Override
+    public ResponseEntity<Void> updateCourierBlockStatus(Long userId1, Long userId2, Boolean body){
+        ResponseEntity<Void> responseEntity;
+        try{
+            responseEntity = courierService.updateCourierBlockStatus(userId1, userId2, body);
+        }
+        catch(StatusException e){
+            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        }
+        return responseEntity;
+    }
 }

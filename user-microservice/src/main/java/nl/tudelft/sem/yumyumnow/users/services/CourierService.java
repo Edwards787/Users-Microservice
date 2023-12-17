@@ -162,4 +162,22 @@ public class CourierService {
         }
         throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
     }
+
+    public ResponseEntity<Void> updateCourierBlockStatus(Long userId1, Long userId2, Boolean body){
+        Optional<Courier> courier = courierRepository.findById(userId1);
+        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
+        Courier to_update = courier.get();
+
+        Optional<User> user = userRepository.findById(userId2);
+        if(user.isEmpty()) throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+        User admin = user.get();
+        if(admin.getRole().equals(User.RoleEnum.ADMIN)){
+            //if here then an admin is issuing on an existing Courier
+            to_update.setBlocked(body);
+            courierRepository.save(to_update);
+            courierRepository.flush();
+            return ResponseEntity.ok().build();
+        }
+        throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+    }
 }
