@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
+import nl.tudelft.sem.yumyumnow.users.model.User;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,8 @@ import java.util.Optional;
 public class CourierServiceTest {
 
     private CourierRepository courierRepository = mock(CourierRepository.class);
-    private CourierService courierService = new CourierService(courierRepository);
+    private UserRepository userRepository  = mock(UserRepository.class);
+    private CourierService courierService = new CourierService(courierRepository, userRepository);
 
     @Test
     public void testCreateCourier_Success() {
@@ -147,6 +150,92 @@ public class CourierServiceTest {
         assertNotNull(response.getBody());
         assertEquals(mockCourier, response.getBody());
     }
+
+    @Test
+    public void testDeleteCourier_Success_UserIsOwner() {
+
+        Long courierId = 1L;
+        Long userId = 1L;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+
+        ResponseEntity<Void> response = courierService.deleteCourier(courierId, userId);
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, times(1)).deleteById(courierId);
+        verify(courierRepository, times(1)).flush();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testDeleteCourier_Success_AdminAuthorized() {
+        Long courierId = 1L;
+        Long userId = 2L;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        User mockAdmin = new User();
+        mockAdmin.setId(userId);
+        mockAdmin.setRole(User.RoleEnum.ADMIN); // Set the role to ADMIN
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
+
+        ResponseEntity<Void> response = courierService.deleteCourier(courierId, userId);
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, times(1)).deleteById(courierId);
+        verify(courierRepository, times(1)).flush();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testDeleteCourier_NotFound() {
+        Long courierId = 1L;
+        Long userId = 1L;
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.empty());
+
+        StatusException exception = assertThrows(StatusException.class,
+                () -> courierService.deleteCourier(courierId, userId));
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, never()).deleteById(anyLong());
+        verify(courierRepository, never()).flush();
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    public void testDeleteCourier_Unauthorized() {
+        Long courierId = 1L;
+        Long userId = 3L;
+
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        StatusException exception = assertThrows(StatusException.class,
+                () -> courierService.deleteCourier(courierId, userId));
+
+        verify(courierRepository, times(1)).findById(courierId);
+        verify(courierRepository, never()).deleteById(anyLong());
+        verify(courierRepository, never()).flush();
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+    }
+
 
 
 }

@@ -55,4 +55,16 @@ public class CourierController implements CourierApi {
         }
         return responseEntity;
     }
+
+    @Override
+    public ResponseEntity<Void> deleteCourier(Long userId1, Long userId2){
+        ResponseEntity<Void> responseEntity;
+        try{
+            responseEntity = courierService.deleteCourier(userId1 , userId2);
+        }
+        catch(StatusException e){
+            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        }
+        return responseEntity;
+    }
 }
