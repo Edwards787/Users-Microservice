@@ -2,7 +2,6 @@ package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
 import nl.tudelft.sem.yumyumnow.users.api.CourierApi;
-import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.CourierService;
@@ -11,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Stack;
+import java.util.List;
 
 @Controller
 public class CourierController implements CourierApi {
@@ -38,6 +37,18 @@ public class CourierController implements CourierApi {
         ResponseEntity<Courier> responseEntity;
         try{
             responseEntity = courierService.createCourier(courierRequestModel);
+        }
+        catch(StatusException e){
+            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        }
+        return responseEntity;
+    }
+
+    @Override
+    public ResponseEntity<List<Courier>> getAllCouriers(){
+        ResponseEntity<List<Courier>> responseEntity;
+        try{
+            responseEntity = courierService.getAllCouriers();
         }
         catch(StatusException e){
             throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
