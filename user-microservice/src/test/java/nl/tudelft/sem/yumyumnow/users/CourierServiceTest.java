@@ -13,6 +13,8 @@ import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.services.CourierService;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class CourierServiceTest {
@@ -91,6 +93,59 @@ public class CourierServiceTest {
         StatusException exception = assertThrows(StatusException.class, () -> courierService.createCourier(requestModel));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
+    }
+
+    @Test
+    public void testGetAllCouriers() {
+
+        Courier courier1 = new Courier();
+        courier1.setId(1L);
+        courier1.setName("John");
+        courier1.setSurname("Doe");
+        courier1.setEmail("john.doe@example.com");
+
+        Courier courier2 = new Courier();
+        courier2.setId(2L);
+        courier2.setName("Jane");
+        courier2.setSurname("Smith");
+        courier2.setEmail("jane.smith@example.com");
+
+        List<Courier> mockCouriers = Arrays.asList(courier1, courier2);
+
+        when(courierRepository.findAll()).thenReturn(mockCouriers);
+
+        ResponseEntity<List<Courier>> response = courierService.getAllCouriers();
+
+        verify(courierRepository, times(1)).findAll();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(mockCouriers, response.getBody());
+    }
+
+    @Test
+    public void testGetCourierById_ExistingCourier() {
+
+        Long courierId = 1L;
+        Courier mockCourier = new Courier();
+        mockCourier.setId(courierId);
+        mockCourier.setName("John");
+        mockCourier.setSurname("Doe");
+        mockCourier.setEmail("john.doe@example.com");
+
+
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(mockCourier));
+
+
+        ResponseEntity<Courier> response = courierService.getCourierById(courierId);
+
+
+        verify(courierRepository, times(1)).findById(courierId);
+
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(mockCourier, response.getBody());
     }
 
 
