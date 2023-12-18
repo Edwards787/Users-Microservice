@@ -1,8 +1,10 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import java.util.ArrayList;
 import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
+import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -10,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -76,6 +75,12 @@ public class CustomerService {
         return ResponseEntity.status(HttpStatus.OK).body(customers);
     }
 
+    /**
+     * Returns a customer model given an Id.
+     *
+     *@param customerId customerId of the customer you want
+     * @return Customer model corresponding to the given customer id
+     */
     public Customer getCustomerById(Long customerId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if (customer.isEmpty()) {
@@ -84,6 +89,16 @@ public class CustomerService {
         return customer.get();
     }
 
+    /**
+     * Updates the given customer with the given customer request model. In case of invalid authorization, request model
+     * or customerId, an exception is thrown.
+     *
+     * @param id1 ID of the customer you want to update
+     * @param id2 ID of the user making the request
+     * @param customerRequestModel customer data model that you want to replace the customer denoted by id1 with
+     * @return void response entity
+     *
+     */
     public ResponseEntity<Void> updateCustomerById(Long id1, Long id2, CustomerRequestModel customerRequestModel) {
         Customer customer;
         //Makes sure we have a correct request model

@@ -1,7 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
 
-import io.swagger.models.Response;
 import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
@@ -20,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CustomerServiceTest {
-    private CustomerRepository customerRepository = mock(CustomerRepository.class);
-    private UserRepository userRepository  = mock(UserRepository.class);
-    private CustomerService customerService = new CustomerService(customerRepository, userRepository);
+    private final CustomerRepository customerRepository = mock(CustomerRepository.class);
+    private final UserRepository userRepository  = mock(UserRepository.class);
+    private final CustomerService customerService = new CustomerService(customerRepository, userRepository);
 
     @Test
     public void testGetCustomerByIDExisting(){
@@ -54,9 +53,7 @@ class CustomerServiceTest {
         Long cId2 = 2L;
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
 
-        assertThrows(StatusException.class, ()->{
-            Customer response = customerService.getCustomerById(cId2);
-        });
+        assertThrows(StatusException.class, ()-> customerService.getCustomerById(cId2));
 
         verify(customerRepository, times(1)).findById(cId2);
     }
@@ -145,9 +142,7 @@ class CustomerServiceTest {
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
 
-        assertThrows(StatusException.class, () -> {
-            ResponseEntity<Void> res = customerService.updateCustomerById(customerId, userId, customerUpdate);
-        });
+        assertThrows(StatusException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
     }
 
     @Test
@@ -171,9 +166,7 @@ class CustomerServiceTest {
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
 
 
-       assertThrows(StatusException.class, () ->{
-           ResponseEntity<Void> response = customerService.updateCustomerById(customerId, userId, customerUpdate);
-       });
+       assertThrows(StatusException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
 
 
     }
@@ -203,9 +196,7 @@ class CustomerServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
 
 
-        assertThrows(StatusException.class, () ->{
-            ResponseEntity<Void> response = customerService.updateCustomerById(customerId, userId, customerUpdate);
-        });
+        assertThrows(StatusException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
 
     }
 
