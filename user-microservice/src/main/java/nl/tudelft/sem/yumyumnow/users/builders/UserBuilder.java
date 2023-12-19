@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public abstract class UserBuilder{
 
-    public User build(User user, UserRequestModel requestModel){
+    protected User build(User user, UserRequestModel requestModel){
         user.email(requestModel.getEmail());
         user.name(requestModel.getName());
         user.surname(requestModel.getSurname());

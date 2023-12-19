@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public abstract class UserValidator {
-    public void validate(UserRequestModel userRequestModel)
+    protected void validate(UserRequestModel userRequestModel)
         throws MissingBodyException, InvalidFieldException {
 
         if (userRequestModel == null)
