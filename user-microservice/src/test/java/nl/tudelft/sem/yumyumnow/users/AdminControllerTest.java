@@ -3,6 +3,7 @@ package nl.tudelft.sem.yumyumnow.users;
 import nl.tudelft.sem.yumyumnow.users.controllers.AdminController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
+import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,6 +24,7 @@ public class AdminControllerTest {
     AdminController adminController;
     Admin admin1;
     Admin admin2;
+    AdminRequestModel adminRequestModel;
 
     @BeforeEach
     public void setUp(){
@@ -42,6 +44,7 @@ public class AdminControllerTest {
         admin2.setName("name 2");
         admin2.setId(1L);
 
+        adminRequestModel = new AdminRequestModel("name 1", "surname 3", "email 3");
     }
 
     @Test
@@ -110,6 +113,43 @@ public class AdminControllerTest {
         }catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(404);
             assertThat(e.getReason()).isEqualTo("User not found");
+        }
+    }
+
+    @Test
+    public void testUpdateAdminValid(){
+        doNothing().when(adminService).updateAdminById(1L, 1L, adminRequestModel);
+
+        assertThat(adminController.updateAdmin(1L, 1L, adminRequestModel))
+            .isEqualTo(new ResponseEntity<>(HttpStatus.OK));
+        verify(adminService).updateAdminById(1L, 1L, adminRequestModel);
+    }
+    @Test
+    public void testUpdateAdminNullRequest() {
+        doThrow(new StatusException(HttpStatus.BAD_REQUEST, "No admin update model present")).when(
+            adminService).updateAdminById(3L, 0L, null);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, null);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, null);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("No admin update model present");
+        }
+    }
+    @Test
+    public void testUpdateAdminNoEmail() {
+        doThrow(new StatusException(HttpStatus.BAD_REQUEST, "No admin update model present")).when(
+            adminService).updateAdminById(3L, 0L, null);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, null);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, null);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("No admin update model present");
         }
     }
 
