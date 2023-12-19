@@ -10,7 +10,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
-import nl.tudelft.sem.yumyumnow.users.controllers.validators.AdminValidator;
+import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,11 +44,12 @@ public class AdminService {
         adminValidator.validate(adminRequestModel);
         Admin admin = adminBuilder.build(new Admin(), adminRequestModel);
 
+        if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent())
+            throw new EmailAlreadyInUseException(adminRequestModel.getEmail());
+
         Admin response = adminRepository.saveAndFlush(admin);
         admin.setId(response.getId());
 
-        if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent())
-            throw new EmailAlreadyInUseException(adminRequestModel.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(admin);
     }

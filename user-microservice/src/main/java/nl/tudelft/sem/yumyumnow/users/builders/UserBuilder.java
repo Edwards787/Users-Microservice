@@ -11,7 +11,7 @@ public abstract class UserBuilder{
         user.email(requestModel.getEmail());
         user.name(requestModel.getName());
         user.surname(requestModel.getSurname());
-        user.blocked(user.getBlocked());
+        if (user.getBlocked() == null) user.blocked(false);
         return user;
     }
 }
