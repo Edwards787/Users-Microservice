@@ -1,24 +1,29 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
+import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
 @Service
 public class AdminService {
     private final AdminRepository adminRepository;
+    private final AdminValidator adminValidator;
+    private final AdminBuilder adminBuilder;
     @Autowired
-    public AdminService(AdminRepository adminRepository){
+    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder, AdminValidator adminValidator){
         this.adminRepository = adminRepository;
+        this.adminBuilder = adminBuilder;
+        this.adminValidator = adminValidator;
     }
 
     public ResponseEntity<Admin> getAdminById(Long adminId){
@@ -29,19 +34,9 @@ public class AdminService {
     }
 
     public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel) {
-        if (adminRequestModel == null)
-           throw new StatusException(HttpStatus.BAD_REQUEST, "No admin request model present");
 
-        if (adminRequestModel.getSurname().equals("") || adminRequestModel.getSurname() == null)
-            throw new StatusException(HttpStatus.BAD_REQUEST, "No surname provided");
-
-
-        Admin admin = new Admin();
-        admin.setBlocked(false);
-        admin.setName(adminRequestModel.getName());
-        admin.setSurname(adminRequestModel.getSurname());
-        admin.setEmail(adminRequestModel.getEmail());
-        admin.setRole(User.RoleEnum.ADMIN);
+        adminValidator.validate(adminRequestModel);
+        Admin admin = adminBuilder.build(new Admin(), adminRequestModel);
 
         if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent())
             return new ResponseEntity<>(HttpStatus.CONFLICT);

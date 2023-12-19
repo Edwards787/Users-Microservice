@@ -1486,6 +1486,7 @@ components:
     #_______________REQUEST_MODELS____________________
     UserRequestModel:
       type: object
+      x-parent: "abstract"
       required:
         - email
         - name
