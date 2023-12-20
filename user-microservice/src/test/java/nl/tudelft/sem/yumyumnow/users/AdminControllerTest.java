@@ -39,7 +39,7 @@ public class AdminControllerTest {
         admin2.setName("name 2");
         admin2.setId(1L);
 
-        adminRequestModel = new AdminRequestModel("name 1", "surname 3", "email 3");
+        adminRequestModel = new AdminRequestModel("name 3", "surname 3", "email 3");
     }
 
     @Test
@@ -114,7 +114,6 @@ public class AdminControllerTest {
             assertThat(e.getReason()).isEqualTo("Admin not found");
         }
     }
-
     @Test
     public void testUpdateAdminValid()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
@@ -141,21 +140,153 @@ public class AdminControllerTest {
             assertThat(e.getReason()).isEqualTo("Body not present");
         }
     }
-//    @Test
-//    public void testUpdateAdminNoEmail()
-//        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-//        InvalidFieldException {
-//        doThrow(new InvalidFieldException("email", "email 1")).when(
-//            adminService).updateAdminById(3L, 0L, null);
-//        assertThrows(ResponseStatusException.class, () -> {
-//            adminController.updateAdmin(3L, 0L, null);
-//        });
-//        try {
-//            adminController.updateAdmin(3L, 0L, null);
-//        } catch (ResponseStatusException e) {
-//            assertThat(e.getStatus().value()).isEqualTo(400);
-//            assertThat(e.getReason()).isEqualTo("Field 'email' with value 'email 1' is invalid");
-//        }
-//    }
+    @Test
+    public void testUpdateAdminNoEmail()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
 
+        adminRequestModel.setEmail("");
+
+        doThrow(new InvalidFieldException("email", "")).when(
+            adminService).updateAdminById(3L, 0L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Field 'email' with value '' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminNullEmail()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        adminRequestModel.setEmail(null);
+
+        doThrow(new InvalidFieldException("email", "null")).when(
+            adminService).updateAdminById(3L, 0L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Field 'email' with value 'null' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminNoName()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        adminRequestModel.setName("");
+
+        doThrow(new InvalidFieldException("name", "")).when(
+            adminService).updateAdminById(3L, 0L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Field 'name' with value '' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminNullName()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        adminRequestModel.setName(null);
+
+        doThrow(new InvalidFieldException("name", "null")).when(
+            adminService).updateAdminById(3L, 0L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Field 'name' with value 'null' is invalid");
+        }
+    }
+
+    @Test
+    public void testUpdateAdminNoSurname()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        adminRequestModel.setSurname("");
+
+        doThrow(new InvalidFieldException("surname", "")).when(
+            adminService).updateAdminById(3L, 0L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Field 'surname' with value '' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminNullSurname()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        adminRequestModel.setSurname(null);
+
+        doThrow(new InvalidFieldException("surname", "null")).when(
+            adminService).updateAdminById(3L, 0L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Field 'surname' with value 'null' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminNotFound()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        doThrow(new UserNotFoundException()).when(
+            adminService).updateAdminById(3L, 0L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 0L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(404);
+            assertThat(e.getReason()).isEqualTo("Admin not found");
+        }
+    }
+    @Test
+    public void testUpdateAdminUnauthorized()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        doThrow(new NotAuthorizedException()).when(
+            adminService).updateAdminById(3L, 1L, adminRequestModel);
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateAdmin(3L, 1L, adminRequestModel);
+        });
+        try {
+            adminController.updateAdmin(3L, 1L, adminRequestModel);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(403);
+            assertThat(e.getReason()).isEqualTo("Unauthorized action");
+        }
+    }
 }

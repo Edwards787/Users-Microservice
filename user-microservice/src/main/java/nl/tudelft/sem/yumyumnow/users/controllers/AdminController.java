@@ -66,7 +66,7 @@ public class AdminController implements AdminApi {
         } catch(UserNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
         } catch (NotAuthorizedException e){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         } catch (InvalidFieldException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e){
