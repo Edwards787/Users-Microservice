@@ -30,7 +30,7 @@ public class AdminController implements AdminApi {
             admin = adminService.getAdminById(adminId);
         }
         catch (UserNotFoundException e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
         }
         return ResponseEntity.ok(admin);
     }
@@ -54,7 +54,7 @@ public class AdminController implements AdminApi {
         } catch (InitialAdminException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Initial admin can not be deleted");
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
     }
 
@@ -68,7 +68,7 @@ public class AdminController implements AdminApi {
         } catch (NotAuthorizedException e){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized action");
         } catch (InvalidFieldException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.fieldName + " is missing");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
         }
