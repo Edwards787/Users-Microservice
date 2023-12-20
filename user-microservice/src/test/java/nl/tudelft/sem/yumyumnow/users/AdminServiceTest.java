@@ -1,10 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users;
 
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
-import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
@@ -13,6 +10,7 @@ import nl.tudelft.sem.yumyumnow.users.services.AdminService;
 import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.Optional;
 
@@ -31,8 +29,8 @@ public class AdminServiceTest {
     @BeforeEach
     public void setUp(){
         adminRepository = mock(AdminRepository.class);
-        adminValidator = mock(AdminValidator.class);
-        adminBuilder = mock(AdminBuilder.class);
+        adminValidator = new AdminValidator();
+        adminBuilder = new AdminBuilder();
 
         adminService = new AdminService(adminRepository, adminBuilder, adminValidator);
     }
@@ -66,9 +64,37 @@ public class AdminServiceTest {
     public void testCreateAdminValid()
         throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
         when(adminRepository.findByEmail("email 1")).thenReturn(Optional.empty());
-        when(adminRepository.saveAndFlush(admin1)).thenReturn(admin1);
+        when(adminRepository.saveAndFlush(adminBuilder.build(new Admin(), adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);
     }
+    @Test
+    public void testCreateAdminInvalid() {
+        when(adminRepository.findByEmail("email 1")).thenReturn(Optional.of(admin1));
+        assertThrows(EmailAlreadyInUseException.class, () -> {
+            adminService.createAdmin(adminRequestModel);
+        });
+    }
+    @Test
+    public void testDeleteAdminByIdValid()
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        doNothing().when(adminRepository).deleteById(1L);
 
+        adminService.deleteAdminById(1L, 0L);
+
+        verify(adminRepository).findById(0L);
+        verify(adminRepository).deleteById(1L);
+    }
+    @Test
+    public void testDeleteAdminByIdNotFound() {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        doThrow(new EmptyResultDataAccessException(0)).when(adminRepository).deleteById(1L);
+
+
+        assertThrows(UserNotFoundException.class, () -> {
+            adminService.deleteAdminById(1L, 0L);
+            verify(adminRepository).findById(0L);
+        });
+    }
 
 }
