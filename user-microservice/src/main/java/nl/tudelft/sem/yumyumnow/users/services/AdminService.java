@@ -92,7 +92,7 @@ public class AdminService {
         }
     }
 
-    public void updateAdminById(Long adminId1, Long adminId2, AdminRequestModel adminRequestModel)
+    public void updateAdminById(Long adminId1, Long adminId2, @NotNull AdminRequestModel adminRequestModel)
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
         Admin adminInitial = getAdminById(adminId1);

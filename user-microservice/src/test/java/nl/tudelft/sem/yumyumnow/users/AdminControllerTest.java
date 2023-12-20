@@ -4,6 +4,7 @@ import nl.tudelft.sem.yumyumnow.users.controllers.AdminController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class AdminControllerTest {
-    AdminService adminService;
-    AdminController adminController;
-    Admin admin1;
-    Admin admin2;
-    AdminRequestModel adminRequestModel;
+    private AdminService adminService;
+    private AdminController adminController;
+    private Admin admin1;
+    private Admin admin2;
+    private AdminRequestModel adminRequestModel;
 
     @BeforeEach
     public void setUp(){
@@ -32,10 +33,14 @@ public class AdminControllerTest {
         admin1 = new Admin();
         admin1.setSurname("surname 1");
         admin1.setName("name 1");
+        admin1.setEmail("email 1");
+        admin1.setRole(User.RoleEnum.ADMIN);
         admin1.setId(0L);
 
         admin2 = new Admin();
         admin2.setSurname("surname 2");
+        admin2.setEmail("email 2");
+        admin2.setRole(User.RoleEnum.ADMIN);
         admin2.setName("name 2");
         admin2.setId(1L);
 
@@ -81,7 +86,7 @@ public class AdminControllerTest {
             adminController.deleteAdmin(0L, 1L);
         }catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(400);
-            assertThat(e.getReason()).isEqualTo("Initial admin cannot be deleted");
+            assertThat(e.getReason()).isEqualTo("Initial admin can not be deleted");
         }
     }
 
