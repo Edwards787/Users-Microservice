@@ -1,7 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.api.AdminApi;
-import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
@@ -19,6 +19,7 @@ import java.util.List;
 public class AdminController implements AdminApi {
 
     private final AdminService adminService;
+
     @Autowired
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
@@ -28,19 +29,32 @@ public class AdminController implements AdminApi {
         try {
             admin = adminService.getAdminById(adminId);
         }
-        catch (StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        catch (UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
         return ResponseEntity.ok(admin);
     }
-
+    @Override
+    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel) {
+        try {
+            return ResponseEntity.ok(adminService.createAdmin(adminRequestModel));
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (EmailAlreadyInUseException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
     @Override
     public ResponseEntity<Void> deleteAdmin(Long userId1, Long userId2){
         try{
             adminService.deleteAdminById(userId1, userId2);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        } catch (InitialAdminException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Initial admin can not be deleted");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized action");
         }
     }
 
@@ -49,24 +63,19 @@ public class AdminController implements AdminApi {
         try{
             adminService.updateAdminById(userId1, userId2, adminRequestModel);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        } catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        } catch (NotAuthorizedException e){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized action");
+        } catch (InvalidFieldException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.fieldName + " is missing");
+        } catch (MissingBodyException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
         }
-    }
-
-    public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel){
-        Admin admin;
-        try {
-            admin = adminService.createAdmin(adminRequestModel);
-        }
-        catch (StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
-        }
-        return ResponseEntity.created(URI.create("")).body(admin);
     }
 
     @Override
-    public ResponseEntity<List<Long>> getRefundRequests(Long userId){
+    public ResponseEntity<List<Long>> getRefundRequests(Long userId) {
         return adminService.getRefundRequests(userId);
     }
 }
