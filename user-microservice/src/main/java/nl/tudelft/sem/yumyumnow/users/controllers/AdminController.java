@@ -25,18 +25,9 @@ public class AdminController implements AdminApi {
     }
 
     @Override
-    public ResponseEntity<Admin> getAdminById(Long adminId) {
-        try {
-            return adminService.getAdminById(adminId);
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    @Override
     public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel) {
         try {
-            return adminService.createAdmin(adminRequestModel);
+            return ResponseEntity.ok(adminService.createAdmin(adminRequestModel));
         } catch (MissingBodyException | InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (EmailAlreadyInUseException e) {
