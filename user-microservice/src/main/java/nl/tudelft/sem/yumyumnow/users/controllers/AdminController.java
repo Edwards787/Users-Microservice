@@ -56,7 +56,7 @@ public class AdminController implements AdminApi {
 
     @Override
     public ResponseEntity<Void> updateAdmin(Long userId1, Long userId2, AdminRequestModel adminRequestModel){
-        try{
+        try {
             adminService.updateAdminById(userId1, userId2, adminRequestModel);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch(UserNotFoundException e) {
@@ -65,7 +65,7 @@ public class AdminController implements AdminApi {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         } catch (InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (MissingBodyException e){
+        } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
         }
     }

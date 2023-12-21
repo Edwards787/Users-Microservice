@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.exceptions.*;
-import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
+import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
+import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -40,9 +45,10 @@ public class AdminService {
 
     public Admin getAdminById(Long adminId) throws UserNotFoundException {
         Optional<Admin> admin = adminRepository.findById(adminId);
-        if (admin.isEmpty())
+        if (admin.isEmpty()) {
             throw new UserNotFoundException();
-        else{
+        }
+        else {
             return admin.get();
         }
     }
@@ -95,7 +101,7 @@ public class AdminService {
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
         Admin adminInitial = getAdminById(adminId1);
-        try{
+        try {
             getAdminById(adminId2);
         } catch (UserNotFoundException exception){
             throw new NotAuthorizedException();
