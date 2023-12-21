@@ -96,7 +96,6 @@ public class AdminService {
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
         Admin adminInitial = getAdminById(adminId1);
-
         try{
             getAdminById(adminId2);
         } catch (UserNotFoundException exception){

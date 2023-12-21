@@ -15,6 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -24,6 +25,7 @@ public class AdminServiceTest {
     private AdminBuilder adminBuilder;
     private AdminService adminService;
     private Admin admin1;
+    private Admin admin2;
     private AdminRequestModel adminRequestModel;
 
     @BeforeEach
@@ -43,6 +45,13 @@ public class AdminServiceTest {
         admin1.setEmail("email 1");
         admin1.setRole(User.RoleEnum.ADMIN);
         admin1.setId(0L);
+
+        admin2 = new Admin();
+        admin2.setSurname("surname 2");
+        admin2.setName("name 2");
+        admin2.setEmail("email 2");
+        admin2.setRole(User.RoleEnum.ADMIN);
+        admin2.setId(1L);
 
         adminRequestModel = new AdminRequestModel("email 1", "name 1", "surname 1");
     }
@@ -89,12 +98,198 @@ public class AdminServiceTest {
     public void testDeleteAdminByIdNotFound() {
         when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
         doThrow(new EmptyResultDataAccessException(0)).when(adminRepository).deleteById(1L);
-
-
         assertThrows(UserNotFoundException.class, () -> {
             adminService.deleteAdminById(1L, 0L);
             verify(adminRepository).findById(0L);
         });
     }
+    @Test
+    public void testDeleteAdminByIdNotAuthorized(){
+        when(adminRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(NotAuthorizedException.class, () -> {
+            adminService.deleteAdminById(2L, 1L);
+            verify(adminRepository).findById(1L);
+        });
+    }
+    @Test
+    public void testDeleteAdminByIdInitialAdmin(){
+        assertThrows(InitialAdminException.class, () -> {
+            adminService.deleteAdminById(0L, 1L);
+        });
+    }
 
+    @Test
+    public void testUpdateAdminByIdValid()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+
+        adminService.updateAdminById(1L, 0L, adminRequestModel);
+
+        verify(adminRepository).saveAndFlush(admin1);
+        assertThat(admin1).isEqualTo(admin2);
+    }
+
+    @Test
+    public void testUpdateAdminByIdNotFound()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> {
+           adminService.updateAdminById(1L, 0L, adminRequestModel);
+           verify(adminRepository).findById(1L);
+        });
+    }
+
+    @Test
+    public void testUpdateAdminByIdUnauthorized()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(NotAuthorizedException.class, () -> {
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+    }
+    @Test
+    public void testUpdateAdminByIdMissingBody()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        assertThrows(MissingBodyException.class, () -> {
+            adminService.updateAdminById(0L, 1L, null);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+    }
+    @Test
+    public void testUpdateAdminByIdNoEmail()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        adminRequestModel.setEmail("");
+
+        assertThrows(InvalidFieldException.class, () -> {
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+
+        try{
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+        } catch (InvalidFieldException e){
+            assertThat(e.fieldName).isEqualTo("email");
+            assertThat(e.getMessage()).isEqualTo("Field 'email' with value '' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminByIdNullEmail()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        adminRequestModel.setEmail(null);
+
+        assertThrows(InvalidFieldException.class, () -> {
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+
+        try{
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+        } catch (InvalidFieldException e){
+            assertThat(e.fieldName).isEqualTo("email");
+            assertThat(e.getMessage()).isEqualTo("Field 'email' with value 'null' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminByIdNoName()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        adminRequestModel.setName("");
+
+        assertThrows(InvalidFieldException.class, () -> {
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+
+        try{
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+        } catch (InvalidFieldException e){
+            assertThat(e.fieldName).isEqualTo("name");
+            assertThat(e.getMessage()).isEqualTo("Field 'name' with value '' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminByIdNullName()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        adminRequestModel.setName(null);
+
+        assertThrows(InvalidFieldException.class, () -> {
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+
+        try{
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+        } catch (InvalidFieldException e){
+            assertThat(e.fieldName).isEqualTo("name");
+            assertThat(e.getMessage()).isEqualTo("Field 'name' with value 'null' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminByIdNoSurname()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        adminRequestModel.setSurname("");
+
+        assertThrows(InvalidFieldException.class, () -> {
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+
+        try{
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+        } catch (InvalidFieldException e){
+            assertThat(e.fieldName).isEqualTo("surname");
+            assertThat(e.getMessage()).isEqualTo("Field 'surname' with value '' is invalid");
+        }
+    }
+    @Test
+    public void testUpdateAdminByIdNullSurname()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        adminRequestModel.setSurname(null);
+
+        assertThrows(InvalidFieldException.class, () -> {
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            verify(adminRepository).findById(1L);
+            verify(adminRepository).findById(0L);
+        });
+
+        try{
+            adminService.updateAdminById(0L, 1L, adminRequestModel);
+        } catch (InvalidFieldException e){
+            assertThat(e.fieldName).isEqualTo("surname");
+            assertThat(e.getMessage()).isEqualTo("Field 'surname' with value 'null' is invalid");
+        }
+    }
 }
