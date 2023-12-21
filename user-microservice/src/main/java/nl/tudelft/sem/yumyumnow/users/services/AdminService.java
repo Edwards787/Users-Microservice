@@ -1,15 +1,23 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +43,15 @@ public class AdminService {
         this.adminValidator = adminValidator;
     }
 
+    public Admin getAdminById(Long adminId) throws UserNotFoundException {
+        Optional<Admin> admin = adminRepository.findById(adminId);
+        if (admin.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        else {
+            return admin.get();
+        }
+    }
     /**
      * Service that handles the creation of an admin.
      *
@@ -61,5 +78,42 @@ public class AdminService {
         admin.setId(response.getId());
 
         return admin;
+
+    }
+
+    public void deleteAdminById(Long adminId1, Long adminId2)
+        throws InitialAdminException, NotAuthorizedException, UserNotFoundException {
+        if (adminId1 == 0)
+            throw new InitialAdminException();
+        try{
+            Admin admin = getAdminById(adminId2);
+        } catch (UserNotFoundException exception){
+            throw new NotAuthorizedException();
+        }
+        try {
+            adminRepository.deleteById(adminId1);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UserNotFoundException();
+        }
+    }
+
+    public void updateAdminById(Long adminId1, Long adminId2, @NotNull AdminRequestModel adminRequestModel)
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+        Admin adminInitial = getAdminById(adminId1);
+        try {
+            getAdminById(adminId2);
+        } catch (UserNotFoundException exception){
+            throw new NotAuthorizedException();
+        }
+
+        adminValidator.validate(adminRequestModel);
+        Admin admin = adminBuilder.build(adminInitial, adminRequestModel);
+        adminRepository.saveAndFlush(admin);
+    }
+
+    public ResponseEntity<List<Long>> getRefundRequests(Long userId) {
+        return ResponseEntity.ok(new ArrayList<>());
+
     }
 }

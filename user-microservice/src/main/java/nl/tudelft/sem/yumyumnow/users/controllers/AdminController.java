@@ -1,10 +1,8 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
+import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.api.AdminApi;
-import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
@@ -23,7 +21,15 @@ public class AdminController implements AdminApi {
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
-
+    public ResponseEntity<Admin> getAdminById(Long adminId){
+        Admin admin;
+        try {
+            admin = adminService.getAdminById(adminId);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        }
+        return ResponseEntity.ok(admin);
+    }
     @Override
     public ResponseEntity<Admin> createAdmin(AdminRequestModel adminRequestModel) {
         try {
@@ -34,9 +40,38 @@ public class AdminController implements AdminApi {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
+    @Override
+    public ResponseEntity<Void> deleteAdmin(Long userId1, Long userId2){
+        try{
+            adminService.deleteAdminById(userId1, userId2);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        } catch (InitialAdminException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Initial admin can not be deleted");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> updateAdmin(Long userId1, Long userId2, AdminRequestModel adminRequestModel){
+        try {
+            adminService.updateAdminById(userId1, userId2, adminRequestModel);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Long>> getRefundRequests(Long userId) {
+        return adminService.getRefundRequests(userId);
+    }
 }
-
-
-
-
-

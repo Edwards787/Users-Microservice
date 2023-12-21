@@ -19,5 +19,6 @@ public abstract class UserValidator {
             throw new InvalidFieldException("email", userRequestModel.getEmail());
         if (userRequestModel.getSurname() == null || userRequestModel.getSurname().equals(""))
             throw new InvalidFieldException("surname", userRequestModel.getSurname());
+
     }
 }
