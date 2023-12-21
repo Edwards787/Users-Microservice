@@ -1,7 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.exceptions;
 
-import org.springframework.stereotype.Service;
-
 import java.io.Serial;
 
 public class InitialAdminException extends Exception{

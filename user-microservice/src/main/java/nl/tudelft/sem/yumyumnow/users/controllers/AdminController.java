@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
+import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.api.AdminApi;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
@@ -10,10 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.net.URI;
-import java.util.List;
-
 
 @Controller
 public class AdminController implements AdminApi {
@@ -28,8 +25,7 @@ public class AdminController implements AdminApi {
         Admin admin;
         try {
             admin = adminService.getAdminById(adminId);
-        }
-        catch (UserNotFoundException e){
+        } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
         }
         return ResponseEntity.ok(admin);
@@ -63,11 +59,11 @@ public class AdminController implements AdminApi {
         try{
             adminService.updateAdminById(userId1, userId2, adminRequestModel);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch(UserNotFoundException e){
+        } catch(UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
-        } catch (NotAuthorizedException e){
+        } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
-        } catch (InvalidFieldException e){
+        } catch (InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");

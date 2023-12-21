@@ -1,22 +1,19 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.exceptions.*;
-import nl.tudelft.sem.yumyumnow.users.model.*;
-import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
-import org.aspectj.weaver.ast.Not;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AdminService {
@@ -45,7 +42,9 @@ public class AdminService {
         Optional<Admin> admin = adminRepository.findById(adminId);
         if (admin.isEmpty())
             throw new UserNotFoundException();
-        else return admin.get();
+        else{
+            return admin.get();
+        }
     }
     /**
      * Service that handles the creation of an admin.
