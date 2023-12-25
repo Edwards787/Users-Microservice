@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 public class VendorController {
 
     private final VendorService vendorService;
+
     @Autowired
     public VendorController(VendorService vendorService) {
         this.vendorService = vendorService;
