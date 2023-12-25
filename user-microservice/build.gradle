@@ -132,9 +132,9 @@ checkstyle {
 	checkstyleTest {
 		source = project.sourceSets.test.allJava.filter { file ->
 			// Exclude directories or files associated with generated code
-			!file.path.contains('generated') // Example condition, modify as per your generated code path
+			!file.path.contains('test') // Example condition, modify as per your generated code path
 		}
-		excludes = ['**/generated/.*']
+		excludes = ['**/test/.*']
 	}
 }
 
@@ -158,9 +158,9 @@ pmd {
 	pmdTest {
 		source = project.sourceSets.test.allJava.filter { file ->
 			// Exclude directories or files associated with generated code
-			!file.path.contains('generated') // Example condition, modify as per your generated code path
+			!file.path.contains('test') // Example condition, modify as per your generated code path
 		}
-		excludes = ['**/generated/.*']
+		excludes = ['**/test/.*']
 	}
 
 }
