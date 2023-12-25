@@ -142,10 +142,10 @@ pmd {
 	incrementalAnalysis = true
 	ignoreFailures = true
 
-	if(System.properties.containsKey("failPMD")){
-		ignoreFailures = false
-		maxFailures = 0
-	}
+//	if(System.properties.containsKey("failPMD")){
+//		ignoreFailures = false
+//		maxFailures = 0
+//	}
 	// Exclude specific rules or files/directories
 	pmdMain {
 		source = project.sourceSets.main.allJava.filter { file ->
