@@ -176,4 +176,10 @@ class VendorServiceTest {
             assertThat(e.getMessage()).isEqualTo("Not authorized"); // custom message not parsed yet
         }
     }
+
+    @Test
+    void getAllVendors() {
+        vendorService.getAllVendors();
+        verify(vendorRepository, times(1)).findAll();
+    }
 }

@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
@@ -109,5 +110,9 @@ public class VendorService {
             }
         }
         return null;
+    }
+
+    public List<Vendor> getAllVendors() {
+        return vendorRepository.findAll();
     }
 }

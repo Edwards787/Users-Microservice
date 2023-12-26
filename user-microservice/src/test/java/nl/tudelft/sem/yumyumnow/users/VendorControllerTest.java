@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -155,5 +157,13 @@ public class VendorControllerTest {
             assertThat(ex.getStatus().value()).isEqualTo(404);
             assertThat(ex.getReason()).isEqualTo("User with id 1 was not found");
         }
+    }
+
+    @Test
+    void getAllVendorsSuccess() {
+        when(vendorService.getAllVendors()).thenReturn(List.of(vendor));
+        ResponseEntity<List<Vendor>> res = vendorController.getAllVendors();
+        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getBody()).isEqualTo(List.of(vendor));
     }
 }

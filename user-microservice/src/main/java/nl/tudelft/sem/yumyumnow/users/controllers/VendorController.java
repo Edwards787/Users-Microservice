@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
+import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.api.VendorApi;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
@@ -52,5 +53,10 @@ public class VendorController implements VendorApi {
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + e.getTargetId() + " was not found");
         }
+    }
+
+    @Override
+    public ResponseEntity<List<Vendor>> getAllVendors() {
+        return ResponseEntity.ok(vendorService.getAllVendors());
     }
 }
