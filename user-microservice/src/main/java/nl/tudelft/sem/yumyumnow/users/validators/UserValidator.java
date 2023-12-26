@@ -1,11 +1,10 @@
 package nl.tudelft.sem.yumyumnow.users.validators;
 
+import java.util.regex.Pattern;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import org.springframework.stereotype.Service;
-
-import java.util.regex.Pattern;
 
 @Service
 public abstract class UserValidator {

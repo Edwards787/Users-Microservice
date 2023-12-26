@@ -15,6 +15,13 @@ public class VendorValidator extends UserValidator {
         this.addressValidator = addressValidator;
     }
 
+    /**
+     * Validates a vendor request model.
+     *
+     * @param vendorRequestModel the vendor request model
+     * @throws MissingBodyException if the request model is null
+     * @throws InvalidFieldException if the request model contains invalid fields, specifying the field and the value
+     */
     public void validate(VendorRequestModel vendorRequestModel) throws MissingBodyException, InvalidFieldException {
         super.validate(vendorRequestModel);
         addressValidator.validate(vendorRequestModel.getAddress());

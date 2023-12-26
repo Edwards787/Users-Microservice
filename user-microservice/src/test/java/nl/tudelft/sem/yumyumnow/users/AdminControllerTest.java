@@ -48,6 +48,55 @@ public class AdminControllerTest {
     }
 
     @Test
+    public void testAdminCreateValid() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+        when(adminService.createAdmin(adminRequestModel)).thenReturn(admin1);
+        assertThat(adminController.createAdmin(adminRequestModel)).isEqualTo(ResponseEntity.ok(admin1));
+    }
+
+    @Test
+    public void testAdminCreateNullRequest() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+        when(adminService.createAdmin(null)).thenThrow(new MissingBodyException());
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.createAdmin(null);
+        });
+        try{
+            adminController.createAdmin(null);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getReason()).isEqualTo("Body is missing");
+        }
+    }
+
+    @Test
+    public void testAdminCreateNoEmail() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+        adminRequestModel.setEmail("");
+        when(adminService.createAdmin(adminRequestModel)).thenThrow(new InvalidFieldException("email", ""));
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.createAdmin(adminRequestModel);
+        });
+        try{
+            adminController.createAdmin(adminRequestModel);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getReason()).isEqualTo("Field 'email' with value '' is invalid");
+        }
+    }
+
+    @Test
+    public void testAdminCreateEmailExists() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+        when(adminService.createAdmin(adminRequestModel)).thenThrow(new EmailAlreadyInUseException("email"));
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.createAdmin(adminRequestModel);
+        });
+        try{
+            adminController.createAdmin(adminRequestModel);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+            assertThat(e.getReason()).isEqualTo("User with email 'email' already exists");
+        }
+    }
+
+    @Test
     public void testAdminGetByIdValid() throws UserNotFoundException {
         when(adminService.getAdminById(0L)).thenReturn(admin1);
         assertThat(adminController.getAdminById(0L)).isEqualTo(ResponseEntity.ok(admin1));
