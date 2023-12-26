@@ -63,5 +63,5 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
     }
-    
+
 }
