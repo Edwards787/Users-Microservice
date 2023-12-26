@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.admin;
+package nl.tudelft.sem.yumyumnow.users;
 
 import nl.tudelft.sem.yumyumnow.users.controllers.AdminController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;

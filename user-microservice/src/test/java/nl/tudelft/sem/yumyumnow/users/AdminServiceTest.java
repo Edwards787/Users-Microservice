@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.admin;
+package nl.tudelft.sem.yumyumnow.users;
 
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
-    private  AdminRepository adminRepository;
+    private AdminRepository adminRepository;
     private AdminValidator adminValidator;
     private AdminBuilder adminBuilder;
     private AdminService adminService;
