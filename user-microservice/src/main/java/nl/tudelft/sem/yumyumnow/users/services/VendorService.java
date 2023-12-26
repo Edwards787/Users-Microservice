@@ -50,7 +50,7 @@ public class VendorService {
     public Vendor getVendorById(Long vendorId) throws UserNotFoundException {
         Optional<Vendor> vendor = vendorRepository.findById(vendorId);
         if (vendor.isEmpty()) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(vendorId);
         } else {
             return vendor.get();
         }
@@ -60,19 +60,19 @@ public class VendorService {
     public Void deleteVendor(Long userid1, Long userid2) throws UserNotFoundException, NotAuthorizedException {
         Optional<Vendor> vendor = vendorRepository.findById(userid1);
         if (vendor.isEmpty()) {
-            throw new UserNotFoundException("User not found for id: " + userid1);
+            throw new UserNotFoundException(userid1);
         }
         if (userid1.equals(userid2)) {
             vendorRepository.deleteById(userid1);
         } else {
             Optional<User> requester = userRepository.findById(userid2);
             if (requester.isEmpty()) {
-                throw new UserNotFoundException("User not found for id: " + userid2);
+                throw new UserNotFoundException(userid2);
             }
             if (requester.get().getRole().equals(User.RoleEnum.ADMIN)) {
                 vendorRepository.deleteById(userid1);
             } else {
-                throw new NotAuthorizedException("User with id " + userid2 + " not authorized to delete vendor with id " + userid1);
+                throw new NotAuthorizedException();
             }
         }
         return null;

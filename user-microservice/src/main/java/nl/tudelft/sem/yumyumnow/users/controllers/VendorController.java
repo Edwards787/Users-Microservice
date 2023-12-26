@@ -37,9 +37,18 @@ public class VendorController implements VendorApi {
         try {
             return ResponseEntity.ok(vendorService.deleteVendor(userid1, userid2));
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + e.getTargetId() + " was not found");
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unauthorized action by" + userid2);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with id " + userid2 + " not authorized to delete vendor with id " + userid1);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Vendor> getVendorById(Long vendorId) {
+        try {
+            return ResponseEntity.ok(vendorService.getVendorById(vendorId));
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + e.getTargetId() + " was not found");
         }
     }
 }
