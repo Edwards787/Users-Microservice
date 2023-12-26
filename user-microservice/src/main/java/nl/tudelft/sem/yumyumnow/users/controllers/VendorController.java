@@ -24,7 +24,6 @@ public class VendorController implements VendorApi {
     }
 
     @Override
-    @SuppressWarnings("never thrown")
     public ResponseEntity<Vendor> createVendor(VendorRequestModel vendorRequestModel) {
         try {
             return ResponseEntity.ok(vendorService.createVendor(vendorRequestModel));
