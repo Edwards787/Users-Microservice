@@ -1,6 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-
 import nl.tudelft.sem.yumyumnow.users.exceptions.InitialCustomerException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
@@ -16,6 +15,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import nl.tudelft.sem.yumyumnow.users.model.Customer;
+import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
+import java.util.List;
+import nl.tudelft.sem.yumyumnow.users.model.User;
+
+
 import java.util.Optional;
 
 @Service
@@ -26,48 +32,55 @@ public class CustomerService {
     private final CustomerValidator customerValidator;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, UserRepository userRepository, CustomerValidator customerValidator){
+    public CustomerService(CustomerRepository customerRepository, UserRepository userRepository, CustomerValidator customerValidator) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.customerValidator = customerValidator;
     }
 
+    /**
+     * Returns a customer model given an Id.
+     *
+     * @param userId customerId of the customer you want
+     * @return Customer model corresponding to the given customer id
+     */
     public Customer getCustomerById(Long userId) throws UserNotFoundException {
         Optional<Customer> customer = customerRepository.findById(userId);
         if (customer.isEmpty()) {
             throw new UserNotFoundException();
-        }
-        else {
+        } else {
             return customer.get();
         }
     }
 
-    public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
-        // Little demo
-        Customer customer = new Customer();
 
-        customer.setAllergens(customerRequestModel.getAllergens());
-        customer.setBlocked(false);
-        customer.setHomeAddress(customerRequestModel.getHomeAddress());
-        customer.setFavRestaurants(new ArrayList<>());
-        customer.setName(customerRequestModel.getName());
-        customer.setSurname(customerRequestModel.getSurname());
-        customer.setRole(User.RoleEnum.CUSTOMER);
-        customer.setEmail(customerRequestModel.getEmail());
 
-        customerRepository.saveAndFlush(customer);
+        public ResponseEntity<Customer> createCustomer (CustomerRequestModel customerRequestModel){
+            // Little demo
+            Customer customer = new Customer();
 
-        return ResponseEntity.ok(customer);
+            customer.setAllergens(customerRequestModel.getAllergens());
+            customer.setBlocked(false);
+            customer.setHomeAddress(customerRequestModel.getHomeAddress());
+            customer.setFavRestaurants(new ArrayList<>());
+            customer.setName(customerRequestModel.getName());
+            customer.setSurname(customerRequestModel.getSurname());
+            customer.setRole(User.RoleEnum.CUSTOMER);
+            customer.setEmail(customerRequestModel.getEmail());
 
-    }
+            customerRepository.saveAndFlush(customer);
 
-    public ResponseEntity<Void> deleteCustomer(Long userId1, Long userId2)
+            return ResponseEntity.ok(customer);
+
+        }
+
+        public ResponseEntity<Void> deleteCustomer (Long userId1, Long userId2)
         throws InitialCustomerException, NotAuthorizedException, UserNotFoundException {
             if (userId1 == 0)
                 throw new InitialCustomerException();
-            try{
+            try {
                 Customer customer = getCustomerById(userId2);
-            } catch (UserNotFoundException exception){
+            } catch (UserNotFoundException exception) {
                 throw new NotAuthorizedException();
             }
             try {
@@ -75,11 +88,86 @@ public class CustomerService {
             } catch (EmptyResultDataAccessException e) {
                 throw new UserNotFoundException();
             }
-        return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        public ResponseEntity<List<Customer>> getAllCustomers () {
+            List<Customer> customers = customerRepository.findAll();
+            return ResponseEntity.status(HttpStatus.OK).body(customers);
+        }
+
+        /**
+         * Updates the given customer with the given customer request model. In case of invalid authorization, request model
+         * or customerId, an exception is thrown.
+         *
+         * @param id1 ID of the customer you want to update
+         * @param id2 ID of the user making the request
+         * @param customerRequestModel customer data model that you want to replace the customer denoted by id1 with
+         * @return void response entity
+         *
+         */
+//        public ResponseEntity<Void> updateCustomerById (Long id1, Long id2, CustomerRequestModel customerRequestModel){
+//            Customer customer;
+//            //Makes sure we have a correct request model
+//            if (customerRequestModel == null) {
+//                throw new StatusException(HttpStatus.BAD_REQUEST, "No new customer model present");
+//            }
+//            if (customerRequestModel.getAllergens() == null) {
+//                throw new StatusException(HttpStatus.BAD_REQUEST, "No value for allergens");
+//            }
+//            if (customerRequestModel.getName() == null) {
+//                throw new StatusException(HttpStatus.BAD_REQUEST, "No name in request model");
+//            }
+//            if (customerRequestModel.getEmail() == null) {
+//                throw new StatusException(HttpStatus.BAD_REQUEST, "No valid email given");
+//            }
+//            if (customerRequestModel.getSurname() == null) {
+//                throw new StatusException(HttpStatus.BAD_REQUEST, "No valid surname given");
+//            }
+//            if (customerRequestModel.getHomeAddress() == null) {
+//                throw new StatusException(HttpStatus.BAD_REQUEST, "No valid address given");
+//            }
+//
+//            //Make sure that we can find the customer to be updated
+//            try {
+//                customer = getCustomerById(id1);
+//            } catch (StatusException e) {
+//                throw new StatusException(HttpStatus.valueOf(404), "Customer not Found");
+//            }
+//            // In case the customer is updating their own account
+//            if (id1.equals(id2)) {
+//                customer.setAllergens(customerRequestModel.getAllergens());
+//                customer.setEmail(customerRequestModel.getEmail());
+//                customer.setName(customerRequestModel.getName());
+//                customer.setSurname(customerRequestModel.getSurname());
+//                customer.setHomeAddress(customerRequestModel.getHomeAddress());
+//
+//                customerRepository.save(customer);
+//                customerRepository.flush();
+//                return ResponseEntity.ok().build();
+//            }
+//
+//            //ensures that the user sending the request otherwise would be an admin
+//            Optional<User> admin = userRepository.findById(id2);
+//            if (admin.isEmpty()) {
+//                throw new StatusException(HttpStatus.UNAUTHORIZED, "Need to be customer or admin to do this");
+//            }
+//            User usr = admin.get();
+//            if (!usr.getRole().equals(User.RoleEnum.ADMIN)) {
+//                throw new StatusException(HttpStatus.UNAUTHORIZED, "Need to be customer or admin to do this");
+//            }
+//
+//            //Set the right attributes for customer
+//            customer.setAllergens(customerRequestModel.getAllergens());
+//            customer.setEmail(customerRequestModel.getEmail());
+//            customer.setName(customerRequestModel.getName());
+//            customer.setSurname(customerRequestModel.getSurname());
+//            customer.setHomeAddress(customerRequestModel.getHomeAddress());
+//
+//            customerRepository.save(customer);
+//            customerRepository.flush();
+//            return ResponseEntity.ok().build();
+//        }
+
     }
 
-    public ResponseEntity<List<Customer>> getAllCustomers(){
-        List<Customer> customers = customerRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(customers);
-    }
-}

@@ -1,0 +1,206 @@
+package nl.tudelft.sem.yumyumnow.users.services;
+
+
+
+import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.model.Address;
+import nl.tudelft.sem.yumyumnow.users.model.Customer;
+import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.User;
+import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
+import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class CustomerServiceTest {
+    private final CustomerRepository customerRepository = mock(CustomerRepository.class);
+    private final UserRepository userRepository  = mock(UserRepository.class);
+    private final CustomerValidator customerValidator= mock(CustomerValidator.class);
+    private final CustomerService customerService = new CustomerService(customerRepository, userRepository, customerValidator);
+//
+//    @Test
+//    public void testGetCustomerByIDExisting() throws UserNotFoundException {
+//        Long customerId = 1L;
+//        Customer mockCustomer = new Customer();
+//        mockCustomer.setId(customerId);
+//        mockCustomer.setName("John");
+//        mockCustomer.setSurname("Doe");
+//        mockCustomer.setEmail("john.doe@example.com");
+//
+//        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+//
+//        Customer response = customerService.getCustomerById(customerId);
+//
+//        verify(customerRepository, times(1)).findById(customerId);
+//
+//        assertEquals(mockCustomer, response);
+//    }
+//
+//    @Test
+//    public void testGetCustomerByIDNonExisting(){
+//        Long customerId = 1L;
+//        Customer mockCustomer = new Customer();
+//        mockCustomer.setId(customerId);
+//        mockCustomer.setName("John");
+//        mockCustomer.setSurname("Doe");
+//        mockCustomer.setEmail("john.doe@example.com");
+//
+//        Long cId2 = 2L;
+//        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+//
+//
+//
+//        verify(customerRepository, times(1)).findById(cId2);
+//    }
+//
+//    @Test
+//    public void testUpdateCustomerSelfWorking(){
+//        Long customerId =1L;
+//        Long userId = 1L;
+//        Customer mockCustomer = new Customer();
+//        mockCustomer.setId(customerId);
+//
+//        CustomerRequestModel customerUpdate = new CustomerRequestModel();
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setEmail("email");
+//        customerUpdate.setAllergens(new ArrayList<>());
+//        customerUpdate.setSurname("");
+//        customerUpdate.setHomeAddress(new Address());
+//
+//        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+//
+//
+//        ResponseEntity<Void> response = customerService.updateCustomerById(customerId, userId, customerUpdate);
+//
+//        verify(customerRepository, times(1)).findById(customerId);
+//        verify(customerRepository, times(1)).flush();
+//
+//
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertNull(response.getBody());
+//
+//        assertEquals("UpdatedName", mockCustomer.getName());
+//    }
+//
+//    @Test
+//    public void testCustomerUpdateAdminWorking(){
+//        Long customerId = 1L;
+//        Long userId = 2L;
+//
+//        Customer mockCustomer = new Customer();
+//        mockCustomer.setId(customerId);
+//
+//        CustomerRequestModel customerUpdate = new CustomerRequestModel();
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setEmail("email");
+//        customerUpdate.setAllergens(new ArrayList<>());
+//        customerUpdate.setSurname("");
+//        customerUpdate.setHomeAddress(new Address());
+//
+//        User mockAdmin = new User();
+//        mockAdmin.setId(userId);
+//        mockAdmin.setRole(User.RoleEnum.ADMIN);
+//
+//
+//        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
+//
+//
+//        ResponseEntity<Void> response = customerService.updateCustomerById(customerId, userId, customerUpdate);
+//
+//        verify(customerRepository, times(1)).findById(customerId);
+//        verify(customerRepository, times(1)).save(mockCustomer);
+//        verify(customerRepository, times(1)).flush();
+//
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertNull(response.getBody());
+//        assertEquals("UpdatedName", mockCustomer.getName());
+//
+//    }
+//
+//    @Test
+//    public void testCustomerUpdateInvalidRequestModel(){
+//        Long customerId = 1L;
+//        Long userId = 1L;
+//
+//        Customer mockCustomer = new Customer();
+//        mockCustomer.setId(customerId);
+//
+//        CustomerRequestModel customerUpdate = new CustomerRequestModel();
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setEmail("email");
+//        customerUpdate.setAllergens(new ArrayList<>());
+//        customerUpdate.setHomeAddress(new Address());
+//        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+//
+//        assertThrows(StatusException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
+//    }
+//
+//    @Test
+//    public void testCustomerUpdateInvalidUserID(){
+//        Long customerId = 1L;
+//        Long userId = 2L;
+//
+//        Customer mockCustomer = new Customer();
+//        mockCustomer.setId(customerId);
+//
+//        CustomerRequestModel customerUpdate = new CustomerRequestModel();
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setEmail("email");
+//        customerUpdate.setAllergens(new ArrayList<>());
+//        customerUpdate.setSurname("");
+//        customerUpdate.setHomeAddress(new Address());
+//
+//
+//
+//        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+//
+//
+//       assertThrows(StatusException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
+//
+//
+//    }
+//
+//    @Test
+//    public void testCustomerUpdateUnauthorized(){
+//        Long customerId = 1L;
+//        Long userId = 2L;
+//
+//        Customer mockCustomer = new Customer();
+//        mockCustomer.setId(customerId);
+//
+//        CustomerRequestModel customerUpdate = new CustomerRequestModel();
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setName("UpdatedName");
+//        customerUpdate.setEmail("email");
+//        customerUpdate.setAllergens(new ArrayList<>());
+//        customerUpdate.setSurname("");
+//        customerUpdate.setHomeAddress(new Address());
+//
+//        User mockAdmin = new User();
+//        mockAdmin.setId(userId);
+//        mockAdmin.setRole(User.RoleEnum.COURIER);
+//
+//
+//        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
+//
+//
+//        assertThrows(StatusException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
+//
+//    }
+
+}
