@@ -1,9 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.api.VendorApi;
-import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.VendorService;
@@ -31,6 +29,17 @@ public class VendorController implements VendorApi {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (EmailAlreadyInUseException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteVendor(Long userid1, Long userid2) {
+        try {
+            return ResponseEntity.ok(vendorService.deleteVendor(userid1, userid2));
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unauthorized action by" + userid2);
         }
     }
 }

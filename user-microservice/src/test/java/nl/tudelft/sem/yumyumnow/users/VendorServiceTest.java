@@ -8,6 +8,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
 import nl.tudelft.sem.yumyumnow.users.services.VendorService;
 import nl.tudelft.sem.yumyumnow.users.validators.AddressValidator;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 class VendorServiceTest {
     private VendorRepository vendorRepository;
+    private UserRepository userRepository;
     private VendorBuilder vendorBuilder;
     private VendorService vendorService;
     private Vendor vendor;
@@ -32,9 +34,10 @@ class VendorServiceTest {
     @BeforeEach
     public void setUp() {
         vendorRepository = mock(VendorRepository.class);
+        userRepository = mock(UserRepository.class);
         vendorBuilder = new VendorBuilder();
         VendorValidator vendorValidator = new VendorValidator(new AddressValidator(new LocationValidator()));
-        vendorService = new VendorService(vendorRepository, vendorBuilder, vendorValidator);
+        vendorService = new VendorService(vendorRepository, vendorBuilder, vendorValidator, userRepository);
 
         Address address = new Address()
                 .address("StreetName 1A")

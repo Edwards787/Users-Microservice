@@ -13,4 +13,7 @@ public class UserNotFoundException extends Exception {
         super(defaultMessage);
     }
 
+    public UserNotFoundException(String message) {
+        super(message);
+    }
 }
