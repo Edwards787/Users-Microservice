@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.admin;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;

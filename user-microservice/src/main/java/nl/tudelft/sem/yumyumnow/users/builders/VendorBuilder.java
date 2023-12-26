@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VendorBuilder extends UserBuilder {
-    protected Vendor build(Vendor vendor, VendorRequestModel vendorRequestModel) {
+    public Vendor build(Vendor vendor, VendorRequestModel vendorRequestModel) {
         super.build(vendor, vendorRequestModel);
         vendor.setRole(User.RoleEnum.VENDOR);
         vendor.setAddress(vendorRequestModel.getAddress());

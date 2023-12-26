@@ -27,7 +27,18 @@ public class VendorService {
 
     public Vendor createVendor(VendorRequestModel vendorRequestModel)
             throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
-        // TODO: implement
-        return null;
+
+        vendorValidator.validate(vendorRequestModel);
+        Vendor dummy = new Vendor();
+        Vendor vendor = vendorBuilder.build(dummy, vendorRequestModel);
+
+        if(vendorRepository.findByEmail(vendor.getEmail()).isPresent()) {
+            throw new EmailAlreadyInUseException(vendor.getEmail());
+        }
+
+        Vendor response = vendorRepository.saveAndFlush(vendor);
+        vendor.setId(response.getId());
+
+        return vendor;
     }
 }
