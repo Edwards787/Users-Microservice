@@ -59,4 +59,19 @@ public class VendorController implements VendorApi {
     public ResponseEntity<List<Vendor>> getAllVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors());
     }
+
+    @Override
+    public ResponseEntity<Void> updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel) {
+        try {
+            return ResponseEntity.ok(vendorService.updateVendor(userId1, userId2, vendorRequestModel));
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User with id " + e.getTargetId() + " was not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "User with id " + userId2 + " not authorized to update vendor with id " + userId1);
+        } catch (InvalidFieldException | MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 }

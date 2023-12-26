@@ -15,12 +15,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class VendorControllerTest {
     private VendorController vendorController;
@@ -70,39 +68,27 @@ public class VendorControllerTest {
     @Test
     void createVendorMissingBody() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
         when(vendorService.createVendor(any())).thenThrow(new MissingBodyException());
-        try{
-            vendorController.createVendor(vendorRequestModel);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(ResponseStatusException.class);
-            ResponseStatusException ex = (ResponseStatusException) e;
-            assertThat(ex.getStatus().value()).isEqualTo(400);
-        }
+        assertThatThrownBy(() -> vendorController.createVendor(null))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 400);
     }
 
     @Test
     void createVendorInvalidField() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
         when(vendorService.createVendor(any())).thenThrow(new InvalidFieldException("fieldName","value"));
-        try{
-            vendorController.createVendor(vendorRequestModel);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(ResponseStatusException.class);
-            ResponseStatusException ex = (ResponseStatusException) e;
-            assertThat(ex.getStatus().value()).isEqualTo(400);
-            assertThat(ex.getReason()).isEqualTo("Field 'fieldName' with value 'value' is invalid");
-        }
+        assertThatThrownBy(() -> vendorController.createVendor(vendorRequestModel))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 400)
+                .hasFieldOrPropertyWithValue("reason", "Field 'fieldName' with value 'value' is invalid");
     }
 
     @Test
     void createVendorEmailAlreadyInUse() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
         when(vendorService.createVendor(any())).thenThrow(new EmailAlreadyInUseException("email"));
-        try{
-            vendorController.createVendor(vendorRequestModel);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(ResponseStatusException.class);
-            ResponseStatusException ex = (ResponseStatusException) e;
-            assertThat(ex.getStatus().value()).isEqualTo(409);
-            assertThat(ex.getReason()).isEqualTo("User with email 'email' already exists");
-        }
+        assertThatThrownBy(() -> vendorController.createVendor(vendorRequestModel))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 409)
+                .hasFieldOrPropertyWithValue("reason", "User with email 'email' already exists");
     }
 
     @Test
@@ -115,27 +101,19 @@ public class VendorControllerTest {
     @Test
     void deleteVendorNotFound() throws UserNotFoundException, NotAuthorizedException {
         when(vendorService.deleteVendor(any(), any())).thenThrow(new UserNotFoundException(1L));
-        try{
-            vendorController.deleteVendor(1L, 10L);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(ResponseStatusException.class);
-            ResponseStatusException ex = (ResponseStatusException) e;
-            assertThat(ex.getStatus().value()).isEqualTo(404);
-            assertThat(ex.getReason()).isEqualTo("User with id 1 was not found");
-        }
+        assertThatThrownBy(() -> vendorController.deleteVendor(1L, 10L))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 404)
+                .hasFieldOrPropertyWithValue("reason", "User with id 1 was not found");
     }
 
     @Test
     void deleteVendorNotAuthorized() throws UserNotFoundException, NotAuthorizedException {
         when(vendorService.deleteVendor(any(), any())).thenThrow(new NotAuthorizedException());
-        try{
-            vendorController.deleteVendor(1L, 10L);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(ResponseStatusException.class);
-            ResponseStatusException ex = (ResponseStatusException) e;
-            assertThat(ex.getStatus().value()).isEqualTo(403);
-            assertThat(ex.getReason()).isEqualTo("User with id 10 not authorized to delete vendor with id 1");
-        }
+        assertThatThrownBy(() -> vendorController.deleteVendor(1L, 10L))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 403)
+                .hasFieldOrPropertyWithValue("reason", "User with id 10 not authorized to delete vendor with id 1");
     }
 
     @Test
@@ -149,14 +127,10 @@ public class VendorControllerTest {
     @Test
     void getVendorByIdNotFound() throws UserNotFoundException {
         when(vendorService.getVendorById(1L)).thenThrow(new UserNotFoundException(1L));
-        try{
-            vendorController.getVendorById(1L);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(ResponseStatusException.class);
-            ResponseStatusException ex = (ResponseStatusException) e;
-            assertThat(ex.getStatus().value()).isEqualTo(404);
-            assertThat(ex.getReason()).isEqualTo("User with id 1 was not found");
-        }
+        assertThatThrownBy(() -> vendorController.getVendorById(1L))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 404)
+                .hasFieldOrPropertyWithValue("reason", "User with id 1 was not found");
     }
 
     @Test
@@ -165,5 +139,40 @@ public class VendorControllerTest {
         ResponseEntity<List<Vendor>> res = vendorController.getAllVendors();
         assertThat(res.getStatusCodeValue()).isEqualTo(200);
         assertThat(res.getBody()).isEqualTo(List.of(vendor));
+    }
+
+    @Test
+    void updateVendorSuccess() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        doNothing().when(vendorService).updateVendor(any(), any(), any());
+        ResponseEntity<Void> res = vendorController.updateVendor(1L, 1L, vendorRequestModel);
+        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getBody()).isNull();
+    }
+
+    @Test
+    void updateVendorNotFound() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        doThrow(new UserNotFoundException(1L)).when(vendorService).updateVendor(any(), any(), any());
+        assertThatThrownBy(() -> vendorController.updateVendor(1L, 1L, vendorRequestModel))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 404)
+                .hasFieldOrPropertyWithValue("reason", "User with id 1 was not found");
+    }
+
+    @Test
+    void updateVendorUnauthorized() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        doThrow(new NotAuthorizedException()).when(vendorService).updateVendor(any(), any(), any());
+        assertThatThrownBy(() -> vendorController.updateVendor(1L, 9L, vendorRequestModel))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 403)
+                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to update vendor with id 1");
+    }
+
+    @Test
+    void updateVendorMissingBody() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        doThrow(new MissingBodyException()).when(vendorService).updateVendor(any(), any(), any());
+        assertThatThrownBy(() -> vendorController.updateVendor(1L, 1L, null))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 400)
+                .hasFieldOrPropertyWithValue("reason", "Body is missing");
     }
 }

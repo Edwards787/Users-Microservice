@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class VendorValidatorTest {
@@ -48,143 +50,104 @@ public class VendorValidatorTest {
     @Test
     public void testNoAddress() {
         vendorRequestModel.setAddress(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'address' with value 'no content' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'address' with value 'no content' is invalid");
     }
 
     @Test
     public void testNoAddressField() {
         vendorRequestModel.getAddress().setAddress("");
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'address field' with value '' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'address field' with value '' is invalid");
     }
 
     @Test
     public void testNoCity() {
         vendorRequestModel.getAddress().setCity(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'city' with value 'null' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'city' with value 'null' is invalid");
     }
 
     @Test
     public void testNoCountry() {
         vendorRequestModel.getAddress().setCountry("");
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'country' with value '' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'country' with value '' is invalid");
     }
 
     @Test
     public void testNoPostalCode() {
         vendorRequestModel.getAddress().setPostalCode(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'postalCode' with value 'null' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'postalCode' with value 'null' is invalid");
     }
 
     @Test
     public void testNoCoordinates() {
         vendorRequestModel.getAddress().setCoordinates(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'location' with value 'no content' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'location' with value 'no content' is invalid");
     }
 
     @Test
     public void testNoLatitude() {
         vendorRequestModel.getAddress().getCoordinates().setLat(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'latitude' with value 'null' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'latitude' with value 'null' is invalid");
     }
 
     @Test
     public void testNoLongitude() {
         vendorRequestModel.getAddress().getCoordinates().setLong(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'longitude' with value 'null' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'longitude' with value 'null' is invalid");
     }
 
     @Test
     public void testNoOpeningTime() {
         vendorRequestModel.setOpeningTimes(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'opening times' with value 'null' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'opening times' with value 'null' is invalid");
     }
 
     @Test
     public void testNoClosingTime() {
         vendorRequestModel.setClosingTimes("");
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'closing times' with value '' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'closing times' with value '' is invalid");
     }
 
     @Test
     public void testNoEmail() {
         vendorRequestModel.setEmail("");
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'email' with value '' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'email' with value '' is invalid");
     }
 
     @Test
     public void testNoName() {
         vendorRequestModel.setName("");
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'name' with value '' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'name' with value '' is invalid");
     }
 
     @Test
     public void testNoSurname() {
         vendorRequestModel.setSurname(null);
-        try {
-            vendorValidator.validate(vendorRequestModel);
-        } catch (Exception e){
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assertThat(e.getMessage()).isEqualTo("Field 'surname' with value 'null' is invalid");
-        }
+        assertThatThrownBy(() -> vendorValidator.validate(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'surname' with value 'null' is invalid");
     }
 }

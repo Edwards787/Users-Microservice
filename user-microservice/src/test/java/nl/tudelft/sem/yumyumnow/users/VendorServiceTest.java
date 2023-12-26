@@ -3,23 +3,25 @@ package nl.tudelft.sem.yumyumnow.users;
 import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
-import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
+import nl.tudelft.sem.yumyumnow.users.services.AuthorizationService;
 import nl.tudelft.sem.yumyumnow.users.services.VendorService;
 import nl.tudelft.sem.yumyumnow.users.validators.AddressValidator;
 import nl.tudelft.sem.yumyumnow.users.validators.LocationValidator;
 import nl.tudelft.sem.yumyumnow.users.validators.VendorValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class VendorServiceTest {
     private VendorRepository vendorRepository;
-    private UserRepository userRepository;
+    private AuthorizationService authorizationService;
     private VendorBuilder vendorBuilder;
     private VendorService vendorService;
     private Vendor vendor;
@@ -27,10 +29,10 @@ class VendorServiceTest {
     @BeforeEach
     public void setUp() {
         vendorRepository = mock(VendorRepository.class);
-        userRepository = mock(UserRepository.class);
+        authorizationService = mock(AuthorizationService.class);
         vendorBuilder = new VendorBuilder();
         VendorValidator vendorValidator = new VendorValidator(new AddressValidator(new LocationValidator()));
-        vendorService = new VendorService(vendorRepository, vendorBuilder, vendorValidator, userRepository);
+        vendorService = new VendorService(vendorRepository, vendorBuilder, vendorValidator, authorizationService);
 
         Address address = new Address()
                 .address("StreetName 1A")
@@ -65,42 +67,33 @@ class VendorServiceTest {
         when(vendorRepository.findByEmail(vendorRequestModel.getEmail())).thenReturn(Optional.empty());
         when(vendorRepository.saveAndFlush(vendorBuilder.build(new Vendor(), vendorRequestModel))).thenReturn(vendor);
         assertThat(vendorService.createVendor(vendorRequestModel)).isEqualTo(vendor);
+        verify(vendorRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
     void createVendorExistingEmail() {
         when(vendorRepository.findByEmail(vendorRequestModel.getEmail())).thenReturn(Optional.of(vendor));
-        try{
-            vendorService.createVendor(vendorRequestModel);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(EmailAlreadyInUseException.class);
-            assert e instanceof EmailAlreadyInUseException;
-            assertThat(((EmailAlreadyInUseException) e).getEmail()).isEqualTo(vendorRequestModel.getEmail());
-            assertThat(e.getMessage()).isEqualTo("User with email '" + vendorRequestModel.getEmail()  + "' already exists");
-        }
+        assertThatThrownBy(() -> vendorService.createVendor(vendorRequestModel))
+                .isInstanceOf(EmailAlreadyInUseException.class)
+                .hasMessage("User with email '" + vendorRequestModel.getEmail()  + "' already exists")
+                .hasFieldOrPropertyWithValue("email", vendorRequestModel.getEmail());
     }
 
     @Test
     void createVendorMissingBody() {
-        try{
-            vendorService.createVendor(null);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(MissingBodyException.class);
-        }
+        assertThatThrownBy(() -> vendorService.createVendor(null))
+                .isInstanceOf(MissingBodyException.class)
+                .hasMessage("Body is missing");
     }
 
     @Test
     void createVendorInvalidField() {
         when(vendorRepository.findByEmail(vendorRequestModel.getEmail())).thenReturn(Optional.empty());
         vendorRequestModel.setEmail("invalidEmail");
-        try{
-            vendorService.createVendor(vendorRequestModel);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(InvalidFieldException.class);
-            assert e instanceof InvalidFieldException;
-            assertThat(((InvalidFieldException) e).getFieldName()).isEqualTo("email");
-            assertThat(e.getMessage()).isEqualTo("Field 'email' with value 'invalidEmail' is invalid");
-        }
+        assertThatThrownBy(() -> vendorService.createVendor(vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'email' with value 'invalidEmail' is invalid")
+                .hasFieldOrPropertyWithValue("fieldName", "email");
     }
 
     @Test
@@ -112,74 +105,53 @@ class VendorServiceTest {
     @Test
     void getVendorByIdNotFound() {
         when(vendorRepository.findById(1L)).thenReturn(Optional.empty());
-        try{
-            vendorService.getVendorById(1L);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(UserNotFoundException.class);
-            assert e instanceof UserNotFoundException;
-            assertThat(((UserNotFoundException) e).getTargetId()).isEqualTo(1L);
-        }
+        assertThatThrownBy(() -> vendorService.getVendorById(1L))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("User not found")
+                .hasFieldOrPropertyWithValue("targetId", 1L);
     }
 
     @Test
-    void deleteVendorNotFound() {
-        when(vendorRepository.findById(1L)).thenReturn(Optional.empty());
-        try{
-            vendorService.deleteVendor(1L, 1L);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(UserNotFoundException.class);
-            assert e instanceof UserNotFoundException;
-            assertThat(((UserNotFoundException) e).getTargetId()).isEqualTo(1L);
-        }
+    void deleteVendorUnauthorized() throws UserNotFoundException, NotAuthorizedException {
+        doThrow(new NotAuthorizedException()).when(authorizationService).authorize(1L, 2L);
+        assertThatThrownBy(() -> vendorService.deleteVendor(1L, 2L))
+                .isInstanceOf(NotAuthorizedException.class)
+                .hasMessage("Not authorized");
+        verify(vendorRepository, times(0)).deleteById(1L);
     }
 
     @Test
-    void deleteRequesterNotFound() {
-        when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
-        when(userRepository.findById(2L)).thenReturn(Optional.empty());
-        try{
-            vendorService.deleteVendor(1L, 2L);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(UserNotFoundException.class);
-            assert e instanceof UserNotFoundException;
-            assertThat(((UserNotFoundException) e).getTargetId()).isEqualTo(2L);
-        }
-    }
-
-    @Test
-    void deleteVendorSameRequester() throws UserNotFoundException, NotAuthorizedException {
-        when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
-        vendorService.deleteVendor(1L, 1L);
+    void deleteVendor() throws UserNotFoundException, NotAuthorizedException {
+        doNothing().when(authorizationService).authorize(1L, 1L);
+        assertThat(vendorService.deleteVendor(1L, 1L)).isNull();
         verify(vendorRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void deleteVendorDifferentRequesterAuthorized() throws UserNotFoundException, NotAuthorizedException {
-        when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(new User()
-                .id(2L)
-                .role(nl.tudelft.sem.yumyumnow.users.model.User.RoleEnum.ADMIN)));
-        vendorService.deleteVendor(1L, 2L);
-        verify(vendorRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void deleteVendorDifferentRequesterNotAuthorized() {
-        when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(new User()
-                .id(2L)
-                .role(User.RoleEnum.VENDOR)));
-        try{
-            vendorService.deleteVendor(1L, 2L);
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(NotAuthorizedException.class);
-            assertThat(e.getMessage()).isEqualTo("Not authorized"); // custom message not parsed yet
-        }
     }
 
     @Test
     void getAllVendors() {
         vendorService.getAllVendors();
         verify(vendorRepository, times(1)).findAll();
+    }
+
+    @Test
+    void updateVendorValid() throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
+        doNothing().when(authorizationService).authorize(1L, 1L);
+        when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
+        vendorRequestModel.setEmail("newEmail@email.com");
+        assertThat(vendorService.updateVendor(1L, 1L, vendorRequestModel)).isNull();
+        ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
+        verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
+        assertThat(vendorCaptor.getValue().getEmail()).isEqualTo("newEmail@email.com");
+    }
+
+    @Test
+    void updateVendorInvalid() throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
+        doNothing().when(authorizationService).authorize(1L, 1L);
+        when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
+        vendorRequestModel.setEmail("invalidEmail");
+        assertThatThrownBy(() -> vendorService.updateVendor(1L, 1L, vendorRequestModel))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'email' with value 'invalidEmail' is invalid")
+                .hasFieldOrPropertyWithValue("fieldName", "email");
     }
 }
