@@ -1,11 +1,8 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.api.CustomerApi;
-import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.InitialCustomerException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
@@ -65,6 +62,22 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
     }
+
+    @Override
+    public ResponseEntity<Void> updateCustomer(Long userId1, Long userId2, CustomerRequestModel customerRequestModel){
+        try{
+            customerService.updateCustomerById(userId1, userId2, customerRequestModel);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(UserNotFoundException e) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        } catch (NotAuthorizedException e) {
+        throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (InvalidFieldException e) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (MissingBodyException e) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        }
+}
 
 
 }

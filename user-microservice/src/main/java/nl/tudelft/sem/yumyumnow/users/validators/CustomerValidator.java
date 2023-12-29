@@ -9,5 +9,11 @@ import org.springframework.stereotype.Service;
 public class CustomerValidator extends UserValidator{
     public void validate(CustomerRequestModel customerRequestModel) throws MissingBodyException, InvalidFieldException {
         super.validate(customerRequestModel);
+        if(customerRequestModel.getAllergens() == null){
+            throw new InvalidFieldException("allergens", customerRequestModel.getAllergens().toString());
+        }
+        if(customerRequestModel.getHomeAddress() == null){
+            throw new InvalidFieldException("address", customerRequestModel.getHomeAddress().getAddress());
+        }
     }
 }

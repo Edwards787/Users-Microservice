@@ -14,8 +14,10 @@ public class CustomerBuilder extends UserBuilder {
      * @return return the updated Customer object
      */
     public Customer build(Customer customer, CustomerRequestModel customerRequestModel) {
-        super.build(customer, customerRequestModel);
-        customer.setRole(User.RoleEnum.CUSTOMER);
-        return customer;
+        Customer c = (Customer)super.build(customer, customerRequestModel);
+        c.setRole(User.RoleEnum.CUSTOMER);
+        c.setAllergens(customerRequestModel.getAllergens());
+        c.setHomeAddress(customerRequestModel.getHomeAddress());
+        return c;
     }
 }

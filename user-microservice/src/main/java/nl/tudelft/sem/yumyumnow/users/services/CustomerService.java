@@ -1,8 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.exceptions.InitialCustomerException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.builders.CustomerBuilder;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -30,12 +29,16 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final CustomerValidator customerValidator;
+    private final CustomerBuilder customerBuilder;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, UserRepository userRepository, CustomerValidator customerValidator) {
+    public CustomerService(CustomerRepository customerRepository,
+                           UserRepository userRepository, CustomerValidator customerValidator,
+                           CustomerBuilder customerBuilder) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.customerValidator = customerValidator;
+        this.customerBuilder = customerBuilder;
     }
 
     /**
@@ -103,71 +106,38 @@ public class CustomerService {
          * @param id1 ID of the customer you want to update
          * @param id2 ID of the user making the request
          * @param customerRequestModel customer data model that you want to replace the customer denoted by id1 with
-         * @return void response entity
+         * @return void
          *
          */
-//        public ResponseEntity<Void> updateCustomerById (Long id1, Long id2, CustomerRequestModel customerRequestModel){
-//            Customer customer;
-//            //Makes sure we have a correct request model
-//            if (customerRequestModel == null) {
-//                throw new StatusException(HttpStatus.BAD_REQUEST, "No new customer model present");
-//            }
-//            if (customerRequestModel.getAllergens() == null) {
-//                throw new StatusException(HttpStatus.BAD_REQUEST, "No value for allergens");
-//            }
-//            if (customerRequestModel.getName() == null) {
-//                throw new StatusException(HttpStatus.BAD_REQUEST, "No name in request model");
-//            }
-//            if (customerRequestModel.getEmail() == null) {
-//                throw new StatusException(HttpStatus.BAD_REQUEST, "No valid email given");
-//            }
-//            if (customerRequestModel.getSurname() == null) {
-//                throw new StatusException(HttpStatus.BAD_REQUEST, "No valid surname given");
-//            }
-//            if (customerRequestModel.getHomeAddress() == null) {
-//                throw new StatusException(HttpStatus.BAD_REQUEST, "No valid address given");
-//            }
-//
-//            //Make sure that we can find the customer to be updated
-//            try {
-//                customer = getCustomerById(id1);
-//            } catch (StatusException e) {
-//                throw new StatusException(HttpStatus.valueOf(404), "Customer not Found");
-//            }
-//            // In case the customer is updating their own account
-//            if (id1.equals(id2)) {
-//                customer.setAllergens(customerRequestModel.getAllergens());
-//                customer.setEmail(customerRequestModel.getEmail());
-//                customer.setName(customerRequestModel.getName());
-//                customer.setSurname(customerRequestModel.getSurname());
-//                customer.setHomeAddress(customerRequestModel.getHomeAddress());
-//
-//                customerRepository.save(customer);
-//                customerRepository.flush();
-//                return ResponseEntity.ok().build();
-//            }
-//
-//            //ensures that the user sending the request otherwise would be an admin
-//            Optional<User> admin = userRepository.findById(id2);
-//            if (admin.isEmpty()) {
-//                throw new StatusException(HttpStatus.UNAUTHORIZED, "Need to be customer or admin to do this");
-//            }
-//            User usr = admin.get();
-//            if (!usr.getRole().equals(User.RoleEnum.ADMIN)) {
-//                throw new StatusException(HttpStatus.UNAUTHORIZED, "Need to be customer or admin to do this");
-//            }
-//
-//            //Set the right attributes for customer
-//            customer.setAllergens(customerRequestModel.getAllergens());
-//            customer.setEmail(customerRequestModel.getEmail());
-//            customer.setName(customerRequestModel.getName());
-//            customer.setSurname(customerRequestModel.getSurname());
-//            customer.setHomeAddress(customerRequestModel.getHomeAddress());
-//
-//            customerRepository.save(customer);
-//            customerRepository.flush();
-//            return ResponseEntity.ok().build();
-//        }
+        public void updateCustomerById (Long id1, Long id2, CustomerRequestModel customerRequestModel)
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+            Customer customer;
+            //Makes sure we have a correct request model
+            customerValidator.validate(customerRequestModel);
+            //Make sure that we can find the customer to be updated
+            customer = getCustomerById(id1);
 
-    }
+            // In case the customer is updating their own account
+            if (id1.equals(id2)) {
+                Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
+                customerRepository.saveAndFlush(cUpdated);
+                return;
+            }
+
+            //ensures that the user sending the request otherwise would be an admin
+            Optional<User> admin = userRepository.findById(id2);
+            if (admin.isEmpty()) {
+                throw new NotAuthorizedException();
+            }
+            User usr = admin.get();
+            if (!usr.getRole().equals(User.RoleEnum.ADMIN)) {
+                throw new NotAuthorizedException();
+            }
+
+            //Set the right attributes for customer
+            Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
+            customerRepository.saveAndFlush(cUpdated);
+        }
+
+}
 
