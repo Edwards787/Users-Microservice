@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
