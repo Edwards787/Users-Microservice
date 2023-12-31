@@ -639,7 +639,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Courier'
+              $ref: '#/components/schemas/CourierRequestModel'
       responses:
         '200':
           description: Courier updated
@@ -702,9 +702,8 @@ paths:
             application/json:
               schema:
                 items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Rating'
+                  $ref: '#/components/schemas/Rating'
+
         '404':
           description: Courier not found
   /courier/{userId1}/{userId2}/ratings:
@@ -735,7 +734,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Rating'
+              items:
+                $ref: '#/components/schemas/Rating'
       responses:
         '200':
           description: successful operation

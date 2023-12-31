@@ -1,12 +1,11 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
-import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.api.CourierApi;
-import nl.tudelft.sem.yumyumnow.users.model.Courier;
-import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
-import nl.tudelft.sem.yumyumnow.users.model.Rating;
+import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.services.CourierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,124 +22,131 @@ public class CourierController implements CourierApi {
 
     @Override
     public ResponseEntity<Courier> getCourierById(Long userId){
-        ResponseEntity<Courier> responseEntity;
-        try{
-            responseEntity = courierService.getCourierById(userId);
+        Courier courier;
+        try {
+            courier = courierService.getCourierById(userId);
+            return ResponseEntity.ok(courier);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
         }
-        catch (StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
-        }
-        return responseEntity;
     }
 
     @Override
     public ResponseEntity<Courier> createCourier(CourierRequestModel courierRequestModel){
-        ResponseEntity<Courier> responseEntity;
-        try{
-            responseEntity = courierService.createCourier(courierRequestModel);
+        Courier courier;
+        try {
+            courier = courierService.createCourier(courierRequestModel);
+            return ResponseEntity.ok(courier);
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (EmailAlreadyInUseException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
-        }
-        return responseEntity;
     }
 
     @Override
     public ResponseEntity<List<Courier>> getAllCouriers(){
-        ResponseEntity<List<Courier>> responseEntity;
+        List<Courier> couriers;
         try{
-            responseEntity = courierService.getAllCouriers();
+            couriers = courierService.getAllCouriers();
+            return ResponseEntity.ok(couriers);
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Something went wrong");
         }
-        return responseEntity;
     }
 
     @Override
     public ResponseEntity<Void> deleteCourier(Long userId1, Long userId2){
-        ResponseEntity<Void> responseEntity;
         try{
-            responseEntity = courierService.deleteCourier(userId1 , userId2);
+            courierService.deleteCourier(userId1 , userId2);
+            return ResponseEntity.ok().build();
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Courier with ID " + userId1 + " not found");
         }
-        return responseEntity;
+        catch (NotAuthorizedException e){
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+
+        }
     }
 
     @Override
-    public ResponseEntity<Void> updateCourier(Long userId1, Long userId2, Courier courier){
-        ResponseEntity<Void> responseEntity;
+    public ResponseEntity<Void> updateCourier(Long userId1, Long userId2, CourierRequestModel courierRequestModel){
         try{
-            responseEntity = courierService.updateCourier(userId1 , userId2, courier);
+            courierService.updateCourier(userId1 , userId2, courierRequestModel);
+            return ResponseEntity.ok().build();
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
-        return responseEntity;
     }
 
     @Override
     public ResponseEntity<List<Long>> getPastOrderIdsForCourier(Long userId){
-        //TODO : MAKE SURE TO FIX THIS WHEN WE DECIDE HOW TO GET ORDERS
-        ResponseEntity<List<Long>> responseEntity;
+        //TODO : MAKE SURE TO ADD THE MOCKING OF CALLING AN API ENDPOINT
+        //RIGHT NOW I JUST RETURN RANDOM NUMBERS
+        List<Long> pastOrders;
         try{
-            responseEntity = courierService.getPastOrderIdsForCourier(userId);
+            pastOrders = courierService.getPastOrderIdsForCourier(userId);
+            return ResponseEntity.ok().body(pastOrders);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId + " Not found");
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
-        }
-        return responseEntity;
     }
 
     @Override
-    public ResponseEntity<List<List<Rating>>> getRatingsForCourier(Long userId){
-        //TODO : IMPLEMENT THIS WHEN U TALK TO TEAM
-        ResponseEntity<List<List<Rating>>> responseEntity;
+    public ResponseEntity<List<Rating>> getRatingsForCourier(Long userId){
+        List<Rating> ratings;
         try{
-            responseEntity = courierService.getRatingsForCourier(userId);
+            ratings = courierService.getRatingsForCourier(userId);
+            return ResponseEntity.ok().body(ratings);
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId + " Not found");
         }
-        return responseEntity;
     }
 
     @Override
-    public ResponseEntity<Void> updateRatingsForCourier(Long userId1, Long userId2, Rating rating){
-        //TODO : IMPLEMENT THIS WHEN U TALK TO TEAM
-        ResponseEntity<Void> responseEntity;
+    public ResponseEntity<Void> updateRatingsForCourier(Long userId1, Long userId2, List<Rating> ratings){
         try{
-            responseEntity = courierService.updateRatingsForCourier(userId1, userId2, rating);
+            courierService.updateRatingsForCourier(userId1, userId2, ratings);
+            return ResponseEntity.ok().build();
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        catch (UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
+        } catch (NotAuthorizedException e){
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
-        return responseEntity;
+
     }
 
     @Override
     public ResponseEntity<Void> updateCourierActivationStatus(Long userId1, Long userId2, Boolean body){
-        ResponseEntity<Void> responseEntity;
         try{
-            responseEntity = courierService.updateCourierActivationStatus(userId1, userId2, body);
+            courierService.updateCourierActivationStatus(userId1, userId2, body);
+            return ResponseEntity.ok().build();
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         }
-        return responseEntity;
+        catch(NotAuthorizedException e){
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        }
     }
 
     @Override
-    public ResponseEntity<Void> updateCourierBlockStatus(Long userId1, Long userId2, Boolean body){
-        ResponseEntity<Void> responseEntity;
-        try{
-            responseEntity = courierService.updateCourierBlockStatus(userId1, userId2, body);
+    public ResponseEntity<Void> updateCourierBlockStatus(Long userId1, Long userId2, Boolean body) {
+        try {
+            courierService.updateCourierBlockStatus(userId1, userId2, body);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
-        catch(StatusException e){
-            throw new ResponseStatusException(e.getHttpStatus(), e.getMessage());
-        }
-        return responseEntity;
     }
 }

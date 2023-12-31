@@ -1,14 +1,14 @@
 package nl.tudelft.sem.yumyumnow.users.services;
+import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
-import org.springframework.beans.BeanUtils;
-import nl.tudelft.sem.yumyumnow.users.exceptions.StatusException;
+import nl.tudelft.sem.yumyumnow.users.validators.CourierValidator;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,168 +16,161 @@ import java.util.Optional;
 public class CourierService {
     private final CourierRepository courierRepository;
     private final UserRepository userRepository;
+
+    private final CourierBuilder courierBuilder;
+    private final CourierValidator courierValidator;
     @Autowired
-    public CourierService(CourierRepository courierRepository, UserRepository userRepository){
+    public CourierService(CourierRepository courierRepository, UserRepository userRepository, CourierBuilder courierBuilder, CourierValidator courierValidator){
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
+        this.courierBuilder = courierBuilder;
+        this.courierValidator = courierValidator;
     }
 
-    public ResponseEntity<Courier> getCourierById(Long courierId){
+    public Courier getCourierById(Long courierId) throws UserNotFoundException{
         Optional<Courier> courier = courierRepository.findById(courierId);
 
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
-        else return ResponseEntity.status(HttpStatus.OK).body(courier.get());
+        if(courier.isEmpty()) throw new UserNotFoundException();
+        else return courier.get();
     }
 
-    public ResponseEntity<Courier> createCourier(CourierRequestModel courierRequestModel){
-        if(courierRequestModel == null){
-            throw new StatusException(HttpStatus.BAD_REQUEST, "No Courier Request model present");
-        }
-        if (courierRequestModel.getEmail().isEmpty()){
-            throw new StatusException(HttpStatus.BAD_REQUEST, "No Email provided");
-        }
-        if (courierRequestModel.getName().isEmpty()){
-            throw new StatusException(HttpStatus.BAD_REQUEST, "No Name provided");
-        }
-        if(courierRequestModel.getSurname().isEmpty()){
-            throw new StatusException(HttpStatus.BAD_REQUEST, "No Surname provided");
-        }
-        if (courierRequestModel.getIbanNumber().isEmpty()){
-            throw new StatusException(HttpStatus.BAD_REQUEST, "No Iban provided");
-        }
-        if(courierRepository.findByEmail(courierRequestModel.getEmail()).isPresent()){
-            throw new StatusException(HttpStatus.CONFLICT, "Account with Email already exists");
-        }
+    public Courier createCourier(@NotNull CourierRequestModel courierRequestModel) throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
 
-        Courier courier = new Courier();
-        courier.setActivated(false);
-        courier.setName(courierRequestModel.getName());
-        courier.setEmail(courierRequestModel.getEmail());
-        courier.setSurname(courierRequestModel.getSurname());
-        Wallet wallet = new Wallet();
-        wallet.setBalance(0f);
-        wallet.setIban(courierRequestModel.getIbanNumber());
-        courier.setWallet(wallet);
+
+        courierValidator.validate(courierRequestModel);
+        Courier dummy = new Courier();
+        Courier courier = courierBuilder.build(dummy, courierRequestModel);
+
+        if (courierRepository.findByEmail(courierRequestModel.getEmail()).isPresent()) {
+            throw new EmailAlreadyInUseException(courierRequestModel.getEmail());
+        }
 
         Courier response = courierRepository.saveAndFlush(courier);
         courier.setId(response.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(courier);
+        return courier;
 
     }
 
-    public ResponseEntity<List<Courier>> getAllCouriers(){
-        List<Courier> couriers = courierRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(couriers);
+    public List<Courier> getAllCouriers(){
+        return courierRepository.findAll();
     }
 
-    public ResponseEntity<Void> deleteCourier(Long userId1, Long userId2){
-        Optional<Courier> courier = courierRepository.findById(userId1);
+    public void deleteCourier(Long userId1, Long userId2) throws NotAuthorizedException, UserNotFoundException{
 
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
-        Courier to_be_deleted = courier.get();
-        if(to_be_deleted.getId().equals(userId2)){
+        Courier courier;
+        courier = getCourierById(userId1);
+
+        if(courier.getId().equals(userId2)){
             courierRepository.deleteById(userId1);
             courierRepository.flush();
-            return ResponseEntity.ok().build();
+            return;
         }
 
         Optional<User> admin = userRepository.findById(userId2);
         if(admin.isEmpty()){
-            throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+            throw new NotAuthorizedException();
         }
-        //now check if the user requesting is an admin
         User usr = admin.get();
-        if(usr.getRole().equals(User.RoleEnum.ADMIN)){
-            courierRepository.deleteById(userId1);
-            courierRepository.flush();
-            return ResponseEntity.ok().build();
+        if(!usr.getRole().equals(User.RoleEnum.ADMIN)){
+            throw new NotAuthorizedException();
         }
-        throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+        System.out.println(usr);
+        courierRepository.deleteById(userId1);
+        courierRepository.flush();
     }
 
-    public ResponseEntity<Void> updateCourier(Long userId1, Long userId2, Courier courier_update){
-        Optional<Courier> courier = courierRepository.findById(userId1);
+    public void updateCourier(Long userId1, Long userId2, CourierRequestModel courierRequestModel)
+            throws UserNotFoundException, NotAuthorizedException {
 
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
-        Courier to_be_updated = courier.get();
-        if(to_be_updated.getId().equals(userId2)){
-            BeanUtils.copyProperties(courier_update, to_be_updated, "id");
-            courierRepository.save(to_be_updated);
-            courierRepository.flush();
-            return ResponseEntity.ok().build();
+        Courier courierInitial;
+        courierInitial = getCourierById(userId1);
+        if(courierInitial.getId().equals(userId2)){
+            Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
+            courierRepository.saveAndFlush(courier);
+            return;
         }
         Optional<User> admin = userRepository.findById(userId2);
         if(admin.isEmpty()){
-            throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+            throw new NotAuthorizedException();
         }
         User usr = admin.get();
         if(usr.getRole().equals(User.RoleEnum.ADMIN)){
-            BeanUtils.copyProperties(courier_update, to_be_updated, "id");
-            courierRepository.save(to_be_updated);
-            courierRepository.flush();
-            return ResponseEntity.ok().build();
+            Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
+            courierRepository.saveAndFlush(courier);
+            return;
         }
-        throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+        throw new NotAuthorizedException();
     }
 
-    public ResponseEntity<List<Long>> getPastOrderIdsForCourier(Long userId){
+    public List<Long> getPastOrderIdsForCourier(Long userId) throws UserNotFoundException {
         Optional<Courier> courier = courierRepository.findById(userId);
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
+        if(courier.isEmpty()) throw new UserNotFoundException();
         //TODO : MAKE SURE TO IMPLEMENT THIS WHEN WE AGREE ON HOW TO GET THEM
-        else return ResponseEntity.status(HttpStatus.OK).body(List.of(1L, 2L, 3L));
+        else return List.of(1L, 2L, 3L);
     }
 
-    public ResponseEntity<List<List<Rating>>> getRatingsForCourier(Long userId){
-        //TODO : IMPLEMENT THIS WHEN U TALK TO TEAM
+    public List<Rating> getRatingsForCourier(Long userId) throws UserNotFoundException {
+
         Optional<Courier> courier = courierRepository.findById(userId);
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
-        else return ResponseEntity.status(HttpStatus.OK).body(List.of(courier.get().getRatings()));
+        if(courier.isEmpty()) throw new UserNotFoundException();
+        else return courier.get().getRatings();
     }
 
-    public ResponseEntity<Void> updateRatingsForCourier(Long userId1, Long userId2, Rating rating){
-        //TODO : IMPLEMENT THIS WHEN U TALK TO TEAM
-        Optional<Courier> courier = courierRepository.findById(userId1);
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
-        Courier to_update = courier.get();
-        Long userIdRating = rating.getUserId();
-        boolean found = false;
-        throw new StatusException(HttpStatus.NOT_FOUND, "TO BE IMPLEMETNED");
+    public void updateRatingsForCourier(Long userId1, Long userId2, List<Rating> ratings)
+            throws UserNotFoundException, NotAuthorizedException {
+        //TODO TEST
+        Courier courier;
+        courier = getCourierById(userId1);
+
+        Optional<User> admin = userRepository.findById(userId2);
+        if(admin.isEmpty()){
+            throw new NotAuthorizedException();
+        }
+        User usr = admin.get();
+        if(usr.getRole().equals(User.RoleEnum.ADMIN)){
+            courier.setRatings(ratings);
+            courierRepository.saveAndFlush(courier);
+            return;
+        }
+        throw new NotAuthorizedException();
+
     }
 
-    public ResponseEntity<Void> updateCourierActivationStatus(Long userId1, Long userId2, Boolean body){
-        Optional<Courier> courier = courierRepository.findById(userId1);
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
-        Courier to_update = courier.get();
+    public void updateCourierActivationStatus(Long userId1, Long userId2, Boolean body)
+            throws UserNotFoundException, NotAuthorizedException {
+
+        Courier courier;
+        courier = getCourierById(userId1);
 
         Optional<User> user = userRepository.findById(userId2);
-        if(user.isEmpty()) throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+        if(user.isEmpty()) throw new NotAuthorizedException();
+        User admin = user.get();
+        if(admin.getRole().equals(User.RoleEnum.ADMIN)){
+            courier.setActivated(body);
+            courierRepository.saveAndFlush(courier);
+            return;
+        }
+        throw new NotAuthorizedException();
+    }
+
+    public void updateCourierBlockStatus(Long userId1, Long userId2, Boolean body)
+            throws UserNotFoundException, NotAuthorizedException {
+
+        Courier courier;
+        courier = getCourierById(userId1);
+
+        Optional<User> user = userRepository.findById(userId2);
+        if(user.isEmpty()) throw new NotAuthorizedException();
         User admin = user.get();
         if(admin.getRole().equals(User.RoleEnum.ADMIN)){
             //if here then an admin is issuing on an existing Courier
-            to_update.setActivated(body);
-            courierRepository.save(to_update);
-            courierRepository.flush();
-            return ResponseEntity.ok().build();
+            courier.setBlocked(body);
+            courierRepository.saveAndFlush(courier);
+            return;
         }
-        throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
+        throw new NotAuthorizedException();
     }
 
-    public ResponseEntity<Void> updateCourierBlockStatus(Long userId1, Long userId2, Boolean body){
-        Optional<Courier> courier = courierRepository.findById(userId1);
-        if(courier.isEmpty()) throw new StatusException(HttpStatus.NOT_FOUND, "No courier with such id");
-        Courier to_update = courier.get();
 
-        Optional<User> user = userRepository.findById(userId2);
-        if(user.isEmpty()) throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
-        User admin = user.get();
-        if(admin.getRole().equals(User.RoleEnum.ADMIN)){
-            //if here then an admin is issuing on an existing Courier
-            to_update.setBlocked(body);
-            courierRepository.save(to_update);
-            courierRepository.flush();
-            return ResponseEntity.ok().build();
-        }
-        throw new StatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED need to be user or admin");
-    }
 }
