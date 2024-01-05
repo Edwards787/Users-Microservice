@@ -113,6 +113,7 @@ jacocoTestCoverageVerification() {
 checkstyle {
 	toolVersion "8.37"
 	// Link Checkstyle task to customCheckstyle
+	checkstyleTest.enabled = false
 	configFile = file("${projectDir}/../config/checkstyle/checkstyle.xml")
 	ignoreFailures = false // Set to true if you want the build to ignore Checkstyle failures
 	showViolations = true // Set to true to display Checkstyle violations in the console
@@ -129,23 +130,23 @@ checkstyle {
 		excludes = ['**/generated/.*']
 	}
 
-	/* checkstyleTest {
+	checkstyleTest {
 		source = project.sourceSets.test.allJava.filter { file ->
 			// Exclude directories or files associated with generated code
 			!file.path.contains('test') // Example condition, modify as per your generated code path
 		}
 		excludes = ['**/test/.*']
-	} */
+	}
 }
 
 pmd {
 	incrementalAnalysis = true
 	ignoreFailures = true
-
-//	if(System.properties.containsKey("failPMD")){
-//		ignoreFailures = false
-//		maxFailures = 0
-//	}
+    pmdTest.enabled = false
+	if(System.properties.containsKey("failPMD")){
+		ignoreFailures = false
+		maxFailures = 0
+	}
 	// Exclude specific rules or files/directories
 	pmdMain {
 		source = project.sourceSets.main.allJava.filter { file ->
