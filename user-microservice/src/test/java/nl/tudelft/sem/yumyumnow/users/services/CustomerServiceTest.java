@@ -224,6 +224,41 @@ class CustomerServiceTest {
         assertThrows(NotAuthorizedException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
 
     }
+    @Test
+    public void createCustomer() throws MissingBodyException, InvalidFieldException{
+        Long customerId = 1L;
+        CustomerRequestModel customer = new CustomerRequestModel();
+        customer.setName("UpdatedName");
+        customer.setSurname("UpdatedName");
+        customer.setEmail("email");
+        customer.setAllergens(new ArrayList<>());
+        customer.setHomeAddress(new Address());
+        Customer k = new Customer();
+        Customer cust = customerBuilder.build(k, customer);
+        Customer c = customerService.createCustomer(customer);
+        assertEquals(c, cust);
+        verify(customerRepository).saveAndFlush(cust);
+    }
+
+
+    @Test
+    public void createCustomerException(){
+        Long customerId = 1L;
+        CustomerRequestModel customer =null;
+        assertThrows(MissingBodyException.class, () ->{
+           customerService.createCustomer(customer);
+        });
+    }
+
+    @Test
+    public void createCustomerException2(){
+        Long customerId = 1L;
+        CustomerRequestModel customer =new CustomerRequestModel();
+        assertThrows(InvalidFieldException.class, () ->{
+            customerService.createCustomer(customer);
+        });
+
+    }
 
 
 }

@@ -27,7 +27,17 @@ public class CustomerController implements CustomerApi {
 
     @Override
     public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
-        return customerService.createCustomer(customerRequestModel);
+        Customer c;
+        try{
+           c =  customerService.createCustomer(customerRequestModel);
+        }
+        catch (MissingBodyException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        }
+        catch(InvalidFieldException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok(c);
     }
 
     @Override

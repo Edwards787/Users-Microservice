@@ -58,23 +58,14 @@ public class CustomerService {
 
 
 
-        public ResponseEntity<Customer> createCustomer (CustomerRequestModel customerRequestModel){
+        public Customer createCustomer (CustomerRequestModel customerRequestModel)throws MissingBodyException, InvalidFieldException{
             // Little demo
             Customer customer = new Customer();
-
-            customer.setAllergens(customerRequestModel.getAllergens());
-            customer.setBlocked(false);
-            customer.setHomeAddress(customerRequestModel.getHomeAddress());
-            customer.setFavRestaurants(new ArrayList<>());
-            customer.setName(customerRequestModel.getName());
-            customer.setSurname(customerRequestModel.getSurname());
-            customer.setRole(User.RoleEnum.CUSTOMER);
-            customer.setEmail(customerRequestModel.getEmail());
-
+            //Makes sure we have a correct request model
+            customerValidator.validate(customerRequestModel);
+            Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
             customerRepository.saveAndFlush(customer);
-
-            return ResponseEntity.ok(customer);
-
+            return customer;
         }
 
         public ResponseEntity<Void> deleteCustomer (Long userId1, Long userId2)
