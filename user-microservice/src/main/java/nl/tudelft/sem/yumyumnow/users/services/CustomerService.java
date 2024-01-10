@@ -1,6 +1,9 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.builders.Builder;
 import nl.tudelft.sem.yumyumnow.users.builders.CustomerBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.Director;
+import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.model.*;
@@ -30,15 +33,21 @@ public class CustomerService {
     private final UserRepository userRepository;
     private final CustomerValidator customerValidator;
     private final CustomerBuilder customerBuilder;
+    Builder builder = new Ubuilder();
+    Director director = new Director();
+
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
                            UserRepository userRepository, CustomerValidator customerValidator,
-                           CustomerBuilder customerBuilder) {
+                           CustomerBuilder customerBuilder, Builder builder, Director director) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.customerValidator = customerValidator;
         this.customerBuilder = customerBuilder;
+        this.director = director;
+        this.builder = builder;
+
     }
 
     /**
@@ -107,10 +116,11 @@ public class CustomerService {
             customerValidator.validate(customerRequestModel);
             //Make sure that we can find the customer to be updated
             customer = getCustomerById(id1);
+            director.constructCustomer(builder, customerRequestModel);
 
             // In case the customer is updating their own account
             if (id1.equals(id2)) {
-                Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
+                Customer cUpdated = (Customer)builder.build(customer);
                 customerRepository.saveAndFlush(cUpdated);
                 return;
             }
@@ -126,7 +136,8 @@ public class CustomerService {
             }
 
             //Set the right attributes for customer
-            Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
+
+            Customer cUpdated = (Customer)builder.build(customer);
             customerRepository.saveAndFlush(cUpdated);
         }
 

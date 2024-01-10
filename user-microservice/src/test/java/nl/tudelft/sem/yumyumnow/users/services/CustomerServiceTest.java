@@ -2,7 +2,10 @@ package nl.tudelft.sem.yumyumnow.users.services;
 
 
 
+import nl.tudelft.sem.yumyumnow.users.builders.Builder;
 import nl.tudelft.sem.yumyumnow.users.builders.CustomerBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.Director;
+import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
@@ -13,6 +16,7 @@ import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -37,7 +41,9 @@ class CustomerServiceTest {
          customerRepository = mock(CustomerRepository.class);
          userRepository  = mock(UserRepository.class);
          customerBuilder = new CustomerBuilder();
-          customerService = new CustomerService(customerRepository, userRepository, customerValidator, customerBuilder);
+         Builder builder = new Ubuilder();
+         Director director = new Director();
+          customerService = new CustomerService(customerRepository, userRepository, customerValidator, customerBuilder, builder, director);
           Location l = new Location();
           l.lat(12.1f);
           l._long(6.9f);
