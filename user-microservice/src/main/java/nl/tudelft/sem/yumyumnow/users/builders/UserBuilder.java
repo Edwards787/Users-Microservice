@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 public abstract class UserBuilder {
 
     protected User build(User user, UserRequestModel requestModel) {
-        user.email(requestModel.getEmail());
-        user.name(requestModel.getName());
-        user.surname(requestModel.getSurname());
+        user.setEmail(requestModel.getEmail());
+        user.setName(requestModel.getName());
+        user.setSurname(requestModel.getSurname());
         if (user.getBlocked() == null) {
-            user.blocked(false);
+            user.setBlocked(false);
         }
         return user;
     }

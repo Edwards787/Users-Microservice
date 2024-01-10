@@ -7,4 +7,7 @@ public class NotAuthorizedException extends Exception {
     @Serial
     private static final long serialVersionUID = -8652829625080878670L;
 
+    public NotAuthorizedException() {
+        super("Not authorized");
+    }
 }

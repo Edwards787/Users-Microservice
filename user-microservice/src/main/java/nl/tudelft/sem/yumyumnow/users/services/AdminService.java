@@ -124,7 +124,7 @@ public class AdminService {
     public void updateAdminById(Long adminId1, Long adminId2, @NotNull AdminRequestModel adminRequestModel)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
-        Admin adminInitial = getAdminById(adminId1);
+        Admin admin = getAdminById(adminId1);
         try {
             getAdminById(adminId2);
         } catch (UserNotFoundException exception) {
@@ -132,7 +132,7 @@ public class AdminService {
         }
 
         adminValidator.validate(adminRequestModel);
-        Admin admin = adminBuilder.build(adminInitial, adminRequestModel);
+        adminBuilder.build(admin, adminRequestModel);
         adminRepository.saveAndFlush(admin);
     }
 

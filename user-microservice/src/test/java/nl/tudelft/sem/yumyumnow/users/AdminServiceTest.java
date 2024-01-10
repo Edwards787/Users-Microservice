@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
-    private  AdminRepository adminRepository;
+    private AdminRepository adminRepository;
     private AdminValidator adminValidator;
     private AdminBuilder adminBuilder;
     private AdminService adminService;
@@ -42,18 +42,18 @@ public class AdminServiceTest {
         admin1 = new Admin();
         admin1.setSurname("surname 1");
         admin1.setName("name 1");
-        admin1.setEmail("email 1");
+        admin1.setEmail("email1@mail.com");
         admin1.setRole(User.RoleEnum.ADMIN);
         admin1.setId(0L);
 
         admin2 = new Admin();
         admin2.setSurname("surname 2");
         admin2.setName("name 2");
-        admin2.setEmail("email 2");
+        admin2.setEmail("email2@mail.com");
         admin2.setRole(User.RoleEnum.ADMIN);
         admin2.setId(1L);
 
-        adminRequestModel = new AdminRequestModel("email 1", "name 1", "surname 1");
+        adminRequestModel = new AdminRequestModel("email1@mail.com", "name 1", "surname 1");
     }
     @Test
     public void testGetAdminByIdValid() throws UserNotFoundException {
@@ -72,13 +72,13 @@ public class AdminServiceTest {
     @Test
     public void testCreateAdminValid()
         throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
-        when(adminRepository.findByEmail("email 1")).thenReturn(Optional.empty());
+        when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.empty());
         when(adminRepository.saveAndFlush(adminBuilder.build(new Admin(), adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);
     }
     @Test
     public void testCreateAdminInvalid() {
-        when(adminRepository.findByEmail("email 1")).thenReturn(Optional.of(admin1));
+        when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.of(admin1));
         assertThrows(EmailAlreadyInUseException.class, () -> {
             adminService.createAdmin(adminRequestModel);
         });

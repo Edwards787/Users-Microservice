@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.validators;
 
+import java.util.regex.Pattern;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
@@ -17,7 +18,11 @@ public abstract class UserValidator {
         if (userRequestModel.getName() == null || userRequestModel.getName().isEmpty()) {
             throw new InvalidFieldException("name", userRequestModel.getName());
         }
-        if (userRequestModel.getEmail() == null || userRequestModel.getEmail().isEmpty()) {
+        if (userRequestModel.getEmail() == null
+                || userRequestModel.getEmail().isEmpty()
+                || !Pattern.compile("^(.+)@(\\S+)$")
+                    .matcher(userRequestModel.getEmail())
+                    .matches()) {
             throw new InvalidFieldException("email", userRequestModel.getEmail());
         }
         if (userRequestModel.getSurname() == null || userRequestModel.getSurname().isEmpty()) {

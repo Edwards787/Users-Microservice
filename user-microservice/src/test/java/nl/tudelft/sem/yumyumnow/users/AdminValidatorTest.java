@@ -16,7 +16,7 @@ public class AdminValidatorTest {
     @BeforeEach
     public void setUp(){
        adminValidator = new AdminValidator();
-       adminRequestModel = new AdminRequestModel("email", "name", "surname");
+       adminRequestModel = new AdminRequestModel("email@mail.com", "name", "surname");
     }
 
     @Test
