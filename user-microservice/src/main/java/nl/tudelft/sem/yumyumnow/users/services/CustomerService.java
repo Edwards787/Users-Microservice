@@ -1,9 +1,8 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
 import nl.tudelft.sem.yumyumnow.users.builders.Builder;
-import nl.tudelft.sem.yumyumnow.users.builders.CustomerBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.Director;
-import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
+
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.model.*;
@@ -15,12 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ArrayList;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
-import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 
 
@@ -32,19 +28,16 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final CustomerValidator customerValidator;
-    private final CustomerBuilder customerBuilder;
-    Builder builder = new Ubuilder();
-    Director director = new Director();
+    Builder builder;
+    Director director;
 
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
-                           UserRepository userRepository, CustomerValidator customerValidator,
-                           CustomerBuilder customerBuilder, Builder builder, Director director) {
+                           UserRepository userRepository, CustomerValidator customerValidator, Builder builder, Director director) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.customerValidator = customerValidator;
-        this.customerBuilder = customerBuilder;
         this.director = director;
         this.builder = builder;
 
@@ -72,7 +65,8 @@ public class CustomerService {
             Customer customer = new Customer();
             //Makes sure we have a correct request model
             customerValidator.validate(customerRequestModel);
-            Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
+            director.constructCustomer(builder, customerRequestModel);
+            Customer cUpdated = (Customer)builder.build(customer);
             customerRepository.saveAndFlush(customer);
             return customer;
         }

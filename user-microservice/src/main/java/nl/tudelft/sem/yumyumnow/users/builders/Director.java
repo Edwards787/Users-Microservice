@@ -1,5 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.builders;
 
+import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 
@@ -16,4 +18,19 @@ public class Director {
         builder.setAllergens(crm.getAllergens());
         builder.setBlocked(false);
     }
+
+    public void constructCourier(Builder builder, CourierRequestModel crm){
+        builder.setRole(User.RoleEnum.COURIER);
+        builder.setName(crm.getName());
+        builder.setSurname(crm.getSurname());
+        builder.setEmail(crm.getEmail());
+    }
+
+    public void constructAdmin(Builder builder, AdminRequestModel adminRequestModelm){
+        builder.setRole(User.RoleEnum.ADMIN);
+        builder.setName(adminRequestModelm.getName());
+        builder.setSurname(adminRequestModelm.getSurname());
+        builder.setEmail(adminRequestModelm.getEmail());
+    }
+
 }

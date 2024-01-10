@@ -16,6 +16,7 @@ import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.reflections.vfs.Vfs;
 import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,19 +32,19 @@ class CustomerServiceTest {
     CustomerValidator customerValidator;
     CustomerRepository customerRepository;
     UserRepository userRepository;
-    private CustomerBuilder customerBuilder;
     private CustomerService customerService;
     Address adr;
     private List<Long> favs;
+    Builder builder;
+    Director director;
     @BeforeEach
     public void setUp(){
         customerValidator = new CustomerValidator();
          customerRepository = mock(CustomerRepository.class);
          userRepository  = mock(UserRepository.class);
-         customerBuilder = new CustomerBuilder();
-         Builder builder = new Ubuilder();
-         Director director = new Director();
-          customerService = new CustomerService(customerRepository, userRepository, customerValidator, customerBuilder, builder, director);
+          builder = new Ubuilder();
+          director = new Director();
+          customerService = new CustomerService(customerRepository, userRepository, customerValidator, builder, director);
           Location l = new Location();
           l.lat(12.1f);
           l._long(6.9f);
@@ -145,7 +146,8 @@ class CustomerServiceTest {
         customerService.updateCustomerById(customerId, userId, customerUpdate);
 
         verify(customerRepository, times(1)).findById(customerId);
-        verify(customerRepository, times(1)).saveAndFlush(customerBuilder.build(mockCustomer, customerUpdate));
+        director.constructCustomer(builder, customerUpdate);
+        verify(customerRepository, times(1)).saveAndFlush((Customer)builder.build(mockCustomer));
 
         assertEquals("UpdatedName", mockCustomer.getName());
     }
@@ -256,7 +258,8 @@ class CustomerServiceTest {
         customer.setAllergens(new ArrayList<>());
         customer.setHomeAddress(new Address());
         Customer k = new Customer();
-        Customer cust = customerBuilder.build(k, customer);
+        director.constructCustomer(builder, customer);
+        Customer cust = (Customer) builder.build(k);
         Customer c = customerService.createCustomer(customer);
         assertEquals(c, cust);
         verify(customerRepository).saveAndFlush(cust);
