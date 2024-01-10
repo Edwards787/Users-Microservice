@@ -33,7 +33,6 @@ public class AdminService {
      * @param adminRepository admin repository
      * @param adminBuilder    admin builder
      * @param adminValidator  admin validator
-     *
      */
     @Autowired
     public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder,
@@ -43,28 +42,32 @@ public class AdminService {
         this.adminValidator = adminValidator;
     }
 
+    /**
+     * Service that handles the retrieval of an admin by id.
+     *
+     * @return admin object
+     */
     public Admin getAdminById(Long adminId) throws UserNotFoundException {
         Optional<Admin> admin = adminRepository.findById(adminId);
         if (admin.isEmpty()) {
             throw new UserNotFoundException();
-        }
-        else {
+        } else {
             return admin.get();
         }
     }
+
     /**
      * Service that handles the creation of an admin.
      *
-     * @param adminRequestModel         request model of admin with provided attributes
-     *
+     * @param adminRequestModel request model of admin with provided attributes
      * @return created admin object
-     * @throws InvalidFieldException    throw exception in case invalid fields were provided
-     * @throws MissingBodyException      throw exception in case a body was missing
+     * @throws InvalidFieldException      throw exception in case invalid fields were provided
+     * @throws MissingBodyException       throw exception in case a body was missing
      * @throws EmailAlreadyInUseException throw exception in case email was not provided
      */
 
     public Admin createAdmin(@NotNull AdminRequestModel adminRequestModel)
-        throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
+            throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
 
         adminValidator.validate(adminRequestModel);
         Admin dummy = new Admin();
@@ -81,13 +84,23 @@ public class AdminService {
 
     }
 
+    /**
+     * Service that handles the deletion of an admin by id.
+     *
+     * @param adminId1 id of admin to be deleted
+     * @param adminId2 id of admin that is requesting the deletion
+     * @throws InitialAdminException throw exception in case initial admin is being deleted
+     * @throws NotAuthorizedException throw exception in case the user with adminId2 is not an admin
+     * @throws UserNotFoundException  throw exception in case the user with adminId1 was not found
+     */
     public void deleteAdminById(Long adminId1, Long adminId2)
-        throws InitialAdminException, NotAuthorizedException, UserNotFoundException {
-        if (adminId1 == 0)
+            throws InitialAdminException, NotAuthorizedException, UserNotFoundException {
+        if (adminId1 == 0) {
             throw new InitialAdminException();
-        try{
-            Admin admin = getAdminById(adminId2);
-        } catch (UserNotFoundException exception){
+        }
+        try {
+            getAdminById(adminId2);
+        } catch (UserNotFoundException exception) {
             throw new NotAuthorizedException();
         }
         try {
@@ -97,13 +110,24 @@ public class AdminService {
         }
     }
 
+    /**
+     * Service that handles the update of an admin by id.
+     *
+     * @param adminId1           id of admin to be updated
+     * @param adminId2           id of admin that is requesting the update
+     * @param adminRequestModel  request model of admin with provided attributes
+     * @throws UserNotFoundException  throw exception in case the user with adminId1 was not found
+     * @throws NotAuthorizedException throw exception in case the user with adminId2 is not an admin
+     * @throws MissingBodyException   throw exception in case a body was missing
+     * @throws InvalidFieldException  throw exception in case invalid fields were provided
+     */
     public void updateAdminById(Long adminId1, Long adminId2, @NotNull AdminRequestModel adminRequestModel)
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         Admin adminInitial = getAdminById(adminId1);
         try {
             getAdminById(adminId2);
-        } catch (UserNotFoundException exception){
+        } catch (UserNotFoundException exception) {
             throw new NotAuthorizedException();
         }
 
@@ -112,6 +136,7 @@ public class AdminService {
         adminRepository.saveAndFlush(admin);
     }
 
+    @SuppressWarnings("unused")
     public ResponseEntity<List<Long>> getRefundRequests(Long userId) {
         return ResponseEntity.ok(new ArrayList<>());
 

@@ -1,22 +1,31 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import java.util.ArrayList;
+import nl.tudelft.sem.yumyumnow.users.model.Customer;
+import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
-import nl.tudelft.sem.yumyumnow.users.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+
     @Autowired
-    public CustomerService(CustomerRepository customerRepository){
+    public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
+    /**
+     * Creates a customer.
+     *
+     * @param customerRequestModel the customer request model
+     * @return the response entity
+     */
     public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
         // Little demo
         Customer customer = new Customer();

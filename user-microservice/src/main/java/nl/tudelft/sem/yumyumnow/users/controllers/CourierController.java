@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class CourierController {
     private final CourierService courierService;
+
     @Autowired
     public CourierController(CourierService courierService) {
         this.courierService = courierService;

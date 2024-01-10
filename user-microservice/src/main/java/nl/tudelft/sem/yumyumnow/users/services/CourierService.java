@@ -9,7 +9,7 @@ public class CourierService {
     private final CourierRepository courierRepository;
 
     @Autowired
-    public CourierService(CourierRepository courierRepository){
+    public CourierService(CourierRepository courierRepository) {
         this.courierRepository = courierRepository;
     }
 }

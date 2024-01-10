@@ -6,7 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdminValidator extends UserValidator{
+public class AdminValidator extends UserValidator {
     public void validate(AdminRequestModel adminRequestModel) throws MissingBodyException, InvalidFieldException {
         super.validate(adminRequestModel);
     }
