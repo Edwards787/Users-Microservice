@@ -44,7 +44,6 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	implementation 'org.springframework.boot:spring-boot-starter'
@@ -85,6 +84,13 @@ jacoco {
 	toolVersion = "0.8.7" // Use the desired version of JaCoCo
 }
 
+jacocoTestReport{
+	reports {
+		xml.enabled(true)
+		html.enabled(true)
+	}
+}
+
 jacocoTestCoverageVerification() {
 	dependsOn test
 	violationRules {
@@ -111,6 +117,10 @@ checkstyle {
 	ignoreFailures = false // Set to true if you want the build to ignore Checkstyle failures
 	showViolations = true // Set to true to display Checkstyle violations in the console
 
+	if(System.properties.containsKey("failCheckstyle")){
+		maxWarnings = 0
+	}
+
 	checkstyleMain {
 		source = project.sourceSets.main.allJava.filter { file ->
 			// Exclude directories or files associated with generated code
@@ -131,6 +141,11 @@ checkstyle {
 pmd {
 	incrementalAnalysis = true
 	ignoreFailures = true
+
+	if(System.properties.containsKey("failPMD")){
+		ignoreFailures = false
+		maxFailures = 0
+	}
 	// Exclude specific rules or files/directories
 	pmdMain {
 		source = project.sourceSets.main.allJava.filter { file ->

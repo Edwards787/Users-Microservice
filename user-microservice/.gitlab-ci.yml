@@ -38,9 +38,13 @@ checkStyle-user-microservice:
     - gradle_build
   stage: staticAnalysis
   script:
-    gradle user-microservice:checkstyleMain user-microservice:checkStyleTest
+    gradle user-microservice:checkstyleMain user-microservice:checkStyleTest -DfailCheckstyle
+  after_script:
+    - bash config/gitlab-ci/parse-checkstyle.sh -c user-microservice/build/reports/checkstyle/main.xml -p user-microservice/build/reports/pmd/main.xml gl-code-quality-report.json
   allow_failure: true
-
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 
 PMD-user-microservice:
   extends:
@@ -51,7 +55,7 @@ PMD-user-microservice:
     - gradle_build
   stage: staticAnalysis
   script:
-    gradle user-microservice:pmdMain
+    gradle user-microservice:pmdMain -DfailPMD
   allow_failure: true
 
 test-user-microservice:
@@ -66,4 +70,22 @@ test-user-microservice:
     - gradle user-microservice:test user-microservice:jacocoTestReport
     - cat user-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
+  artifacts:
+    when: always
+    reports:
+      junit: user-microservice/build/test-results/test/**/TEST-*.xml
+    paths:
+      - user-microservice/build/reports/jacoco/test/jacocoTestReport.xml
 
+coverage-report:
+  stage: test
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.9
+  script:
+    # convert report from jacoco to cobertura, using relative project path
+    - python /opt/cover2cover.py $PWD/user-microservice/build/reports/jacoco/test/jacocoTestReport.xml $PWD/user-microservice/src/main/java/ > cobertura.xml
+  needs: ["test-user-microservice"]
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura.xml
