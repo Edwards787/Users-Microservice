@@ -452,6 +452,4 @@ class CustomerServiceTest {
         assertThrows(NotAuthorizedException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs));
 
     }
-
-
 }

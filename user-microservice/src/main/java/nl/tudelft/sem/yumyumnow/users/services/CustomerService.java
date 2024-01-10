@@ -59,7 +59,6 @@ public class CustomerService {
     }
 
 
-
         public Customer createCustomer (CustomerRequestModel customerRequestModel)throws MissingBodyException, InvalidFieldException{
             // Little demo
             Customer customer = new Customer();
@@ -69,31 +68,23 @@ public class CustomerService {
             Customer cUpdated = (Customer)builder.build(customer);
             customerRepository.saveAndFlush(customer);
             return customer;
-        }
+    }
 
-        public ResponseEntity<Void> deleteCustomer (Long userId1, Long userId2)
-        throws InitialCustomerException, NotAuthorizedException, UserNotFoundException {
-            if (userId1 == 0)
-                throw new InitialCustomerException();
-            try {
-                Customer customer = getCustomerById(userId2);
-            } catch (UserNotFoundException exception) {
-                throw new NotAuthorizedException();
-            }
-            try {
-                customerRepository.deleteById(userId1);
-            } catch (EmptyResultDataAccessException e) {
-                throw new UserNotFoundException();
-            }
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Void> deleteCustomer (Long userId1, Long userId2)
+    throws NotAuthorizedException, UserNotFoundException {
+        try {
+            customerRepository.deleteById(userId1);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UserNotFoundException();
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-        public ResponseEntity<List<Customer>> getAllCustomers () {
-            List<Customer> customers = customerRepository.findAll();
-            return ResponseEntity.status(HttpStatus.OK).body(customers);
-        }
-
-        /**
+    public ResponseEntity<List<Customer>> getAllCustomers () {
+        List<Customer> customers = customerRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(customers);
+    }
+     /**
          * Updates the given customer with the given customer request model. In case of invalid authorization, request model
          * or customerId, an exception is thrown.
          *
@@ -114,7 +105,7 @@ public class CustomerService {
 
             // In case the customer is updating their own account
             if (id1.equals(id2)) {
-                Customer cUpdated = (Customer)builder.build(customer);
+                Customer cUpdated = (Customer) builder.build(customer);
                 customerRepository.saveAndFlush(cUpdated);
                 return;
             }
@@ -131,7 +122,7 @@ public class CustomerService {
 
             //Set the right attributes for customer
 
-            Customer cUpdated = (Customer)builder.build(customer);
+            Customer cUpdated = (Customer) builder.build(customer);
             customerRepository.saveAndFlush(cUpdated);
         }
 
