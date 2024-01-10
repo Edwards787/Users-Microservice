@@ -257,8 +257,5 @@ class CustomerServiceTest {
         assertThrows(InvalidFieldException.class, () ->{
             customerService.createCustomer(customer);
         });
-
     }
-
-
 }

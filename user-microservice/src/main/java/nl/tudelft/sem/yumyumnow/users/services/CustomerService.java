@@ -57,78 +57,75 @@ public class CustomerService {
     }
 
 
+    public Customer createCustomer (CustomerRequestModel customerRequestModel)throws MissingBodyException, InvalidFieldException{
+        // Little demo
+        Customer customer = new Customer();
+        //Makes sure we have a correct request model
+        customerValidator.validate(customerRequestModel);
+        Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
 
-        public Customer createCustomer (CustomerRequestModel customerRequestModel)throws MissingBodyException, InvalidFieldException{
-            // Little demo
-            Customer customer = new Customer();
-            //Makes sure we have a correct request model
-            customerValidator.validate(customerRequestModel);
-            Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
-            customerRepository.saveAndFlush(customer);
-            return customer;
+        customer = customerRepository.saveAndFlush(cUpdated);
+        return customer;
+    }
+
+    public ResponseEntity<Void> deleteCustomer (Long userId1, Long userId2)
+    throws NotAuthorizedException, UserNotFoundException {
+        try {
+            Customer customer = getCustomerById(userId2);
+        } catch (UserNotFoundException exception) {
+            throw new NotAuthorizedException();
         }
-
-        public ResponseEntity<Void> deleteCustomer (Long userId1, Long userId2)
-        throws InitialCustomerException, NotAuthorizedException, UserNotFoundException {
-            if (userId1 == 0)
-                throw new InitialCustomerException();
-            try {
-                Customer customer = getCustomerById(userId2);
-            } catch (UserNotFoundException exception) {
-                throw new NotAuthorizedException();
-            }
-            try {
-                customerRepository.deleteById(userId1);
-            } catch (EmptyResultDataAccessException e) {
-                throw new UserNotFoundException();
-            }
-            return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            customerRepository.deleteById(userId1);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UserNotFoundException();
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-        public ResponseEntity<List<Customer>> getAllCustomers () {
-            List<Customer> customers = customerRepository.findAll();
-            return ResponseEntity.status(HttpStatus.OK).body(customers);
-        }
+    public ResponseEntity<List<Customer>> getAllCustomers () {
+        List<Customer> customers = customerRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(customers);
+    }
 
-        /**
-         * Updates the given customer with the given customer request model. In case of invalid authorization, request model
-         * or customerId, an exception is thrown.
-         *
-         * @param id1 ID of the customer you want to update
-         * @param id2 ID of the user making the request
-         * @param customerRequestModel customer data model that you want to replace the customer denoted by id1 with
-         * @return void
-         *
-         */
-        public void updateCustomerById (Long id1, Long id2, CustomerRequestModel customerRequestModel)
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
-            Customer customer;
-            //Makes sure we have a correct request model
-            customerValidator.validate(customerRequestModel);
-            //Make sure that we can find the customer to be updated
-            customer = getCustomerById(id1);
+    /**
+     * Updates the given customer with the given customer request model. In case of invalid authorization, request model
+     * or customerId, an exception is thrown.
+     *
+     * @param id1 ID of the customer you want to update
+     * @param id2 ID of the user making the request
+     * @param customerRequestModel customer data model that you want to replace the customer denoted by id1 with
+     * @return void
+     *
+     */
+    public void updateCustomerById (Long id1, Long id2, CustomerRequestModel customerRequestModel)
+    throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        Customer customer;
+        //Makes sure we have a correct request model
+        customerValidator.validate(customerRequestModel);
+        //Make sure that we can find the customer to be updated
+        customer = getCustomerById(id1);
 
-            // In case the customer is updating their own account
-            if (id1.equals(id2)) {
-                Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
-                customerRepository.saveAndFlush(cUpdated);
-                return;
-            }
-
-            //ensures that the user sending the request otherwise would be an admin
-            Optional<User> admin = userRepository.findById(id2);
-            if (admin.isEmpty()) {
-                throw new NotAuthorizedException();
-            }
-            User usr = admin.get();
-            if (!usr.getRole().equals(User.RoleEnum.ADMIN)) {
-                throw new NotAuthorizedException();
-            }
-
-            //Set the right attributes for customer
+        // In case the customer is updating their own account
+        if (id1.equals(id2)) {
             Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
             customerRepository.saveAndFlush(cUpdated);
+            return;
         }
 
+        //ensures that the user sending the request otherwise would be an admin
+        Optional<User> admin = userRepository.findById(id2);
+        if (admin.isEmpty()) {
+            throw new NotAuthorizedException();
+        }
+        User usr = admin.get();
+        if (!usr.getRole().equals(User.RoleEnum.ADMIN)) {
+            throw new NotAuthorizedException();
+        }
+
+        //Set the right attributes for customer
+        Customer cUpdated = customerBuilder.build(customer, customerRequestModel);
+        customerRepository.saveAndFlush(cUpdated);
+    }
 }
 

@@ -47,8 +47,6 @@ public class CustomerController implements CustomerApi {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
-        } catch (InitialCustomerException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Initial customer can not be deleted");
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
