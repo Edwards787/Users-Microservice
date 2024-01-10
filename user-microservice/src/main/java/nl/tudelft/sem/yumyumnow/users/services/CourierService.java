@@ -35,8 +35,6 @@ public class CourierService {
     }
 
     public Courier createCourier(@NotNull CourierRequestModel courierRequestModel) throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
-
-
         courierValidator.validate(courierRequestModel);
         Courier dummy = new Courier();
         Courier courier = courierBuilder.build(dummy, courierRequestModel);
@@ -49,7 +47,6 @@ public class CourierService {
         courier.setId(response.getId());
 
         return courier;
-
     }
 
     public List<Courier> getAllCouriers(){
@@ -57,7 +54,6 @@ public class CourierService {
     }
 
     public void deleteCourier(Long userId1, Long userId2) throws NotAuthorizedException, UserNotFoundException{
-
         Courier courier;
         courier = getCourierById(userId1);
 
@@ -100,7 +96,7 @@ public class CourierService {
             courierRepository.saveAndFlush(courier);
             return;
         }
-        throw new NotAuthorizedException();
+        else throw new NotAuthorizedException();
     }
 
     public List<Long> getPastOrderIdsForCourier(Long userId) throws UserNotFoundException {
@@ -133,8 +129,7 @@ public class CourierService {
             courierRepository.saveAndFlush(courier);
             return;
         }
-        throw new NotAuthorizedException();
-
+        else throw new NotAuthorizedException();
     }
 
     public void updateCourierActivationStatus(Long userId1, Long userId2, Boolean body)
@@ -151,7 +146,7 @@ public class CourierService {
             courierRepository.saveAndFlush(courier);
             return;
         }
-        throw new NotAuthorizedException();
+        else throw new NotAuthorizedException();
     }
 
     public void updateCourierBlockStatus(Long userId1, Long userId2, Boolean body)
@@ -169,8 +164,6 @@ public class CourierService {
             courierRepository.saveAndFlush(courier);
             return;
         }
-        throw new NotAuthorizedException();
+        else throw new NotAuthorizedException();
     }
-
-
 }

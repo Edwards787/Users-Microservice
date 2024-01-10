@@ -261,5 +261,4 @@ public class CourierControllerTest {
         // Act and Assert
         assertThrows(ResponseStatusException.class, () -> courierController.updateCourierBlockStatus(userId1, userId2, blockStatus));
     }
-
 }

@@ -27,7 +27,7 @@ public class CourierController implements CourierApi {
             courier = courierService.getCourierById(userId);
             return ResponseEntity.ok(courier);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Courier not found");
         }
     }
 
@@ -121,7 +121,6 @@ public class CourierController implements CourierApi {
         } catch (NotAuthorizedException e){
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
-
     }
 
     @Override
