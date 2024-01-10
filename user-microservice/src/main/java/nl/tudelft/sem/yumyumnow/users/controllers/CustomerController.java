@@ -89,5 +89,45 @@ public class CustomerController implements CustomerApi {
         }
 }
 
+    @Override
+    public ResponseEntity<Location> getCurrentLocationForUser(Long id){
+        try{
+        Location l = customerService.getLocation(id);
+        return new ResponseEntity<>(l, HttpStatus.OK);
+        }
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Long>> getFavouriteVendorIdsForCustomer(Long id){
+        try{
+            List<Long> favs = customerService.getFavoriteRestaurants(id);
+            return new ResponseEntity<>(favs, HttpStatus.OK);
+        }
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> updateFavouriteVendorIdsForCustomer(Long userId1, Long userId2, List<Long> favorites){
+        try{
+            customerService.updateFavRestaurants(userId1, userId2, favorites);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        }
+    }
+
+
+
 
 }
