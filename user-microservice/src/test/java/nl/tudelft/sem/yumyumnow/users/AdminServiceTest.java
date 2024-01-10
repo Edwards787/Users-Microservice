@@ -1,6 +1,9 @@
 package nl.tudelft.sem.yumyumnow.users;
 
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.Builder;
+import nl.tudelft.sem.yumyumnow.users.builders.Director;
+import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
@@ -33,8 +36,9 @@ public class AdminServiceTest {
         adminRepository = mock(AdminRepository.class);
         adminValidator = new AdminValidator();
         adminBuilder = new AdminBuilder();
-
-        adminService = new AdminService(adminRepository, adminBuilder, adminValidator);
+        Builder builder = new Ubuilder();
+        Director director = new Director();
+        adminService = new AdminService(adminRepository, adminValidator, builder, director);
     }
 
     @BeforeEach

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.Builder;
+import nl.tudelft.sem.yumyumnow.users.builders.Director;
 import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
@@ -25,22 +27,26 @@ public class AdminService {
 
     private final AdminRepository adminRepository;
     private final AdminValidator adminValidator;
-    private final AdminBuilder adminBuilder;
+    Builder builder;
+    Director director;
+
 
     /**
      * Constructor.
      *
      * @param adminRepository admin repository
-     * @param adminBuilder    admin builder
      * @param adminValidator  admin validator
+     * @param builder builder for admins
+     * @param director director for admin creation
      *
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder,
-                        AdminValidator adminValidator) {
+    public AdminService(AdminRepository adminRepository,
+                        AdminValidator adminValidator, Builder builder, Director director) {
         this.adminRepository = adminRepository;
-        this.adminBuilder = adminBuilder;
         this.adminValidator = adminValidator;
+        this.builder = builder;
+        this.director = director;
     }
 
     public Admin getAdminById(Long adminId) throws UserNotFoundException {
@@ -68,7 +74,8 @@ public class AdminService {
 
         adminValidator.validate(adminRequestModel);
         Admin dummy = new Admin();
-        Admin admin = adminBuilder.build(dummy, adminRequestModel);
+        director.constructAdmin(builder, adminRequestModel);
+        Admin admin = (Admin)builder.build(dummy);
 
         if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(adminRequestModel.getEmail());
@@ -108,7 +115,8 @@ public class AdminService {
         }
 
         adminValidator.validate(adminRequestModel);
-        Admin admin = adminBuilder.build(adminInitial, adminRequestModel);
+        director.constructAdmin(builder, adminRequestModel);
+        Admin admin = (Admin) builder.build(adminInitial);
         adminRepository.saveAndFlush(admin);
     }
 
