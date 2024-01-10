@@ -14,6 +14,7 @@ import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CustomerServiceTest {
-    private final CustomerRepository customerRepository = mock(CustomerRepository.class);
-    private final UserRepository userRepository  = mock(UserRepository.class);
-    private final CustomerValidator customerValidator= new CustomerValidator();
-
-    private final CustomerBuilder customerBuilder = new CustomerBuilder();
-    private final CustomerService customerService = new CustomerService(customerRepository, userRepository, customerValidator, customerBuilder);
-
+    CustomerValidator customerValidator;
+    CustomerRepository customerRepository;
+    UserRepository userRepository;
+    private CustomerBuilder customerBuilder;
+    private CustomerService customerService;
+    @BeforeEach
+    public void setUp(){
+        customerValidator = new CustomerValidator();
+         customerRepository = mock(CustomerRepository.class);
+         userRepository  = mock(UserRepository.class);
+         customerBuilder = new CustomerBuilder();
+          customerService = new CustomerService(customerRepository, userRepository, customerValidator, customerBuilder);
+    }
     @Test
     public void testGetCustomerByIDExisting() throws UserNotFoundException {
         Long customerId = 1L;
