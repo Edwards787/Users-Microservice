@@ -8,17 +8,21 @@ import org.springframework.stereotype.Service;
 @Service
 public abstract class UserValidator {
     protected void validate(UserRequestModel userRequestModel)
-        throws MissingBodyException, InvalidFieldException {
+            throws MissingBodyException, InvalidFieldException {
 
-        if (userRequestModel == null)
+        if (userRequestModel == null) {
             throw new MissingBodyException();
+        }
 
-        if (userRequestModel.getName() == null || userRequestModel.getName().equals(""))
+        if (userRequestModel.getName() == null || userRequestModel.getName().isEmpty()) {
             throw new InvalidFieldException("name", userRequestModel.getName());
-        if (userRequestModel.getEmail() == null || userRequestModel.getEmail().equals(""))
+        }
+        if (userRequestModel.getEmail() == null || userRequestModel.getEmail().isEmpty()) {
             throw new InvalidFieldException("email", userRequestModel.getEmail());
-        if (userRequestModel.getSurname() == null || userRequestModel.getSurname().equals(""))
+        }
+        if (userRequestModel.getSurname() == null || userRequestModel.getSurname().isEmpty()) {
             throw new InvalidFieldException("surname", userRequestModel.getSurname());
+        }
 
     }
 }

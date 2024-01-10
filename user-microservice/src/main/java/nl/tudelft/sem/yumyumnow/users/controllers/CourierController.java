@@ -15,6 +15,7 @@ import java.util.List;
 @Controller
 public class CourierController implements CourierApi {
     private final CourierService courierService;
+
     @Autowired
     public CourierController(CourierService courierService) {
         this.courierService = courierService;

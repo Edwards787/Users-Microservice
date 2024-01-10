@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 public class UserController implements UserApi {
 
     private final UserService userService;
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;

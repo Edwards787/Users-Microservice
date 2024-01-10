@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 public class VendorService {
 
     private final VendorRepository vendorRepository;
+
     @Autowired
-    public VendorService(VendorRepository vendorRepository){
+    public VendorService(VendorRepository vendorRepository) {
         this.vendorRepository = vendorRepository;
     }
 }
