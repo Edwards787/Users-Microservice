@@ -20,5 +20,4 @@ public class CourierBuilder extends UserBuilder {
         courier.setRole(User.RoleEnum.COURIER);
         return courier;
     }
-
 }
