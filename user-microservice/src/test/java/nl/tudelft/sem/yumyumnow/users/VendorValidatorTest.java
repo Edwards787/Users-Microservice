@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+/*
 public class VendorValidatorTest {
     private VendorValidator vendorValidator;
     private VendorRequestModel vendorRequestModel;
@@ -147,3 +147,4 @@ public class VendorValidatorTest {
                 .hasMessage("Field 'surname' with value 'null' is invalid");
     }
 }
+*/

@@ -27,9 +27,6 @@ class VendorServiceTest {
         vendorRepository = mock(VendorRepository.class);
         vendorBuilder = new VendorBuilder();
         userRepository = mock(UserRepository.class);
-
-        VendorValidator
-            vendorValidator = new VendorValidator(new AddressValidator(new LocationValidator()));
         vendorService = new VendorService(vendorRepository, userRepository, vendorBuilder);
 
         Address address = new Address()
