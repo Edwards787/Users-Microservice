@@ -7,6 +7,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.ValidationObject;
 
 public class AddressValidator extends BaseValidator{
     @Override

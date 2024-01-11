@@ -5,6 +5,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.ValidationObject;
 
 public class AllergenValidator extends BaseValidator{
     @Override
