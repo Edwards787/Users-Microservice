@@ -16,7 +16,7 @@ public abstract class BaseValidator implements Validator{
     protected boolean checkNext(ValidationObject validationObject)
         throws NotAuthorizedException, InvalidFieldException, MissingBodyException,
         UserNotFoundException {
-        if (validationObject == null){
+        if (next == null){
             return true;
         }
         return next.handle(validationObject);

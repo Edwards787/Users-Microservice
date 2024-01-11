@@ -48,13 +48,17 @@ public class AdminControllerTest {
     }
 
     @Test
-    public void testAdminCreateValid() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+    public void testAdminCreateValid()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
         when(adminService.createAdmin(adminRequestModel)).thenReturn(admin1);
         assertThat(adminController.createAdmin(adminRequestModel)).isEqualTo(ResponseEntity.ok(admin1));
     }
 
     @Test
-    public void testAdminCreateNullRequest() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+    public void testAdminCreateNullRequest()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
         when(adminService.createAdmin(null)).thenThrow(new MissingBodyException());
         assertThrows(ResponseStatusException.class, () -> {
             adminController.createAdmin(null);
@@ -68,7 +72,9 @@ public class AdminControllerTest {
     }
 
     @Test
-    public void testAdminCreateNoEmail() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+    public void testAdminCreateNoEmail()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
         adminRequestModel.setEmail("");
         when(adminService.createAdmin(adminRequestModel)).thenThrow(new InvalidFieldException("email", ""));
         assertThrows(ResponseStatusException.class, () -> {
@@ -83,7 +89,9 @@ public class AdminControllerTest {
     }
 
     @Test
-    public void testAdminCreateEmailExists() throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException {
+    public void testAdminCreateEmailExists()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
         when(adminService.createAdmin(adminRequestModel)).thenThrow(new EmailAlreadyInUseException("email"));
         assertThrows(ResponseStatusException.class, () -> {
             adminController.createAdmin(adminRequestModel);

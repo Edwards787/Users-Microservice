@@ -10,24 +10,29 @@ public class Validators {
     }
 
     public Validator simpleWithoutAuthorization(){
+        RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
         SurnameValidator surnameValidator = new SurnameValidator();
         EmailValidator emailValidator = new EmailValidator();
 
+        requestModelValidator.setNext(nameValidator);
         nameValidator.setNext(surnameValidator);
         surnameValidator.setNext(emailValidator);
         emailValidator.setNext(null);
 
-        return nameValidator;
+        return requestModelValidator;
     }
 
     public Validator simpleWithAuthorization(){
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
+        RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
         SurnameValidator surnameValidator = new SurnameValidator();
         EmailValidator emailValidator = new EmailValidator();
 
-        authorizationValidator.setNext(nameValidator);
+
+        authorizationValidator.setNext(requestModelValidator);
+        requestModelValidator.setNext(nameValidator);
         nameValidator.setNext(surnameValidator);
         surnameValidator.setNext(emailValidator);
         emailValidator.setNext(null);

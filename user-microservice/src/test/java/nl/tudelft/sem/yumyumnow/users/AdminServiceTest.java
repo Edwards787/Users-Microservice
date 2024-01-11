@@ -37,8 +37,8 @@ public class AdminServiceTest {
         userRepository = mock(UserRepository.class);
         validators = new Validators();
         adminBuilder = new AdminBuilder();
-
         adminService = new AdminService(adminRepository, userRepository, adminBuilder, validators);
+
     }
 
     @BeforeEach
@@ -58,6 +58,11 @@ public class AdminServiceTest {
         admin2.setId(1L);
 
         adminRequestModel = new AdminRequestModel("email1@mail.com", "name 1", "surname 1");
+
+        when(userRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
     }
     @Test
     public void testGetAdminByIdValid() throws UserNotFoundException {
@@ -163,8 +168,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdMissingBody()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         assertThrows(MissingBodyException.class, () -> {
             adminService.updateAdminById(0L, 1L, null);
             verify(adminRepository).findById(1L);
@@ -175,8 +178,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNoEmail()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setEmail("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -196,8 +197,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNullEmail()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setEmail(null);
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -217,8 +216,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNoName()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setName("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -238,8 +235,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNullName()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setName(null);
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -259,8 +254,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNoSurname()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setSurname("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -280,8 +273,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNullSurname()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setSurname(null);
 
         assertThrows(InvalidFieldException.class, () -> {
