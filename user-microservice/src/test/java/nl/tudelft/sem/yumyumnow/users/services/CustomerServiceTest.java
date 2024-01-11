@@ -13,7 +13,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
+import nl.tudelft.sem.yumyumnow.users.validators.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.reflections.vfs.Vfs;
@@ -44,7 +44,17 @@ class CustomerServiceTest {
          userRepository  = mock(UserRepository.class);
           builder = new Ubuilder();
           director = new Director();
-          customerService = new CustomerService(customerRepository, userRepository, customerValidator, builder, director);
+          Validator v1 = new EmailValidator();
+        Validator v2 = new NameValidator();
+        Validator v3 = new SurnameValidator();
+        Validator v4 = new AllergenValidator();
+        Validator v5 = new AddressValidator();
+        v4.setNext(v5);
+        v3.setNext(v4);
+        v2.setNext(v3);
+        v1.setNext(v2);
+
+        customerService = new CustomerService(customerRepository, userRepository, customerValidator, builder, director, v1);
           Location l = new Location();
           l.lat(12.1f);
           l._long(6.9f);

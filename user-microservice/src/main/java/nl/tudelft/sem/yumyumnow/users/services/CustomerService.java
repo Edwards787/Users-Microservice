@@ -8,6 +8,7 @@ import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
+import nl.tudelft.sem.yumyumnow.users.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -30,16 +31,18 @@ public class CustomerService {
     private final CustomerValidator customerValidator;
     Builder builder;
     Director director;
+    Validator validator;
 
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
-                           UserRepository userRepository, CustomerValidator customerValidator, Builder builder, Director director) {
+                           UserRepository userRepository, CustomerValidator customerValidator, Builder builder, Director director, Validator validator) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.customerValidator = customerValidator;
         this.director = director;
         this.builder = builder;
+        this.validator = validator;
 
     }
 
