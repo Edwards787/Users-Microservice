@@ -1,15 +1,10 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.AddressValidator;
-import nl.tudelft.sem.yumyumnow.users.AuthorizationService;
-import nl.tudelft.sem.yumyumnow.users.LocationValidator;
-import nl.tudelft.sem.yumyumnow.users.VendorValidator;
 import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
-import nl.tudelft.sem.yumyumnow.users.services.VendorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

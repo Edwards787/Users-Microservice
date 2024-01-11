@@ -8,8 +8,6 @@ import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
-import nl.tudelft.sem.yumyumnow.users.AuthorizationService;
-import nl.tudelft.sem.yumyumnow.users.VendorValidator;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
