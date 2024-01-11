@@ -16,8 +16,8 @@ public class IBANValidator extends BaseValidator{
         CourierRequestModel courierRequestModel = (CourierRequestModel) validationObject.getUserRequestModel();
         String iban = courierRequestModel.getIbanNumber();
 
-        if (iban == null || iban.equals("")){
-            throw new InvalidFieldException("iban", iban);
+        if (iban == null){
+            throw new InvalidFieldException("iban", "null");
         }
 
         return super.checkNext(validationObject);

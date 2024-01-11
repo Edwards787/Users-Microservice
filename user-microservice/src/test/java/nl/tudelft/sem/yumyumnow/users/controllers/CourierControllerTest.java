@@ -58,7 +58,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testCreateCourierSuccess() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+    public void testCreateCourierSuccess()
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         // Arrange
         CourierRequestModel courierRequestModel = new CourierRequestModel("test@example.com", "John", "Doe");
         Courier mockCourier = new Courier();
@@ -73,7 +75,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testCreateCourierMissingBody() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+    public void testCreateCourierMissingBody()
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         // Arrange
         CourierRequestModel courierRequestModel = new CourierRequestModel(null, "John", "Doe");
         when(courierService.createCourier(courierRequestModel)).thenThrow(new MissingBodyException());
@@ -83,7 +87,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testCreateCourierInvalidField() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+    public void testCreateCourierInvalidField()
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         // Arrange
         CourierRequestModel courierRequestModel = new CourierRequestModel("test@example.com", null, "Doe");
         when(courierService.createCourier(courierRequestModel)).thenThrow(new InvalidFieldException("name", null));
@@ -159,7 +165,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testUpdateRatingsForCourierSuccess() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateRatingsForCourierSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -185,7 +193,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testUpdateCourierActivationStatusSuccess() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierActivationStatusSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -200,7 +210,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testUpdateCourierActivationStatusUserNotFound() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierActivationStatusUserNotFound()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -212,7 +224,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testUpdateCourierActivationStatusNotAuthorized() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierActivationStatusNotAuthorized()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -224,7 +238,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testUpdateCourierBlockStatusSuccess() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierBlockStatusSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -239,7 +255,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testUpdateCourierBlockStatusUserNotFound() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierBlockStatusUserNotFound()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -251,7 +269,9 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testUpdateCourierBlockStatusNotAuthorized() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierBlockStatusNotAuthorized()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;

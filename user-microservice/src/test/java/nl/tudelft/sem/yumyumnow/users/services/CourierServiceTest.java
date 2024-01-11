@@ -50,7 +50,9 @@ public class CourierServiceTest {
 
 
     @Test
-    public void testCreateCourierSuccess() throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
+    public void testCreateCourierSuccess()
+        throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         // Arrange
         CourierRequestModel requestModel = TestDataInitializer.createValidCourierRequestModel();
         Courier dummyCourier = TestDataInitializer.createDummyCourier();
@@ -140,16 +142,18 @@ public class CourierServiceTest {
         Courier courier = new Courier();
         courier.setId(userId1);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.empty());
 
         // Assert
-        assertThrows(NotAuthorizedException.class, () -> courierService.deleteCourier(userId1, userId2));
-
+        assertThrows(UserNotFoundException.class, () -> courierService.deleteCourier(userId1, userId2));
     }
 
     @Test
-    public void testDeleteCourierAuthorizedAdminSuccess() throws NotAuthorizedException, UserNotFoundException {
+    public void testDeleteCourierAuthorizedAdminSuccess()
+        throws NotAuthorizedException, UserNotFoundException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -161,6 +165,7 @@ public class CourierServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.ADMIN);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
 
@@ -173,7 +178,9 @@ public class CourierServiceTest {
     }
 
     @Test
-    public void testDeleteCourierAuthorizedUser() throws NotAuthorizedException, UserNotFoundException {
+    public void testDeleteCourierAuthorizedUser()
+        throws NotAuthorizedException, UserNotFoundException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 1L;
@@ -181,7 +188,7 @@ public class CourierServiceTest {
         Courier courier = new Courier();
         courier.setId(userId1);
 
-
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
 
         // Act
@@ -205,6 +212,7 @@ public class CourierServiceTest {
         nonAdminUser.setId(userId2);
         nonAdminUser.setRole(User.RoleEnum.COURIER);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
 
@@ -239,15 +247,18 @@ public class CourierServiceTest {
         when(userRepository.findById(userId2)).thenReturn(Optional.empty());
         when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
-        assertThrows(NotAuthorizedException.class, () -> courierService.updateCourier(userId1, userId2, courierRequestModel));
+        assertThrows(UserNotFoundException.class, () -> courierService.updateCourier(userId1, userId2, courierRequestModel));
     }
 
     @Test
-    public void testUpdateCourierAuthorizedAdminSuccess() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierAuthorizedAdminSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
         CourierRequestModel courierRequestModel = new CourierRequestModel("newemail@gmail.com", "NewName", "NewSurname");
+        courierRequestModel.setIbanNumber("");
 
         Courier courierInitial = new Courier();
         courierInitial.setId(userId1);
@@ -256,6 +267,7 @@ public class CourierServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.ADMIN);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
         when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
@@ -269,16 +281,19 @@ public class CourierServiceTest {
     }
 
     @Test
-    public void testUpdateCourierAuthorizedUser() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierAuthorizedUser()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 1L;
         CourierRequestModel courierRequestModel = new CourierRequestModel("newemail@gmail.com", "NewName", "NewSurname");
+        courierRequestModel.setIbanNumber("valid");
 
         Courier courierInitial = new Courier();
         courierInitial.setId(userId1);
 
-
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
@@ -304,6 +319,7 @@ public class CourierServiceTest {
         nonAdminUser.setId(userId2);
         nonAdminUser.setRole(User.RoleEnum.COURIER);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
 
@@ -386,15 +402,17 @@ public class CourierServiceTest {
         Courier courier = new Courier();
         courier.setId(userId1);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.empty());
 
-        assertThrows(NotAuthorizedException.class, () -> courierService.updateRatingsForCourier(userId1, userId2, ratings));
-
+        assertThrows(UserNotFoundException.class, () -> courierService.updateRatingsForCourier(userId1, userId2, ratings));
     }
 
     @Test
-    public void testUpdateRatingsForCourierAuthorizedAdminSuccess() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateRatingsForCourierAuthorizedAdminSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -418,6 +436,7 @@ public class CourierServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.ADMIN);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
 
@@ -454,6 +473,7 @@ public class CourierServiceTest {
         nonAdminUser.setId(userId2);
         nonAdminUser.setRole(User.RoleEnum.COURIER);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
 
@@ -487,7 +507,9 @@ public class CourierServiceTest {
     }
 
     @Test
-    public void testUpdateCourierActivationStatusSuccess() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierActivationStatusSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -500,6 +522,7 @@ public class CourierServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.ADMIN);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
 
@@ -525,6 +548,7 @@ public class CourierServiceTest {
         nonAdminUser.setId(userId2);
         nonAdminUser.setRole(User.RoleEnum.COURIER);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
 
@@ -547,7 +571,9 @@ public class CourierServiceTest {
     }
 
     @Test
-    public void testUpdateCourierBlockStatusSuccess() throws UserNotFoundException, NotAuthorizedException {
+    public void testUpdateCourierBlockStatusSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         // Arrange
         Long userId1 = 1L;
         Long userId2 = 2L;
@@ -560,6 +586,7 @@ public class CourierServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.ADMIN);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
 
@@ -585,6 +612,7 @@ public class CourierServiceTest {
         nonAdminUser.setId(userId2);
         nonAdminUser.setRole(User.RoleEnum.COURIER);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courier));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
 

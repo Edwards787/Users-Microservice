@@ -107,56 +107,48 @@ public class CourierService {
     }
 
     public void updateRatingsForCourier(Long userId1, Long userId2, List<Rating> ratings)
-            throws UserNotFoundException, NotAuthorizedException {
-        //TODO TEST
-        Courier courier;
-        courier = getCourierById(userId1);
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
 
-        Optional<User> admin = userRepository.findById(userId2);
-        if(admin.isEmpty()){
-            throw new NotAuthorizedException();
-        }
-        User usr = admin.get();
-        if(usr.getRole().equals(User.RoleEnum.ADMIN)){
-            courier.setRatings(ratings);
-            courierRepository.saveAndFlush(courier);
-            return;
-        }
-        else throw new NotAuthorizedException();
+        if (ratings == null) throw new InvalidFieldException("ratings", "null");
+
+        Validator validator = validators.userAuthorization();
+        validator.handle(new ValidationObject(null,
+            new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+
+        Courier courier = getCourierById(userId1);
+        courier.setRatings(ratings);
+        courierRepository.saveAndFlush(courier);
     }
 
+
     public void updateCourierActivationStatus(Long userId1, Long userId2, Boolean body)
-            throws UserNotFoundException, NotAuthorizedException {
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
 
-        Courier courier;
-        courier = getCourierById(userId1);
+        if (body == null) throw new InvalidFieldException("activation status", "null");
 
-        Optional<User> user = userRepository.findById(userId2);
-        if(user.isEmpty()) throw new NotAuthorizedException();
-        User admin = user.get();
-        if(admin.getRole().equals(User.RoleEnum.ADMIN)){
-            courier.setActivated(body);
-            courierRepository.saveAndFlush(courier);
-            return;
-        }
-        else throw new NotAuthorizedException();
+        Validator validator = validators.userAuthorization();
+        validator.handle(new ValidationObject(null,
+            new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+
+        Courier courier = getCourierById(userId1);
+        courier.setActivated(body);
+        courierRepository.saveAndFlush(courier);
     }
 
     public void updateCourierBlockStatus(Long userId1, Long userId2, Boolean body)
-            throws UserNotFoundException, NotAuthorizedException {
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
 
-        Courier courier;
-        courier = getCourierById(userId1);
+        if (body == null) throw new InvalidFieldException("block status", "null");
 
-        Optional<User> user = userRepository.findById(userId2);
-        if(user.isEmpty()) throw new NotAuthorizedException();
-        User admin = user.get();
-        if(admin.getRole().equals(User.RoleEnum.ADMIN)){
-            //if here then an admin is issuing on an existing Courier
-            courier.setBlocked(body);
-            courierRepository.saveAndFlush(courier);
-            return;
-        }
-        else throw new NotAuthorizedException();
+        Validator validator = validators.userAuthorization();
+        validator.handle(new ValidationObject(null,
+            new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+
+        Courier courier = getCourierById(userId1);
+        courier.setBlocked(body);
+        courierRepository.saveAndFlush(courier);
     }
 }
