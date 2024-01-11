@@ -10,7 +10,6 @@ import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
 import nl.tudelft.sem.yumyumnow.users.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -47,7 +46,7 @@ public class CustomerService {
     }
 
     /**
-     * Returns a customer model given an Id.
+     * Returns a customer model given an ID.
      *
      * @param userId customerId of the customer you want
      * @return Customer model corresponding to the given customer id
@@ -73,15 +72,30 @@ public class CustomerService {
             return customer;
     }
 
-    public ResponseEntity<Void> deleteCustomer (Long userId1, Long userId2)
-    throws NotAuthorizedException, UserNotFoundException {
-        try {
-            customerRepository.deleteById(userId1);
-        } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException();
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public void deleteCustomer (Long userId1, Long userId2)
+            throws NotAuthorizedException, UserNotFoundException{
+    Customer customer;
+    customer = getCustomerById(userId1);
+
+        if(customer.getId().equals(userId2)){
+        customerRepository.deleteById(userId1);
+        customerRepository.flush();
+        return;
     }
+
+    Optional<User> admin = userRepository.findById(userId2);
+        if(admin.isEmpty()){
+        throw new NotAuthorizedException();
+    }
+    User user = admin.get();
+        if(!user.getRole().equals(User.RoleEnum.ADMIN)){
+        throw new NotAuthorizedException();
+    }
+        System.out.println(user);
+        customerRepository.deleteById(userId1);
+        customerRepository.flush();
+
+}
 
     public ResponseEntity<List<Customer>> getAllCustomers () {
         List<Customer> customers = customerRepository.findAll();
@@ -94,7 +108,7 @@ public class CustomerService {
          * @param id1 ID of the customer you want to update
          * @param id2 ID of the user making the request
          * @param customerRequestModel customer data model that you want to replace the customer denoted by id1 with
-         * @return void
+         * return void
          *
          */
         public void updateCustomerById (Long id1, Long id2, CustomerRequestModel customerRequestModel)
@@ -174,9 +188,6 @@ public class CustomerService {
             customer.setFavRestaurants(favRestaurants);
             customerRepository.saveAndFlush(customer);
         }
-
-
-
 
 }
 

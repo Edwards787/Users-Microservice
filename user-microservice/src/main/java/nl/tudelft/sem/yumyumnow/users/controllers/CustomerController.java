@@ -43,13 +43,18 @@ public class CustomerController implements CustomerApi {
     @Override
     public ResponseEntity<Void> deleteCustomer(Long userId1, Long userId2) {
         try{
-            customerService.deleteCustomer(userId1, userId2);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
-        } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            customerService.deleteCustomer(userId1 , userId2);
+            return ResponseEntity.ok().build();
         }
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Customer with ID " + userId1 + " not found");
+        }
+        catch (NotAuthorizedException e){
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+
+        }
+
     }
 
     @Override
