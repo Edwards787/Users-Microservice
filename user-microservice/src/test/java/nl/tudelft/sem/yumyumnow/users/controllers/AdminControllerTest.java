@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.controllers.AdminController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
@@ -125,7 +125,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteAdminValid()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doNothing().when(adminService).deleteAdminById(1L, 2L);
         assertThat(adminController.deleteAdmin(1L, 2L)).isEqualTo(new ResponseEntity<>(HttpStatus.OK));
         verify(adminService).deleteAdminById(1L, 2L);
@@ -133,7 +134,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteInitialAdmin()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doThrow(new InitialAdminException()).when(adminService).deleteAdminById(0L, 1L);
 
         assertThrows(ResponseStatusException.class, () -> {
@@ -149,7 +151,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteAdminUnauthorized()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doThrow(new NotAuthorizedException()).when(adminService).deleteAdminById(2L, 0L);
         assertThrows(ResponseStatusException.class, () -> {
             adminController.deleteAdmin(2L, 0L);
@@ -164,7 +167,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteAdminNotFound()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doThrow(new UserNotFoundException()).when(adminService).deleteAdminById(3L, 0L);
         assertThrows(ResponseStatusException.class, () -> {
             adminController.deleteAdmin(3L, 0L);

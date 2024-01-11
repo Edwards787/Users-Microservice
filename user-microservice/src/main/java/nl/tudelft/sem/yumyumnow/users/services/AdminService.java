@@ -14,15 +14,11 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
-import nl.tudelft.sem.yumyumnow.users.AdminValidator;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.EmailValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.NameValidator;
 import nl.tudelft.sem.yumyumnow.users.validation.Objects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.Objects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.Objects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.Objects.Validators;
-import nl.tudelft.sem.yumyumnow.users.validation.SurnameValidator;
 import nl.tudelft.sem.yumyumnow.users.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -108,15 +104,15 @@ public class AdminService {
      * @throws UserNotFoundException  throw exception in case the user with adminId1 was not found
      */
     public void deleteAdminById(Long adminId1, Long adminId2)
-            throws InitialAdminException, NotAuthorizedException, UserNotFoundException {
+        throws InitialAdminException, NotAuthorizedException, UserNotFoundException,
+        MissingBodyException, InvalidFieldException {
         if (adminId1 == 0) {
             throw new InitialAdminException();
         }
-        try {
-            getAdminById(adminId2);
-        } catch (UserNotFoundException exception) {
-            throw new NotAuthorizedException();
-        }
+
+        Validator validator = validators.simpleAuthorization();
+        validator.handle(new ValidationObject(null, new AuthorizationObject(adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
+
         try {
             adminRepository.deleteById(adminId1);
         } catch (EmptyResultDataAccessException e) {
@@ -139,16 +135,10 @@ public class AdminService {
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
         Admin admin = getAdminById(adminId1);
-        try {
-            getAdminById(adminId2);
-        } catch (UserNotFoundException exception) {
-            throw new NotAuthorizedException();
-        }
 
         Validator validator = validators.simpleWithAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, new AuthorizationObject
             (adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
-
         adminBuilder.build(admin, adminRequestModel);
         adminRepository.saveAndFlush(admin);
     }

@@ -40,4 +40,10 @@ public class Validators {
         return authorizationValidator;
     }
 
+    public Validator simpleAuthorization(){
+        AuthorizationValidator authorizationValidator = new AuthorizationValidator();
+        authorizationValidator.setNext(null);
+        return authorizationValidator;
+    }
+
 }

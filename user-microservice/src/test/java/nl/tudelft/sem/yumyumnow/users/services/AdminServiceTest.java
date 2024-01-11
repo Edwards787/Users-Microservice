@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.services;
 
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
@@ -38,7 +38,6 @@ public class AdminServiceTest {
         validators = new Validators();
         adminBuilder = new AdminBuilder();
         adminService = new AdminService(adminRepository, userRepository, adminBuilder, validators);
-
     }
 
     @BeforeEach
@@ -95,13 +94,14 @@ public class AdminServiceTest {
     }
     @Test
     public void testDeleteAdminByIdValid()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
         doNothing().when(adminRepository).deleteById(1L);
 
         adminService.deleteAdminById(1L, 0L);
 
-        verify(adminRepository).findById(0L);
+        verify(userRepository, times(2)).findById(0L);
         verify(adminRepository).deleteById(1L);
     }
     @Test
@@ -115,7 +115,11 @@ public class AdminServiceTest {
     }
     @Test
     public void testDeleteAdminByIdNotAuthorized(){
-        when(adminRepository.findById(1L)).thenReturn(Optional.empty());
+        User user3 = new User();
+        user3.setRole(User.RoleEnum.VENDOR);
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user3));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user3));
         assertThrows(NotAuthorizedException.class, () -> {
             adminService.deleteAdminById(2L, 1L);
             verify(adminRepository).findById(1L);
@@ -156,10 +160,14 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdUnauthorized()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
+        User user = new User();
+        user.setRole(User.RoleEnum.VENDOR);
+
         when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+
         assertThrows(NotAuthorizedException.class, () -> {
-            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            adminService.updateAdminById(0L, 2L, adminRequestModel);
             verify(adminRepository).findById(1L);
             verify(adminRepository).findById(0L);
         });

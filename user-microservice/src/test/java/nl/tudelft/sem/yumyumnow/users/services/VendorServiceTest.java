@@ -1,5 +1,9 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.AddressValidator;
+import nl.tudelft.sem.yumyumnow.users.AuthorizationService;
+import nl.tudelft.sem.yumyumnow.users.LocationValidator;
+import nl.tudelft.sem.yumyumnow.users.VendorValidator;
 import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
@@ -27,7 +31,8 @@ class VendorServiceTest {
         vendorRepository = mock(VendorRepository.class);
         authorizationService = mock(AuthorizationService.class);
         vendorBuilder = new VendorBuilder();
-        VendorValidator vendorValidator = new VendorValidator(new AddressValidator(new LocationValidator()));
+        VendorValidator
+            vendorValidator = new VendorValidator(new AddressValidator(new LocationValidator()));
         vendorService = new VendorService(vendorRepository, vendorBuilder, vendorValidator, authorizationService);
 
         Address address = new Address()
