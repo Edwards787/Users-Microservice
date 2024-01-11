@@ -5,7 +5,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validation.Objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 
 public class OpeningTimesValidator extends BaseValidator{
     @Override

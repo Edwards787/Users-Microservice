@@ -21,10 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class CourierControllerTest {
-
     private CourierService courierService;
     private CourierController courierController;
-
 
     @BeforeEach
     public void setUp(){

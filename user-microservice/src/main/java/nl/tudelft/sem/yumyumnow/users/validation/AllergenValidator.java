@@ -6,7 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validation.Objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 
 public class AllergenValidator extends BaseValidator{
     @Override
