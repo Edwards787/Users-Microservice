@@ -6,7 +6,10 @@ import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.Validators;
+import nl.tudelft.sem.yumyumnow.users.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,7 +23,8 @@ import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
     private AdminRepository adminRepository;
-    private AdminValidator adminValidator;
+    private UserRepository userRepository;
+    private Validators validators;
     private AdminBuilder adminBuilder;
     private AdminService adminService;
     private Admin admin1;
@@ -30,10 +34,11 @@ public class AdminServiceTest {
     @BeforeEach
     public void setUp(){
         adminRepository = mock(AdminRepository.class);
-        adminValidator = new AdminValidator();
+        userRepository = mock(UserRepository.class);
+        validators = new Validators();
         adminBuilder = new AdminBuilder();
 
-        adminService = new AdminService(adminRepository, adminBuilder, adminValidator);
+        adminService = new AdminService(adminRepository, userRepository, adminBuilder, validators);
     }
 
     @BeforeEach
@@ -70,7 +75,8 @@ public class AdminServiceTest {
 
     @Test
     public void testCreateAdminValid()
-        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.empty());
         when(adminRepository.saveAndFlush(adminBuilder.build(new Admin(), adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);

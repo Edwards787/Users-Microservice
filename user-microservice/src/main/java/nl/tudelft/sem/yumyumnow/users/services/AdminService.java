@@ -15,6 +15,15 @@ import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.AdminValidator;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
+import nl.tudelft.sem.yumyumnow.users.validation.EmailValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.NameValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.Accessibility;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.Validators;
+import nl.tudelft.sem.yumyumnow.users.validation.SurnameValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +33,8 @@ import org.springframework.stereotype.Service;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final AdminValidator adminValidator;
+    private final UserRepository userRepository;
+    private final Validators validators;
     private final AdminBuilder adminBuilder;
 
     /**
@@ -32,14 +42,15 @@ public class AdminService {
      *
      * @param adminRepository admin repository
      * @param adminBuilder    admin builder
-     * @param adminValidator  admin validator
+     * @param validators  object that creates a certain configuration of validators
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder,
-                        AdminValidator adminValidator) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder,
+                        Validators validators) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
-        this.adminValidator = adminValidator;
+        this.validators = validators;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -67,9 +78,12 @@ public class AdminService {
      */
 
     public Admin createAdmin(@NotNull AdminRequestModel adminRequestModel)
-            throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
+        throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
 
-        adminValidator.validate(adminRequestModel);
+        Validator validator = validators.simpleWithoutAuthorization();
+        validator.handle(new ValidationObject(adminRequestModel, null));
+
         Admin dummy = new Admin();
         Admin admin = adminBuilder.build(dummy, adminRequestModel);
 
@@ -131,7 +145,10 @@ public class AdminService {
             throw new NotAuthorizedException();
         }
 
-        adminValidator.validate(adminRequestModel);
+        Validator validator = validators.simpleWithAuthorization();
+        validator.handle(new ValidationObject(adminRequestModel, new AuthorizationObject
+            (adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
+
         adminBuilder.build(admin, adminRequestModel);
         adminRepository.saveAndFlush(admin);
     }

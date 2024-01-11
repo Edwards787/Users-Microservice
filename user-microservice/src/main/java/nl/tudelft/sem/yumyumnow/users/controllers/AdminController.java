@@ -46,6 +46,8 @@ public class AdminController implements AdminApi {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (EmailAlreadyInUseException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (UserNotFoundException | NotAuthorizedException e) {
+            throw new RuntimeException(e);
         }
     }
 

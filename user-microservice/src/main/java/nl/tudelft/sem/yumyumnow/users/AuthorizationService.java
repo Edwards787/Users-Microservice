@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation;
+package nl.tudelft.sem.yumyumnow.users;
 
 import java.util.Optional;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;

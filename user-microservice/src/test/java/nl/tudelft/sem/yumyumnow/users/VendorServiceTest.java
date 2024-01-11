@@ -4,7 +4,6 @@ import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.AuthorizationService;
 import nl.tudelft.sem.yumyumnow.users.services.VendorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
