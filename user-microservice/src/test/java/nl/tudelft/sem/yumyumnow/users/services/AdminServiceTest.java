@@ -37,7 +37,7 @@ public class AdminServiceTest {
         userRepository = mock(UserRepository.class);
         validators = new Validators();
         adminBuilder = new AdminBuilder();
-        adminService = new AdminService(adminRepository, userRepository, adminBuilder, validators);
+        adminService = new AdminService(adminRepository, userRepository, adminBuilder);
     }
 
     @BeforeEach

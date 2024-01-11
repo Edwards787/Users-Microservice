@@ -5,6 +5,11 @@ import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.CourierValidator;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.Accessibility;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.Validators;
+import nl.tudelft.sem.yumyumnow.users.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +23,13 @@ public class CourierService {
     private final UserRepository userRepository;
 
     private final CourierBuilder courierBuilder;
-    private final CourierValidator courierValidator;
+    private final Validators validators;
     @Autowired
-    public CourierService(CourierRepository courierRepository, UserRepository userRepository, CourierBuilder courierBuilder, CourierValidator courierValidator){
+    public CourierService(CourierRepository courierRepository, UserRepository userRepository, CourierBuilder courierBuilder){
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
         this.courierBuilder = courierBuilder;
-        this.courierValidator = courierValidator;
+        this.validators = new Validators();
     }
 
     public Courier getCourierById(Long courierId) throws UserNotFoundException{
@@ -34,8 +39,13 @@ public class CourierService {
         else return courier.get();
     }
 
-    public Courier createCourier(@NotNull CourierRequestModel courierRequestModel) throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
-        courierValidator.validate(courierRequestModel);
+    public Courier createCourier(@NotNull CourierRequestModel courierRequestModel)
+        throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
+
+        Validator validator = validators.courierWithoutAuthorization();
+        validator.handle(new ValidationObject(courierRequestModel, null));
+
         Courier dummy = new Courier();
         Courier courier = courierBuilder.build(dummy, courierRequestModel);
 
@@ -53,50 +63,34 @@ public class CourierService {
         return courierRepository.findAll();
     }
 
-    public void deleteCourier(Long userId1, Long userId2) throws NotAuthorizedException, UserNotFoundException{
+    public void deleteCourier(Long userId1, Long userId2)
+        throws NotAuthorizedException, UserNotFoundException, MissingBodyException,
+        InvalidFieldException {
         Courier courier;
         courier = getCourierById(userId1);
 
-        if(courier.getId().equals(userId2)){
-            courierRepository.deleteById(userId1);
-            courierRepository.flush();
-            return;
-        }
+        Validator validator = validators.userAuthorization();
+        validator.handle(new ValidationObject(null,
+            new AuthorizationObject(userId1, userId2, userRepository,
+                Accessibility.USER_AND_ADMIN)));
 
-        Optional<User> admin = userRepository.findById(userId2);
-        if(admin.isEmpty()){
-            throw new NotAuthorizedException();
-        }
-        User usr = admin.get();
-        if(!usr.getRole().equals(User.RoleEnum.ADMIN)){
-            throw new NotAuthorizedException();
-        }
-        System.out.println(usr);
         courierRepository.deleteById(userId1);
         courierRepository.flush();
     }
 
     public void updateCourier(Long userId1, Long userId2, CourierRequestModel courierRequestModel)
-            throws UserNotFoundException, NotAuthorizedException {
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        Validator validator = validators.courierWithAuthorization();
+        validator.handle(new ValidationObject(courierRequestModel,
+            new AuthorizationObject(userId1, userId2, userRepository,
+                Accessibility.USER_AND_ADMIN)));
 
         Courier courierInitial;
         courierInitial = getCourierById(userId1);
-        if(courierInitial.getId().equals(userId2)){
-            Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
-            courierRepository.saveAndFlush(courier);
-            return;
-        }
-        Optional<User> admin = userRepository.findById(userId2);
-        if(admin.isEmpty()){
-            throw new NotAuthorizedException();
-        }
-        User usr = admin.get();
-        if(usr.getRole().equals(User.RoleEnum.ADMIN)){
-            Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
-            courierRepository.saveAndFlush(courier);
-            return;
-        }
-        else throw new NotAuthorizedException();
+        Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
+        courierRepository.saveAndFlush(courier);
     }
 
     public List<Long> getPastOrderIdsForCourier(Long userId) throws UserNotFoundException {
@@ -107,7 +101,6 @@ public class CourierService {
     }
 
     public List<Rating> getRatingsForCourier(Long userId) throws UserNotFoundException {
-
         Optional<Courier> courier = courierRepository.findById(userId);
         if(courier.isEmpty()) throw new UserNotFoundException();
         else return courier.get().getRatings();

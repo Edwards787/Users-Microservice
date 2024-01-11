@@ -38,14 +38,12 @@ public class AdminService {
      *
      * @param adminRepository admin repository
      * @param adminBuilder    admin builder
-     * @param validators  object that creates a certain configuration of validators
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder,
-                        Validators validators) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
-        this.validators = validators;
+        this.validators = new Validators();
         this.userRepository = userRepository;
     }
 
@@ -77,7 +75,7 @@ public class AdminService {
         throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
         UserNotFoundException, NotAuthorizedException {
 
-        Validator validator = validators.simpleWithoutAuthorization();
+        Validator validator = validators.userWithoutAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, null));
 
         Admin dummy = new Admin();
@@ -110,7 +108,7 @@ public class AdminService {
             throw new InitialAdminException();
         }
 
-        Validator validator = validators.simpleAuthorization();
+        Validator validator = validators.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationObject(adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
 
         try {
@@ -136,7 +134,7 @@ public class AdminService {
             InvalidFieldException {
         Admin admin = getAdminById(adminId1);
 
-        Validator validator = validators.simpleWithAuthorization();
+        Validator validator = validators.userWithAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, new AuthorizationObject
             (adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
         adminBuilder.build(admin, adminRequestModel);

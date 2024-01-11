@@ -10,6 +10,8 @@ import nl.tudelft.sem.yumyumnow.users.model.Rating;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.CourierValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.Objects.Validators;
+import nl.tudelft.sem.yumyumnow.users.validation.Validator;
 import org.junit.jupiter.api.Test;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
@@ -23,9 +25,8 @@ public class CourierServiceTest {
 
     private CourierRepository courierRepository = mock(CourierRepository.class);
     private UserRepository userRepository  = mock(UserRepository.class);
-    private CourierValidator courierValidator = mock(CourierValidator.class);
     private CourierBuilder courierBuilder = mock(CourierBuilder.class);
-    private CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder, courierValidator);
+    private CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder);
 
     @Test
     public void testGetCourierById_WhenCourierExists() throws UserNotFoundException {
@@ -62,7 +63,6 @@ public class CourierServiceTest {
 
         // Assert
         assertEquals(dummyCourier, result);
-        verify(courierValidator).validate(requestModel);
         verify(courierBuilder).build(any(), any());
         verify(courierRepository).findByEmail(any());
         verify(courierRepository).saveAndFlush(any());
@@ -82,7 +82,6 @@ public class CourierServiceTest {
     public void testCreateCourierInvalidField() throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
         // Arrange
         CourierRequestModel requestModel = TestDataInitializer.createInvalidCourierRequestModel();
-        doThrow(new InvalidFieldException("fieldName", "invalidValue")).when(courierValidator).validate(requestModel);
 
         // Act and Assert
         assertThrows(InvalidFieldException.class, () -> courierService.createCourier(requestModel));
@@ -241,8 +240,6 @@ public class CourierServiceTest {
         when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
         assertThrows(NotAuthorizedException.class, () -> courierService.updateCourier(userId1, userId2, courierRequestModel));
-
-
     }
 
     @Test
