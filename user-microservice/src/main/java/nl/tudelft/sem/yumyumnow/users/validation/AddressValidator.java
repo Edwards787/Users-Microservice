@@ -6,14 +6,22 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
+import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 
 public class AddressValidator extends BaseValidator{
     @Override
     public boolean handle(ValidationObject validationObject)
         throws InvalidFieldException, NotAuthorizedException, MissingBodyException {
 
-        CustomerRequestModel customerRequestModel = (CustomerRequestModel) validationObject.getUserRequestModel();
-        Address address = customerRequestModel.getHomeAddress();
+        Address address = null;
+        if (validationObject.getUserRequestModel().getClass() == CustomerRequestModel.class) {
+            CustomerRequestModel customerRequestModel = (CustomerRequestModel) validationObject.getUserRequestModel();
+            address = customerRequestModel.getHomeAddress();
+        }
+        else if (validationObject.getUserRequestModel().getClass() == VendorRequestModel.class) {
+            VendorRequestModel vendorRequestModel = (VendorRequestModel) validationObject.getUserRequestModel();
+            address = vendorRequestModel.getAddress();
+        }
 
         if (address == null) {
             throw new InvalidFieldException("address", "no content");
