@@ -59,21 +59,27 @@ public class CustomerController implements CustomerApi {
 
     @Override
     public ResponseEntity<List<Customer>> getAllCustomers() {
-        ResponseEntity<List<Customer>> responseEntity;
-
-            responseEntity = customerService.getAllCustomers();
-        return responseEntity;
+        List<Customer> customers;
+        try{
+            customers = customerService.getAllCustomers();
+            return ResponseEntity.ok(customers);
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Something went wrong");
+        }
 
     }
 
     @Override
     public ResponseEntity<Customer> getCustomerById(Long userId) {
+        Customer customer;
         try {
-            Customer customer = customerService.getCustomerById(userId);
-            return new ResponseEntity<>(customer, HttpStatus.OK);
+            customer = customerService.getCustomerById(userId);
+            return ResponseEntity.ok(customer);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
+
     }
 
     @Override

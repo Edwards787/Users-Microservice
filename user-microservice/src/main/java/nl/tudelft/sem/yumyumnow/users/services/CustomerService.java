@@ -53,11 +53,10 @@ public class CustomerService {
      */
     public Customer getCustomerById(Long userId) throws UserNotFoundException {
         Optional<Customer> customer = customerRepository.findById(userId);
-        if (customer.isEmpty()) {
-            throw new UserNotFoundException();
-        } else {
-            return customer.get();
-        }
+
+        if(customer.isEmpty()) throw new UserNotFoundException();
+        else return customer.get();
+
     }
 
 
@@ -97,9 +96,8 @@ public class CustomerService {
 
 }
 
-    public ResponseEntity<List<Customer>> getAllCustomers () {
-        List<Customer> customers = customerRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(customers);
+    public List<Customer> getAllCustomers () {
+        return customerRepository.findAll();
     }
      /**
          * Updates the given customer with the given customer request model. In case of invalid authorization, request model
