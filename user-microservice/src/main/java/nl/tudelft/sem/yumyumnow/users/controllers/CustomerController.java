@@ -136,6 +136,17 @@ public class CustomerController implements CustomerApi {
         }
     }
 
+    @Override
+    public ResponseEntity<Void> updateCustomerBlockStatus(Long userId1, Long userId2, Boolean body) {
+        try {
+            customerService.updateCustomerBlockStatus(userId1, userId2, body);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        }
+    }
 
 
 

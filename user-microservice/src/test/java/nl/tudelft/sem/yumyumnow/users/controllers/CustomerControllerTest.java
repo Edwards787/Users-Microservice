@@ -1,10 +1,9 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
-import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
+import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.services.AdminService;
 import nl.tudelft.sem.yumyumnow.users.services.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,11 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -28,6 +29,8 @@ class CustomerControllerTest {
     private Customer c1;
     private Customer c2;
     private CustomerRequestModel customerUpdate;
+    private UserRepository userRepository;
+    private CustomerRepository customerRepository;
 
     private Address adr;
     private List<Long> favs;
@@ -35,6 +38,8 @@ class CustomerControllerTest {
     public void setUp(){
         customerService = mock(CustomerService.class);
         customerController = new CustomerController(customerService);
+        userRepository  = mock(UserRepository.class);
+        customerRepository = mock(CustomerRepository.class);
     }
 
     @BeforeEach
@@ -70,6 +75,69 @@ class CustomerControllerTest {
         customerUpdate.setSurname("Hi");
         customerUpdate.setHomeAddress(new Address());
     }
+
+    @Test
+    void createCustomerSuccess() throws MissingBodyException, InvalidFieldException {
+        when(customerService.createCustomer(customerUpdate)).thenReturn(c1);
+        ResponseEntity<Customer> res = customerController.createCustomer(customerUpdate);
+        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getBody()).isEqualTo(c1);
+    }
+
+    @Test
+    void createCustomerMissingBody() throws MissingBodyException, InvalidFieldException {
+        when(customerService.createCustomer(any())).thenThrow(new MissingBodyException());
+        assertThatThrownBy(() -> customerController.createCustomer(null))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 400);
+    }
+
+    @Test
+    void createCustomerInvalidField() throws MissingBodyException, InvalidFieldException {
+        when(customerService.createCustomer(any())).thenThrow(new InvalidFieldException("fieldName","value"));
+        assertThatThrownBy(() -> customerController.createCustomer(customerUpdate))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 400)
+                .hasFieldOrPropertyWithValue("reason", "Field 'fieldName' with value 'value' is invalid");
+    }
+
+    @Test
+    void deleteCustomerSuccess() {
+        ResponseEntity<Void> res = customerController.deleteCustomer(0L, 0L);
+        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getBody()).isNull();
+    }
+
+    @Test
+    void deleteCustomerNotFound()
+            throws UserNotFoundException, NotAuthorizedException {
+        doThrow(new UserNotFoundException()).when(customerService).deleteCustomer(3L, 0L);
+        assertThrows(ResponseStatusException.class, () -> {
+            customerController.deleteCustomer(3L, 0L);
+        });
+        try{
+            customerController.deleteCustomer(3L, 0L);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus().value()).isEqualTo(404);
+            assertThat(e.getReason()).isEqualTo("Customer with ID 3 not found");
+        }
+    }
+
+    @Test
+    void deleteAdminUnauthorized()
+            throws UserNotFoundException, NotAuthorizedException {
+        doThrow(new NotAuthorizedException()).when(customerService).deleteCustomer(2L, 0L);
+        assertThrows(ResponseStatusException.class, () -> {
+            customerController.deleteCustomer(2L, 0L);
+        });
+        try{
+            customerController.deleteCustomer(2L, 0L);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus().value()).isEqualTo(403);
+            assertThat(e.getReason()).isEqualTo("Unauthorized action");
+        }
+    }
+
 
     @Test
     public void testGetCustomerByIDExisting() throws UserNotFoundException {
@@ -151,6 +219,24 @@ class CustomerControllerTest {
     }
 
     @Test
+    public void testUpdateCustomerNotFound()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+
+        doThrow(new UserNotFoundException()).when(
+                customerService).updateCustomerById(10L, 12L, customerUpdate);
+        assertThrows(ResponseStatusException.class, () -> {
+            customerController.updateCustomer(10L, 12L, customerUpdate);
+        });
+        try {
+            customerController.updateCustomer(10L, 12L, customerUpdate);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(e.getReason()).isEqualTo("Customer not found");
+        }
+    }
+
+    @Test
     public void testGetLocationByIDExisting() throws UserNotFoundException {
         when(customerService.getLocation(0L)).thenReturn(adr.getCoordinates());
         ResponseEntity<Location> c = customerController.getCurrentLocationForUser(0L);
@@ -225,9 +311,74 @@ class CustomerControllerTest {
         }
     }
 
+    @Test
+    void getAllCustomersSuccess() {
+        when(customerService.getAllCustomers()).thenReturn(List.of(c1,c2));
+        ResponseEntity<List<Customer>> res = customerController.getAllCustomers();
+        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getBody()).isEqualTo(List.of(c1,c2));
+    }
 
+    @Test
+    void getAllCustomersFailure() {
+        when(customerService.getAllCustomers()).thenThrow(new RuntimeException("Error"));
 
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerController.getAllCustomers()
+        );
+        assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(exception.getReason()).isEqualTo("Something went wrong");
+    }
 
+    @Test
+    void updateCustomerBlockStatusSuccess() throws UserNotFoundException, NotAuthorizedException {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Boolean body = true; // or false, depending on your test case
+
+        doNothing().when(customerService).updateCustomerBlockStatus(userId1, userId2, body);
+
+        ResponseEntity<Void> response = customerController.updateCustomerBlockStatus(userId1, userId2, body);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void updateCustomerBlockStatusUserNotFoundException() throws UserNotFoundException, NotAuthorizedException{
+        Long userId1 = 10L;
+        Long userId2 = 20L;
+        Boolean body = true; // or false
+
+        doThrow(new UserNotFoundException())
+                .when(customerService).updateCustomerBlockStatus(userId1, userId2, body);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerController.updateCustomerBlockStatus(userId1, userId2, body)
+        );
+
+        assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(exception.getReason()).isEqualTo("User with id " + userId1 + " Not found");
+    }
+
+    @Test
+    void updateCustomerBlockStatusNotAuthorizedException() throws UserNotFoundException, NotAuthorizedException{
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Boolean body = true; // or false
+
+        doThrow(new NotAuthorizedException())
+                .when(customerService).updateCustomerBlockStatus(userId1, userId2, body);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerController.updateCustomerBlockStatus(userId1, userId2, body)
+        );
+
+        assertThat(exception.getStatus().value()).isEqualTo(403);
+        assertThat(exception.getReason()).isEqualTo("Unauthorized action");
+    }
 
 
 }

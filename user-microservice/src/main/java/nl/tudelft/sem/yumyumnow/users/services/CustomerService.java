@@ -187,5 +187,24 @@ public class CustomerService {
             customerRepository.saveAndFlush(customer);
         }
 
+
+    public void updateCustomerBlockStatus(Long userId1, Long userId2, Boolean body)
+            throws UserNotFoundException, NotAuthorizedException {
+
+        Customer customer;
+        customer = getCustomerById(userId1);
+
+        Optional<User> user = userRepository.findById(userId2);
+        if(user.isEmpty()) throw new NotAuthorizedException();
+        User admin = user.get();
+        if(admin.getRole().equals(User.RoleEnum.ADMIN)){
+            customer.setBlocked(body);
+            customerRepository.saveAndFlush(customer);
+            return;
+        }
+        else throw new NotAuthorizedException();
+    }
+
+
 }
 
