@@ -2,7 +2,7 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
-import nl.tudelft.sem.yumyumnow.users.validators.CourierValidator;
+import nl.tudelft.sem.yumyumnow.users.CourierValidator;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

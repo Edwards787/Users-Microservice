@@ -5,12 +5,8 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validators.AddressValidator;
-import nl.tudelft.sem.yumyumnow.users.validators.LocationValidator;
-import nl.tudelft.sem.yumyumnow.users.validators.VendorValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

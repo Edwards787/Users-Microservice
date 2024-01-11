@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validators;
+package nl.tudelft.sem.yumyumnow.users;
 
 import java.util.regex.Pattern;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;

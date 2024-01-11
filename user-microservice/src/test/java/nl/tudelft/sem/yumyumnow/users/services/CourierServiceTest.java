@@ -9,13 +9,11 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.services.TestDataInitializer;
-import nl.tudelft.sem.yumyumnow.users.validators.CourierValidator;
+import nl.tudelft.sem.yumyumnow.users.CourierValidator;
 import org.junit.jupiter.api.Test;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
-import nl.tudelft.sem.yumyumnow.users.services.CourierService;
 
 import java.util.ArrayList;
 import java.util.List;

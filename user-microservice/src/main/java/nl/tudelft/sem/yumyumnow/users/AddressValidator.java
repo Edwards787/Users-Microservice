@@ -1,12 +1,10 @@
-package nl.tudelft.sem.yumyumnow.users.validators;
+package nl.tudelft.sem.yumyumnow.users;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class AddressValidator {
+public class AddressValidator{
     private final LocationValidator locationValidator;
 
     @Autowired

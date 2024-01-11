@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validators;
+package nl.tudelft.sem.yumyumnow.users;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
