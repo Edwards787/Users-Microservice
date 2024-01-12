@@ -19,4 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Check if an existing user already uses an id.
      */
     boolean existsById(Long id);
+
+    Optional<User> findByEmail(String email);
 }
