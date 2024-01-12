@@ -26,7 +26,7 @@ public class UserServiceTest {
 
     @Test
     public void testGetAllUsers() {
-  
+
         when(userRepository.findAll()).thenReturn(new ArrayList<>());
         List<User> users = userService.getAllUsers();
         assertNotNull(users);
