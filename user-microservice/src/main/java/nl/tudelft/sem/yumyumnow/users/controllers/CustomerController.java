@@ -121,6 +121,17 @@ public class CustomerController implements CustomerApi {
     }
 
     @Override
+    public ResponseEntity<Long> getPastSavedOrderIdForUser(Long id){
+        try{
+            Long orderId = customerService.getPastSavedOrderIdForUser(id);
+            return new ResponseEntity<>(orderId, HttpStatus.OK);
+        }
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
+    }
+
+    @Override
     public ResponseEntity<Void> updateFavouriteVendorIdsForCustomer(Long userId1, Long userId2, List<Long> favorites){
         try{
             customerService.updateFavRestaurants(userId1, userId2, favorites);
@@ -129,10 +140,20 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
-        } catch (InvalidFieldException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> updatePastSavedOrderIdForUser(Long userId1, Long userId2, Long orderId) {
+        try {
+            customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
     }
 
@@ -147,7 +168,5 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         }
     }
-
-
 
 }

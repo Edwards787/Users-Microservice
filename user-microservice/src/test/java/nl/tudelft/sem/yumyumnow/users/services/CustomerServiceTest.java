@@ -103,6 +103,13 @@ class CustomerServiceTest {
     }
 
     @Test
+    void getAllCustomers() {
+        customerService.getAllCustomers();
+        verify(customerRepository, times(1)).findAll();
+    }
+
+
+    @Test
     public void testUpdateCustomerSelfWorking()
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException{
         Long customerId =1L;
@@ -462,4 +469,5 @@ class CustomerServiceTest {
         assertThrows(NotAuthorizedException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs));
 
     }
+
 }

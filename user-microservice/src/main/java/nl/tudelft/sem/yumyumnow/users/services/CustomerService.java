@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import com.sun.xml.bind.v2.TODO;
 import nl.tudelft.sem.yumyumnow.users.builders.Builder;
 import nl.tudelft.sem.yumyumnow.users.builders.Director;
 
@@ -159,7 +160,8 @@ public class CustomerService {
             }
         }
 
-        public void updateFavRestaurants(Long id1, Long id2, List<Long> favRestaurants) throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        public void updateFavRestaurants(Long id1, Long id2, List<Long> favRestaurants)
+                throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
             Customer customer;
             customer = getCustomerById(id1);
             if(favRestaurants == null){
@@ -186,6 +188,37 @@ public class CustomerService {
             customer.setFavRestaurants(favRestaurants);
             customerRepository.saveAndFlush(customer);
         }
+
+
+    public Long getPastSavedOrderIdForUser(Long userId) throws UserNotFoundException {
+
+        Optional<Customer> customer = customerRepository.findById(userId);
+        if(customer.isEmpty()) throw new UserNotFoundException();
+        else return customer.get().getSavedOrder();
+    }
+
+    public void updatePastSavedOrderIdForUser(Long userId1, Long userId2, Long orderId)
+            throws UserNotFoundException, NotAuthorizedException {
+
+        Customer customer;
+        customer = getCustomerById(userId1);
+
+        if(customer.getId().equals(userId2)){
+            customer.setSavedOrder(orderId);
+            return;
+        }
+
+        Optional<User> admin = userRepository.findById(userId2);
+        if(admin.isEmpty()){
+            throw new NotAuthorizedException();
+        }
+        User user = admin.get();
+        if(!user.getRole().equals(User.RoleEnum.ADMIN)){
+            throw new NotAuthorizedException();
+        }
+
+        customer.setSavedOrder(orderId);
+    }
 
 
     public void updateCustomerBlockStatus(Long userId1, Long userId2, Boolean body)

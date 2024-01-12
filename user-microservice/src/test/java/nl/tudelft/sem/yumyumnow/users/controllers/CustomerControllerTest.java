@@ -312,6 +312,25 @@ class CustomerControllerTest {
     }
 
     @Test
+    public void testUpdateFavsUserNotFound()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+
+        doThrow(new UserNotFoundException()).when(
+                customerService).updateFavRestaurants(10L, 10L, favs);
+        assertThrows(ResponseStatusException.class, () -> {
+            customerController.updateFavouriteVendorIdsForCustomer(10L, 10L, favs);
+        });
+        try {
+            customerController.updateFavouriteVendorIdsForCustomer(10L, 10L, favs);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(404);
+            assertThat(e.getReason()).isEqualTo("Customer not found");
+        }
+    }
+
+
+    @Test
     void getAllCustomersSuccess() {
         when(customerService.getAllCustomers()).thenReturn(List.of(c1,c2));
         ResponseEntity<List<Customer>> res = customerController.getAllCustomers();
@@ -345,10 +364,38 @@ class CustomerControllerTest {
     }
 
     @Test
+    public void testGetPastSavedOrderIdForUserSuccess() throws UserNotFoundException {
+        when(customerService.getPastSavedOrderIdForUser(0L)).thenReturn(5L);
+        ResponseEntity<Long> c = customerController.getPastSavedOrderIdForUser(0L);
+        assertEquals(c.getBody(), 5L);
+    }
+
+    @Test
+    public void testGetPastSavedOrderUserNotFoundError() throws UserNotFoundException {
+        when(customerService.getPastSavedOrderIdForUser(10L)).thenThrow(new UserNotFoundException());
+        assertThrows(ResponseStatusException.class, ()->{
+            customerController.getPastSavedOrderIdForUser(10L);
+        });
+    }
+
+    @Test
+    void updatePastOrderSuccess() throws UserNotFoundException, NotAuthorizedException {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 5L;
+
+        doNothing().when(customerService).updatePastSavedOrderIdForUser(userId1, userId2, orderId);
+
+        ResponseEntity<Void> response = customerController.updatePastSavedOrderIdForUser(userId1, userId2, orderId);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     void updateCustomerBlockStatusUserNotFoundException() throws UserNotFoundException, NotAuthorizedException{
         Long userId1 = 10L;
         Long userId2 = 20L;
-        Boolean body = true; // or false
+        Boolean body = true;
 
         doThrow(new UserNotFoundException())
                 .when(customerService).updateCustomerBlockStatus(userId1, userId2, body);
@@ -363,10 +410,46 @@ class CustomerControllerTest {
     }
 
     @Test
+    void updatePastSavedOrderUserNotFoundException() throws UserNotFoundException, NotAuthorizedException{
+        Long userId1 = 10L;
+        Long userId2 = 20L;
+        Long orderId = 5L;
+
+        doThrow(new UserNotFoundException())
+                .when(customerService).updatePastSavedOrderIdForUser(userId1, userId2, orderId);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerController.updatePastSavedOrderIdForUser(userId1, userId2, orderId)
+        );
+
+        assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(exception.getReason()).isEqualTo("User with id " + userId1 + " Not found");
+    }
+
+    @Test
+    void updatePastSavedOrderNotAuthException() throws UserNotFoundException, NotAuthorizedException{
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 5L;
+
+        doThrow(new NotAuthorizedException())
+                .when(customerService).updatePastSavedOrderIdForUser(userId1, userId2, orderId);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerController.updatePastSavedOrderIdForUser(userId1, userId2, orderId)
+        );
+
+        assertThat(exception.getStatus().value()).isEqualTo(403);
+        assertThat(exception.getReason()).isEqualTo("Unauthorized action");
+    }
+
+    @Test
     void updateCustomerBlockStatusNotAuthorizedException() throws UserNotFoundException, NotAuthorizedException{
         Long userId1 = 1L;
         Long userId2 = 2L;
-        Boolean body = true; // or false
+        Boolean body = true;
 
         doThrow(new NotAuthorizedException())
                 .when(customerService).updateCustomerBlockStatus(userId1, userId2, body);
