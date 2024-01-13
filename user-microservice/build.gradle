@@ -50,6 +50,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	//Testing Api
+	implementation 'org.hibernate.validator:hibernate-validator:7.0.1.Final'
+
 	// Local test database (in-memory)
 	implementation 'com.h2database:h2'
 	developmentOnly 'org.hibernate:hibernate-entitymanager'
