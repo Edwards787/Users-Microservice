@@ -54,8 +54,8 @@ public class CourierService {
         Validator validator = validatorConstructor.courierWithoutAuthorization();
         validator.handle(new ValidationObject(courierRequestModel, null));
 
-        Courier dummy = new Courier();
-        Courier courier = courierBuilder.build(dummy, courierRequestModel);
+        Courier courier = new Courier();
+        courierBuilder.build(courier, courierRequestModel);
 
         if (courierRepository.findByEmail(courierRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(courierRequestModel.getEmail());

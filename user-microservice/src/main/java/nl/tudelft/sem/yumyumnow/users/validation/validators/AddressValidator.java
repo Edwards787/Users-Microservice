@@ -16,7 +16,7 @@ public class AddressValidator extends BaseValidator {
             throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
             UserNotFoundException {
 
-        Address address = null;
+        Address address;
         if (validationObject.getUserRequestModel().getClass() == CustomerRequestModel.class) {
             CustomerRequestModel customerRequestModel = (CustomerRequestModel) validationObject.getUserRequestModel();
             address = customerRequestModel.getHomeAddress();
