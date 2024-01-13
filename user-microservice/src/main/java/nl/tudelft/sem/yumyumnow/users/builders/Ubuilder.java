@@ -5,6 +5,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 
+<<<<<<< HEAD
 public class Ubuilder implements Builder {
     private User.RoleEnum role;
     private String name;
@@ -15,7 +16,7 @@ public class Ubuilder implements Builder {
     private boolean blocked;
     private List<String> allergens;
     private Address homeAddress;
-
+    
     public void setRole(User.RoleEnum role) {
         this.role = role;
     }

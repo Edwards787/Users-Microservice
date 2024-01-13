@@ -24,9 +24,9 @@ public class CustomerController implements CustomerApi {
 
     @Override
     public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
-        Customer c;
         try {
-            c = customerService.createCustomer(customerRequestModel);
+            Customer c = customerService.createCustomer(customerRequestModel);
+            return ResponseEntity.ok(c);
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
         } catch (InvalidFieldException e) {
@@ -38,7 +38,7 @@ public class CustomerController implements CustomerApi {
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authorized to create");
         }
-        return ResponseEntity.ok(c);
+
     }
 
     @Override
@@ -48,11 +48,11 @@ public class CustomerController implements CustomerApi {
             return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Customer with ID " + userId1 + " not found");
+                    e.getCustomMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (MissingBodyException | InvalidFieldException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "something went wrong");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ public class CustomerController implements CustomerApi {
             customer = customerService.getCustomerById(userId);
             return ResponseEntity.ok(customer);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         }
     }
 
@@ -84,9 +84,9 @@ public class CustomerController implements CustomerApi {
             customerService.updateCustomerById(userId1, userId2, customerRequestModel);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e) {
@@ -100,7 +100,7 @@ public class CustomerController implements CustomerApi {
             Location l = customerService.getLocation(id);
             return new ResponseEntity<>(l, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         }
     }
 
@@ -110,7 +110,7 @@ public class CustomerController implements CustomerApi {
             List<Long> favs = customerService.getFavoriteRestaurants(id);
             return new ResponseEntity<>(favs, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         }
     }
 
@@ -120,7 +120,7 @@ public class CustomerController implements CustomerApi {
             Long orderId = customerService.getPastSavedOrderIdForUser(id);
             return new ResponseEntity<>(orderId, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         }
     }
 
@@ -130,9 +130,9 @@ public class CustomerController implements CustomerApi {
             customerService.updateFavRestaurants(userId1, userId2, favorites);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
         } catch (InvalidFieldException e) {
@@ -146,9 +146,9 @@ public class CustomerController implements CustomerApi {
             customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId);
             return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (MissingBodyException | InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "something went wrong");
         }
@@ -162,7 +162,7 @@ public class CustomerController implements CustomerApi {
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (InvalidFieldException | MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

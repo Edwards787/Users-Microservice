@@ -112,7 +112,7 @@ class CustomerControllerTest {
     void deleteCustomerNotFound()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        doThrow(new UserNotFoundException()).when(customerService).deleteCustomer(3L, 0L);
+        doThrow(new UserNotFoundException(3L)).when(customerService).deleteCustomer(3L, 0L);
         assertThrows(ResponseStatusException.class, () -> {
             customerController.deleteCustomer(3L, 0L);
         });
@@ -120,7 +120,7 @@ class CustomerControllerTest {
             customerController.deleteCustomer(3L, 0L);
         } catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(404);
-            assertThat(e.getReason()).isEqualTo("Customer with ID 3 not found");
+            assertThat(e.getReason()).isEqualTo("User with id 3 not found");
         }
     }
 
@@ -136,7 +136,7 @@ class CustomerControllerTest {
             customerController.deleteCustomer(2L, 0L);
         }catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(403);
-            assertThat(e.getReason()).isEqualTo("Unauthorized action");
+            assertThat(e.getReason()).isEqualTo("Not authorized");
         }
     }
 
@@ -215,7 +215,7 @@ class CustomerControllerTest {
             customerController.updateCustomer(3L, 1L, customerUpdate);
         } catch (ResponseStatusException e) {
             assertThat(e.getStatus().value()).isEqualTo(403);
-            assertThat(e.getReason()).isEqualTo("Unauthorized action");
+            assertThat(e.getReason()).isEqualTo("Not authorized");
         }
     }
 
@@ -233,7 +233,7 @@ class CustomerControllerTest {
             customerController.updateCustomer(10L, 12L, customerUpdate);
         } catch (ResponseStatusException e) {
             assertThat(e.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-            assertThat(e.getReason()).isEqualTo("Customer not found");
+            assertThat(e.getReason()).isEqualTo("User not found");
         }
     }
 
@@ -307,7 +307,7 @@ class CustomerControllerTest {
             customerController.updateFavouriteVendorIdsForCustomer(3L, 1L, favs);
         } catch (ResponseStatusException e) {
             assertThat(e.getStatus().value()).isEqualTo(403);
-            assertThat(e.getReason()).isEqualTo("Unauthorized action");
+            assertThat(e.getReason()).isEqualTo("Not authorized");
         }
     }
 
@@ -325,7 +325,7 @@ class CustomerControllerTest {
             customerController.updateFavouriteVendorIdsForCustomer(10L, 10L, favs);
         } catch (ResponseStatusException e) {
             assertThat(e.getStatus().value()).isEqualTo(404);
-            assertThat(e.getReason()).isEqualTo("Customer not found");
+            assertThat(e.getReason()).isEqualTo("User not found");
         }
     }
 
@@ -422,7 +422,7 @@ class CustomerControllerTest {
         Long userId2 = 20L;
         Long orderId = 5L;
 
-        doThrow(new UserNotFoundException())
+        doThrow(new UserNotFoundException(userId1))
                 .when(customerService).updatePastSavedOrderIdForUser(userId1, userId2, orderId);
 
         ResponseStatusException exception = assertThrows(
@@ -431,7 +431,7 @@ class CustomerControllerTest {
         );
 
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(exception.getReason()).isEqualTo("User with id " + userId1 + " Not found");
+        assertThat(exception.getReason()).isEqualTo("User with id " + userId1 + " not found");
     }
 
     @Test
@@ -451,7 +451,7 @@ class CustomerControllerTest {
         );
 
         assertThat(exception.getStatus().value()).isEqualTo(403);
-        assertThat(exception.getReason()).isEqualTo("Unauthorized action");
+        assertThat(exception.getReason()).isEqualTo("Not authorized");
     }
 
     @Test
@@ -471,6 +471,6 @@ class CustomerControllerTest {
         );
         
         assertThat(exception.getStatus().value()).isEqualTo(403);
-        assertThat(exception.getReason()).isEqualTo("Unauthorized action");
+        assertThat(exception.getReason()).isEqualTo("Not authorized");
     }
 }
