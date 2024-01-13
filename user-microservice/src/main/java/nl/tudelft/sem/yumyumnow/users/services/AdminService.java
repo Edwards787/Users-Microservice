@@ -18,8 +18,8 @@ import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validators;
-import nl.tudelft.sem.yumyumnow.users.validation.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ public class AdminService {
 
     private final AdminRepository adminRepository;
     private final UserRepository userRepository;
-    private final Validators validators;
+    private final ValidatorConstructor validatorConstructor;
     private final AdminBuilder adminBuilder;
 
     /**
@@ -43,7 +43,7 @@ public class AdminService {
     public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
-        this.validators = new Validators();
+        this.validatorConstructor = new ValidatorConstructor();
         this.userRepository = userRepository;
     }
 
@@ -75,7 +75,7 @@ public class AdminService {
         throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
         UserNotFoundException, NotAuthorizedException {
 
-        Validator validator = validators.userWithoutAuthorization();
+        Validator validator = validatorConstructor.userWithoutAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, null));
 
         Admin dummy = new Admin();
@@ -108,7 +108,7 @@ public class AdminService {
             throw new InitialAdminException();
         }
 
-        Validator validator = validators.userAuthorization();
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationObject(adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
 
         try {
@@ -134,7 +134,7 @@ public class AdminService {
             InvalidFieldException {
         Admin admin = getAdminById(adminId1);
 
-        Validator validator = validators.userWithAuthorization();
+        Validator validator = validatorConstructor.userWithAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, new AuthorizationObject
             (adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
         adminBuilder.build(admin, adminRequestModel);

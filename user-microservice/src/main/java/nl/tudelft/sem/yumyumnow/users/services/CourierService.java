@@ -7,8 +7,8 @@ import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validators;
-import nl.tudelft.sem.yumyumnow.users.validation.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +22,13 @@ public class CourierService {
     private final UserRepository userRepository;
 
     private final CourierBuilder courierBuilder;
-    private final Validators validators;
+    private final ValidatorConstructor validatorConstructor;
     @Autowired
     public CourierService(CourierRepository courierRepository, UserRepository userRepository, CourierBuilder courierBuilder){
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
         this.courierBuilder = courierBuilder;
-        this.validators = new Validators();
+        this.validatorConstructor = new ValidatorConstructor();
     }
 
     public Courier getCourierById(Long courierId) throws UserNotFoundException{
@@ -42,7 +42,7 @@ public class CourierService {
         throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
         UserNotFoundException, NotAuthorizedException {
 
-        Validator validator = validators.courierWithoutAuthorization();
+        Validator validator = validatorConstructor.courierWithoutAuthorization();
         validator.handle(new ValidationObject(courierRequestModel, null));
 
         Courier dummy = new Courier();
@@ -68,7 +68,7 @@ public class CourierService {
         Courier courier;
         courier = getCourierById(userId1);
 
-        Validator validator = validators.userAuthorization();
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
             new AuthorizationObject(userId1, userId2, userRepository,
                 Accessibility.USER_AND_ADMIN)));
@@ -81,7 +81,7 @@ public class CourierService {
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
 
-        Validator validator = validators.courierWithAuthorization();
+        Validator validator = validatorConstructor.courierWithAuthorization();
         validator.handle(new ValidationObject(courierRequestModel,
             new AuthorizationObject(userId1, userId2, userRepository,
                 Accessibility.USER_AND_ADMIN)));
@@ -111,7 +111,7 @@ public class CourierService {
 
         if (ratings == null) throw new InvalidFieldException("ratings", "null");
 
-        Validator validator = validators.userAuthorization();
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
             new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
 
@@ -127,7 +127,7 @@ public class CourierService {
 
         if (body == null) throw new InvalidFieldException("activation status", "null");
 
-        Validator validator = validators.userAuthorization();
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
             new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
 
@@ -142,7 +142,7 @@ public class CourierService {
 
         if (body == null) throw new InvalidFieldException("block status", "null");
 
-        Validator validator = validators.userAuthorization();
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
             new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
 

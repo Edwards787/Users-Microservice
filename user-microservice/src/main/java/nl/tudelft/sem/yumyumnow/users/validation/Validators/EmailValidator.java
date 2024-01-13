@@ -1,25 +1,29 @@
-package nl.tudelft.sem.yumyumnow.users.validation;
+package nl.tudelft.sem.yumyumnow.users.validation.Validators;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
-import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 
-public class IBANValidator extends BaseValidator{
+import java.util.regex.Pattern;
+
+public class EmailValidator extends BaseValidator{
+
     @Override
     public boolean handle(ValidationObject validationObject)
         throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
         UserNotFoundException {
 
-        CourierRequestModel courierRequestModel = (CourierRequestModel) validationObject.getUserRequestModel();
-        String iban = courierRequestModel.getIbanNumber();
-
-        if (iban == null){
-            throw new InvalidFieldException("iban", "null");
+        UserRequestModel userRequestModel = validationObject.getUserRequestModel();
+        if (userRequestModel.getEmail() == null
+            || userRequestModel.getEmail().isEmpty()
+            || !Pattern.compile("^(.+)@(\\S+)$")
+            .matcher(userRequestModel.getEmail())
+            .matches()) {
+            throw new InvalidFieldException("email", userRequestModel.getEmail());
         }
-
         return super.checkNext(validationObject);
     }
 }

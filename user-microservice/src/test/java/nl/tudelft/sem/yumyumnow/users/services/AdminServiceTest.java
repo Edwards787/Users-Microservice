@@ -7,7 +7,7 @@ import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validators;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 public class AdminServiceTest {
     private AdminRepository adminRepository;
     private UserRepository userRepository;
-    private Validators validators;
+    private ValidatorConstructor validatorConstructor;
     private AdminBuilder adminBuilder;
     private AdminService adminService;
     private Admin admin1;
@@ -33,7 +33,7 @@ public class AdminServiceTest {
     public void setUp(){
         adminRepository = mock(AdminRepository.class);
         userRepository = mock(UserRepository.class);
-        validators = new Validators();
+        validatorConstructor = new ValidatorConstructor();
         adminBuilder = new AdminBuilder();
         adminService = new AdminService(adminRepository, userRepository, adminBuilder);
     }

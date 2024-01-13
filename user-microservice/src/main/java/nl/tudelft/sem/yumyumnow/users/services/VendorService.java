@@ -11,8 +11,8 @@ import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validators;
-import nl.tudelft.sem.yumyumnow.users.validation.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class VendorService {
     private final VendorRepository vendorRepository;
     private final UserRepository userRepository;
     private final VendorBuilder vendorBuilder;
-    private final Validators validators;
+    private final ValidatorConstructor validatorConstructor;
 
     /**
      * Creates an instance of the VendorService.
@@ -37,7 +37,7 @@ public class VendorService {
         this.vendorRepository = vendorRepository;
         this.vendorBuilder = vendorBuilder;
         this.userRepository = userRepository;
-        this.validators = new Validators();
+        this.validatorConstructor = new ValidatorConstructor();
     }
 
     /**
@@ -53,7 +53,7 @@ public class VendorService {
         throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
         UserNotFoundException, NotAuthorizedException {
 
-        Validator validator = validators.vendorWithoutAuthorization();
+        Validator validator = validatorConstructor.vendorWithoutAuthorization();
         validator.handle(new ValidationObject(vendorRequestModel, null));
 
         Vendor dummy = new Vendor();
@@ -98,7 +98,7 @@ public class VendorService {
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
 
-        Validator validator = validators.userAuthorization();
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationObject(userid1,
             userid2, userRepository, Accessibility.USER_AND_ADMIN)));
 
@@ -126,7 +126,7 @@ public class VendorService {
             throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
         Optional<Vendor> vendor = vendorRepository.findById(userId1);
 
-        Validator validator = validators.vendorWithAuthorization();
+        Validator validator = validatorConstructor.vendorWithAuthorization();
         validator.handle(new ValidationObject(vendorRequestModel,
             new AuthorizationObject(userId1, userId2, userRepository,
                 Accessibility.USER_AND_ADMIN)));

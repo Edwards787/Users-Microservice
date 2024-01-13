@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation;
+package nl.tudelft.sem.yumyumnow.users.validation.Validators;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
@@ -7,9 +7,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 
-import java.util.regex.Pattern;
-
-public class EmailValidator extends BaseValidator{
+public class NameValidator extends BaseValidator {
 
     @Override
     public boolean handle(ValidationObject validationObject)
@@ -17,13 +15,10 @@ public class EmailValidator extends BaseValidator{
         UserNotFoundException {
 
         UserRequestModel userRequestModel = validationObject.getUserRequestModel();
-        if (userRequestModel.getEmail() == null
-            || userRequestModel.getEmail().isEmpty()
-            || !Pattern.compile("^(.+)@(\\S+)$")
-            .matcher(userRequestModel.getEmail())
-            .matches()) {
-            throw new InvalidFieldException("email", userRequestModel.getEmail());
+        if (userRequestModel.getName() == null || userRequestModel.getName().isEmpty()) {
+            throw new InvalidFieldException("name", userRequestModel.getName());
         }
+
         return super.checkNext(validationObject);
     }
 }

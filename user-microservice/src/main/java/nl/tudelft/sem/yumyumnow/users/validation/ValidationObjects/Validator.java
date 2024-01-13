@@ -1,10 +1,9 @@
-package nl.tudelft.sem.yumyumnow.users.validation;
+package nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 
 public interface Validator {
     void setNext(Validator handler);

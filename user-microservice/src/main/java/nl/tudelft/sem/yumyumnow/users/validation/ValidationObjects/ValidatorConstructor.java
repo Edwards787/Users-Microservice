@@ -1,12 +1,12 @@
 package nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects;
 
-import nl.tudelft.sem.yumyumnow.users.validation.*;
+import nl.tudelft.sem.yumyumnow.users.validation.Validators.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class Validators {
+public class ValidatorConstructor {
 
-    public Validators() {
+    public ValidatorConstructor() {
     }
 
     public Validator userWithoutAuthorization(){
