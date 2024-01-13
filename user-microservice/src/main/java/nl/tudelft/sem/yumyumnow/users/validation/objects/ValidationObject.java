@@ -1,6 +1,7 @@
-package nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects;
+package nl.tudelft.sem.yumyumnow.users.validation.objects;
 
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
+
 
 public class ValidationObject {
 
