@@ -26,10 +26,10 @@ public class CustomerService {
 
     private final transient CustomerRepository customerRepository;
 
-    private final UserRepository userRepository;
-    Builder builder;
-    Director director;
-    ValidatorConstructor validatorConstructor;
+    private final transient UserRepository userRepository;
+    private final transient Builder builder;
+    private final transient Director director;
+    private final transient ValidatorConstructor validatorConstructor;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
@@ -144,15 +144,23 @@ public class CustomerService {
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
         Validator validator = validatorConstructor.userAuthorization();
-        validator.handle(new ValidationObject(null, new AuthorizationObject(id1,
-                id2, userRepository, Accessibility.USER_AND_ADMIN)));
+        validator.handle(
+                new ValidationObject(
+                        null,
+                        new AuthorizationObject(
+                                id1,
+                                id2,
+                                userRepository,
+                                Accessibility.USER_AND_ADMIN
+                        )));
 
-        Customer customer = getCustomerById(id1);
+
         if (favRestaurants == null) {
             throw new MissingBodyException();
         }
 
         //Set the right attributes for customer
+        Customer customer = getCustomerById(id1);
         customer.setFavRestaurants(favRestaurants);
         customerRepository.saveAndFlush(customer);
     }
@@ -175,6 +183,7 @@ public class CustomerService {
 
         Customer customer = getCustomerById(userId1);
         customer.setSavedOrder(orderId);
+        customerRepository.saveAndFlush(customer);
     }
 
 
