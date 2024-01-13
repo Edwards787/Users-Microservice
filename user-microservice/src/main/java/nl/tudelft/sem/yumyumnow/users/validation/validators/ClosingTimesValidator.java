@@ -9,7 +9,8 @@ import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObj
 
 public class ClosingTimesValidator extends BaseValidator{
     @Override
-    public boolean handle(ValidationObject validationObject)
+    public boolean handle(
+        ValidationObject validationObject)
         throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
         UserNotFoundException {
 

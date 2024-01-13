@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.controllers.UserController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
