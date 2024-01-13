@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization;
+package nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Authorization;
 
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 

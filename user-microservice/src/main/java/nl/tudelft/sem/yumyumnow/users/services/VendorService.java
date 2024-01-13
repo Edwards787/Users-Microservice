@@ -8,10 +8,11 @@ import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization.AuthorizationData;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Authorization.AuthorizationUserAndAdminStrategy;
+import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -99,7 +100,7 @@ public class VendorService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationData(userid1,
-            userid2, userRepository, Accessibility.USER_AND_ADMIN)));
+            userid2, userRepository, new AuthorizationUserAndAdminStrategy())));
 
         vendorRepository.deleteById(userid1);
         return null;
@@ -128,7 +129,7 @@ public class VendorService {
         Validator validator = validatorConstructor.vendorWithAuthorization();
         validator.handle(new ValidationObject(vendorRequestModel,
             new AuthorizationData(userId1, userId2, userRepository,
-                Accessibility.USER_AND_ADMIN)));
+                new AuthorizationUserAndAdminStrategy())));
 
         Vendor updated = vendorBuilder.build(vendor.get(), vendorRequestModel);
         vendorRepository.saveAndFlush(updated);

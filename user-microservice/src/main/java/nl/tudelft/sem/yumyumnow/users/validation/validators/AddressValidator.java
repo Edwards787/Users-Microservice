@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.Validators;
+package nl.tudelft.sem.yumyumnow.users.validation.validators;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
@@ -8,7 +8,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
 
 public class AddressValidator extends BaseValidator{
     @Override

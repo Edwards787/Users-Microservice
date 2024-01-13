@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects;
+package nl.tudelft.sem.yumyumnow.users.validation.validationObjects;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;

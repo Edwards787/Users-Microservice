@@ -1,6 +1,6 @@
-package nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects;
+package nl.tudelft.sem.yumyumnow.users.validation.validationObjects;
 
-import nl.tudelft.sem.yumyumnow.users.validation.Validators.*;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.*;
 import org.springframework.stereotype.Service;
 
 @Service
