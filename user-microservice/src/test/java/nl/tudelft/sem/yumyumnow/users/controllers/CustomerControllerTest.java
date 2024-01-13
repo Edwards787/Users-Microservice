@@ -110,14 +110,15 @@ class CustomerControllerTest {
 
     @Test
     void deleteCustomerNotFound()
-            throws UserNotFoundException, NotAuthorizedException {
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new UserNotFoundException()).when(customerService).deleteCustomer(3L, 0L);
         assertThrows(ResponseStatusException.class, () -> {
             customerController.deleteCustomer(3L, 0L);
         });
         try{
             customerController.deleteCustomer(3L, 0L);
-        }catch (ResponseStatusException e){
+        } catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(404);
             assertThat(e.getReason()).isEqualTo("Customer with ID 3 not found");
         }
@@ -125,7 +126,8 @@ class CustomerControllerTest {
 
     @Test
     void deleteAdminUnauthorized()
-            throws UserNotFoundException, NotAuthorizedException {
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new NotAuthorizedException()).when(customerService).deleteCustomer(2L, 0L);
         assertThrows(ResponseStatusException.class, () -> {
             customerController.deleteCustomer(2L, 0L);
@@ -137,7 +139,6 @@ class CustomerControllerTest {
             assertThat(e.getReason()).isEqualTo("Unauthorized action");
         }
     }
-
 
     @Test
     public void testGetCustomerByIDExisting() throws UserNotFoundException {
@@ -292,7 +293,6 @@ class CustomerControllerTest {
         }
     }
 
-
     @Test
     public void testUpdateFavsUnauthorized()
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
@@ -350,7 +350,9 @@ class CustomerControllerTest {
     }
 
     @Test
-    void updateCustomerBlockStatusSuccess() throws UserNotFoundException, NotAuthorizedException {
+    void updateCustomerBlockStatusSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 2L;
         Boolean body = true;
@@ -378,7 +380,9 @@ class CustomerControllerTest {
     }
 
     @Test
-    void updatePastOrderSuccess() throws UserNotFoundException, NotAuthorizedException {
+    void updatePastOrderSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 2L;
         Long orderId = 5L;
@@ -391,7 +395,9 @@ class CustomerControllerTest {
     }
 
     @Test
-    void updateCustomerBlockStatusUserNotFoundException() throws UserNotFoundException, NotAuthorizedException{
+    void updateCustomerBlockStatusUserNotFoundException()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 10L;
         Long userId2 = 20L;
         Boolean body = true;
@@ -409,7 +415,9 @@ class CustomerControllerTest {
     }
 
     @Test
-    void updatePastSavedOrderUserNotFoundException() throws UserNotFoundException, NotAuthorizedException{
+    void updatePastSavedOrderUserNotFoundException()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 10L;
         Long userId2 = 20L;
         Long orderId = 5L;
@@ -427,7 +435,9 @@ class CustomerControllerTest {
     }
 
     @Test
-    void updatePastSavedOrderNotAuthException() throws UserNotFoundException, NotAuthorizedException{
+    void updatePastSavedOrderNotAuthException()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 2L;
         Long orderId = 5L;
@@ -445,7 +455,9 @@ class CustomerControllerTest {
     }
 
     @Test
-    void updateCustomerBlockStatusNotAuthorizedException() throws UserNotFoundException, NotAuthorizedException{
+    void updateCustomerBlockStatusNotAuthorizedException()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 2L;
         Boolean body = true;

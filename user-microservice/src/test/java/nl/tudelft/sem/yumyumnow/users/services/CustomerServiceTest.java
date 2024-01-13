@@ -1,27 +1,17 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-
-
 import nl.tudelft.sem.yumyumnow.users.builders.Builder;
-import nl.tudelft.sem.yumyumnow.users.builders.CustomerBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.Director;
 import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validators.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.reflections.vfs.Vfs;
-import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,6 +24,9 @@ class CustomerServiceTest {
     private List<Long> favs;
     Builder builder;
     Director director;
+    Customer mockCustomer;
+    Long customerId;
+    CustomerRequestModel customerUpdate;
     @BeforeEach
     public void setUp(){
         customerRepository = mock(CustomerRepository.class);
@@ -44,43 +37,40 @@ class CustomerServiceTest {
         Location l = new Location();
         l.lat(12.1f);
         l._long(6.9f);
+
         adr = new Address();
         adr.setCoordinates(l);
         favs = new ArrayList<>();
         favs.add(1L);
         favs.add(6L);
         favs.add(10L);
-    }
-    @Test
-    public void testGetCustomerByIDExisting() throws UserNotFoundException {
-        Long customerId = 1L;
-        Customer mockCustomer = new Customer();
+
+        customerId = 1L;
+        mockCustomer = new Customer();
         mockCustomer.setId(customerId);
         mockCustomer.setName("John");
         mockCustomer.setSurname("Doe");
         mockCustomer.setEmail("john.doe@example.com");
 
+        customerUpdate = new CustomerRequestModel();
+        customerUpdate.setName("UpdatedName");
+        customerUpdate.setEmail("email@g");
+        customerUpdate.setAllergens(new ArrayList<>());
+        customerUpdate.setSurname("Hello");
+        customerUpdate.setHomeAddress(new Address());
+    }
+    @Test
+    public void testGetCustomerByIDExisting() throws UserNotFoundException {
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
-
         Customer response = customerService.getCustomerById(customerId);
-
         verify(customerRepository, times(1)).findById(customerId);
-
         assertEquals(mockCustomer, response);
     }
 
     @Test
     public void testGetCustomerByIDNonExisting(){
-        Long customerId = 1L;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-        mockCustomer.setName("John");
-        mockCustomer.setSurname("Doe");
-        mockCustomer.setEmail("john.doe@example.com");
-
         Long cId2 = 2L;
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
-
         assertThrows(UserNotFoundException.class, () ->{
             customerService.getCustomerById(cId2);
         });
@@ -98,23 +88,23 @@ class CustomerServiceTest {
     @Test
     public void testUpdateCustomerSelfWorking()
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException{
-        Long customerId =1L;
         Long userId = 1L;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
 
-        CustomerRequestModel customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setEmail("email");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setSurname("Hello");
-        customerUpdate.setHomeAddress(new Address());
+        Address address = new Address();
+        address.setAddress("a");
+        address.setCity("c");
+        address.setCountry("d");
+        address.setPostalCode("df");
+        Location location = new Location();
+        location.setLat(0.1F);
+        location.setLong(0.2F);
+        address.setCoordinates(location);
+
+        customerUpdate.setHomeAddress(address);
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
-
         customerService.updateCustomerById(customerId, userId, customerUpdate);
-
         verify(customerRepository, times(1)).findById(customerId);
 
         assertEquals("UpdatedName", mockCustomer.getName());
@@ -123,25 +113,25 @@ class CustomerServiceTest {
     @Test
     public void testCustomerUpdateAdminWorking()
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException{
-        Long customerId = 1L;
         Long userId = 2L;
-
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-
-        CustomerRequestModel customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setEmail("email");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setSurname("Hi");
-        customerUpdate.setHomeAddress(new Address());
 
         User mockAdmin = new User();
         mockAdmin.setId(userId);
         mockAdmin.setRole(User.RoleEnum.ADMIN);
 
+        Address address = new Address();
+        address.setAddress("a");
+        address.setCity("c");
+        address.setCountry("d");
+        address.setPostalCode("df");
+        Location location = new Location();
+        location.setLat(0.1F);
+        location.setLong(0.2F);
+        address.setCoordinates(location);
 
+        customerUpdate.setHomeAddress(address);
+
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
 
@@ -159,22 +149,14 @@ class CustomerServiceTest {
         Long customerId = 1L;
         Long userId = 1L;
 
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-
-        CustomerRequestModel customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
         customerUpdate.setSurname("");
-        customerUpdate.setEmail("email");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setHomeAddress(new Address());
+
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
 
         assertThrows(InvalidFieldException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
         CustomerRequestModel crm = null;
         assertThrows(MissingBodyException.class, () -> customerService.updateCustomerById(customerId, userId, crm));
-
     }
 
     @Test
@@ -182,57 +164,41 @@ class CustomerServiceTest {
         Long customerId = 3L;
         Long userId = 2L;
 
-        Customer mockCustomer = new Customer();
         mockCustomer.setId(1L);
 
-        CustomerRequestModel customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setSurname("UpdatedName");
-        customerUpdate.setEmail("email");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setHomeAddress(new Address());
-
        assertThrows(UserNotFoundException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
-
-
     }
 
     @Test
     public void testCustomerUpdateUnauthorized(){
-        Long customerId = 1L;
         Long userId = 2L;
 
         Customer mockCustomer = new Customer();
         mockCustomer.setId(customerId);
 
-        CustomerRequestModel customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setSurname("UpdatedName");
-        customerUpdate.setEmail("email");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setHomeAddress(new Address());
-
         User mockAdmin = new User();
         mockAdmin.setId(userId);
         mockAdmin.setRole(User.RoleEnum.COURIER);
 
-
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
-
 
         assertThrows(NotAuthorizedException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
 
     }
 
     @Test
-    void deleteCustomerBySelfSuccess() throws UserNotFoundException, NotAuthorizedException {
+    void deleteCustomerBySelfSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 1L; // Same as userId1
 
         Customer customer = new Customer();
         customer.setId(userId1);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
         doNothing().when(customerRepository).deleteById(userId1);
         doNothing().when(customerRepository).flush();
@@ -244,7 +210,9 @@ class CustomerServiceTest {
     }
 
     @Test
-    void deleteCustomerByAdminSuccess() throws UserNotFoundException, NotAuthorizedException {
+    void deleteCustomerByAdminSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 2L;
         User adminUser = new User();
@@ -254,6 +222,7 @@ class CustomerServiceTest {
         customer.setId(userId1);
 
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
         doNothing().when(customerRepository).deleteById(userId1);
         doNothing().when(customerRepository).flush();
@@ -274,6 +243,7 @@ class CustomerServiceTest {
         Customer customer = new Customer();
         customer.setId(userId1);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
 
@@ -299,43 +269,39 @@ class CustomerServiceTest {
 
     @Test
     public void testCustomerUpdateAdminNotThere(){
-        Long customerId = 1L;
         Long userId = 2L;
-
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-
-        CustomerRequestModel customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setSurname("UpdatedName");
-        customerUpdate.setEmail("email");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setHomeAddress(new Address());
 
         User mockAdmin = new User();
         mockAdmin.setRole(User.RoleEnum.COURIER);
 
-
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
 
-
         assertThrows(NotAuthorizedException.class, () -> customerService.updateCustomerById(customerId, userId, customerUpdate));
-
     }
     @Test
     public void createCustomer() throws MissingBodyException, InvalidFieldException,
             NotAuthorizedException, UserNotFoundException, EmailAlreadyInUseException {
-        Long customerId = 1L;
-        CustomerRequestModel customer = new CustomerRequestModel();
-        customer.setName("UpdatedName");
-        customer.setSurname("UpdatedName");
-        customer.setEmail("email1@mail.com");
-        customer.setAllergens(new ArrayList<>());
-        customer.setHomeAddress(new Address());
         Customer k = new Customer();
-        director.constructCustomer(builder, customer);
+
+        director.constructCustomer(builder, customerUpdate);
         Customer cust = (Customer) builder.build(k);
-        Customer c = customerService.createCustomer(customer);
+
+        Address address = new Address();
+        address.setAddress("a");
+        address.setCity("c");
+        address.setCountry("d");
+        address.setPostalCode("df");
+        Location location = new Location();
+        location.setLat(0.1F);
+        location.setLong(0.2F);
+        address.setCoordinates(location);
+
+        cust.setHomeAddress(address);
+        customerUpdate.setHomeAddress(address);
+
+        Customer c = customerService.createCustomer(customerUpdate);
         assertEquals(c, cust);
         verify(customerRepository).saveAndFlush(cust);
     }
@@ -361,19 +327,11 @@ class CustomerServiceTest {
 
     @Test
     public void testGetLocation()throws UserNotFoundException{
-        Long customerId = 1L;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-        mockCustomer.setName("John");
-        mockCustomer.setSurname("Doe");
-        mockCustomer.setEmail("john.doe@example.com");
         mockCustomer.setHomeAddress(adr);
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
-
         Location response = customerService.getLocation(customerId);
 
         verify(customerRepository, times(1)).findById(customerId);
-
         assertEquals(adr.getCoordinates(), response);
     }
 
@@ -390,12 +348,7 @@ class CustomerServiceTest {
 
     @Test
     public void testGetLocationNotWorking() {
-        Long customerId = 1L;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-        mockCustomer.setName("John");
-        mockCustomer.setSurname("Doe");
-        mockCustomer.setEmail("john.doe@example.com");
+
         mockCustomer.setHomeAddress(adr);
         Long cId2 = 2L;
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
@@ -409,12 +362,6 @@ class CustomerServiceTest {
 
     @Test
     public void testGetFavLocations()throws UserNotFoundException{
-        Long customerId = 1L;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-        mockCustomer.setName("John");
-        mockCustomer.setSurname("Doe");
-        mockCustomer.setEmail("john.doe@example.com");
         mockCustomer.setHomeAddress(adr);
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         mockCustomer.setFavRestaurants(favs);
@@ -427,12 +374,6 @@ class CustomerServiceTest {
 
     @Test
     public void testGetFavsNotWorking() {
-        Long customerId = 1L;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-        mockCustomer.setName("John");
-        mockCustomer.setSurname("Doe");
-        mockCustomer.setEmail("john.doe@example.com");
         mockCustomer.setHomeAddress(adr);
         Long cId2 = 2L;
         mockCustomer.setFavRestaurants(favs);
@@ -451,23 +392,16 @@ class CustomerServiceTest {
         Long customerId = 1L;
         Long userId = 2L;
 
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-        mockCustomer.setFavRestaurants(new ArrayList<>());
-
         User mockAdmin = new User();
         mockAdmin.setId(userId);
         mockAdmin.setRole(User.RoleEnum.ADMIN);
 
-
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
-
-
         customerService.updateFavRestaurants(customerId, userId, favs);
 
         verify(customerRepository, times(1)).findById(customerId);
-
         assertEquals(favs, mockCustomer.getFavRestaurants());
     }
 
@@ -510,6 +444,7 @@ class CustomerServiceTest {
         mockAdmin.setId(userId);
         mockAdmin.setRole(User.RoleEnum.COURIER);
 
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
 
@@ -522,17 +457,15 @@ class CustomerServiceTest {
         Long customerId = 1L;
         Long userId = 2L;
 
-        Customer mockCustomer = new Customer();
-        mockCustomer.setId(customerId);
-
         User mockAdmin = new User();
         mockAdmin.setRole(User.RoleEnum.COURIER);
 
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+
         assertThrows(NotAuthorizedException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs));
     }
-<<<<<<< HEAD
-=======
 
     @Test
     void getPastSavedOrderIdForUserSuccess() throws UserNotFoundException {
@@ -551,7 +484,9 @@ class CustomerServiceTest {
 
 
     @Test
-    void updateCustomerBlockStatusByAdminSuccess() throws UserNotFoundException, NotAuthorizedException {
+    void updateCustomerBlockStatusByAdminSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 2L;
         Boolean body = true;
@@ -563,9 +498,9 @@ class CustomerServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.ADMIN);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
-
         customerService.updateCustomerBlockStatus(userId1, userId2, body);
 
         verify(customerRepository, times(1)).saveAndFlush(customer);
@@ -585,6 +520,7 @@ class CustomerServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.CUSTOMER);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
 
@@ -593,7 +529,9 @@ class CustomerServiceTest {
     }
 
     @Test
-    void updatePastSavedOrderIdForUserBySelfSuccess() throws UserNotFoundException, NotAuthorizedException {
+    void updatePastSavedOrderIdForUserBySelfSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 1L;
         Long orderId = 123L;
@@ -602,15 +540,17 @@ class CustomerServiceTest {
         customer.setId(userId1);
         customer.setSavedOrder(0L);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
-
         customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId);
 
         assertThat(customer.getSavedOrder()).isEqualTo(orderId);
     }
 
     @Test
-    void updatePastSavedOrderIdForUserByAdminSuccess() throws UserNotFoundException, NotAuthorizedException {
+    void updatePastSavedOrderIdForUserByAdminSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         Long userId1 = 1L;
         Long userId2 = 2L;
         Long orderId = 123L;
@@ -622,6 +562,7 @@ class CustomerServiceTest {
         adminUser.setId(userId2);
         adminUser.setRole(User.RoleEnum.ADMIN);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
 
@@ -660,13 +601,11 @@ class CustomerServiceTest {
         nonAdminUser.setId(userId2);
         nonAdminUser.setRole(User.RoleEnum.CUSTOMER);
 
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
 
         assertThrows(NotAuthorizedException.class,
                 () -> customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId));
     }
-
-
->>>>>>> b1043bdfa671584392025ea638dc5912cfd774a4
 }
