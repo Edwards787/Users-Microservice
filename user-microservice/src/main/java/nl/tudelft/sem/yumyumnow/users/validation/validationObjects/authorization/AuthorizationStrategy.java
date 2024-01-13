@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Authorization;
+package nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;

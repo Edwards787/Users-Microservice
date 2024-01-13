@@ -4,7 +4,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationData;
 import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
 
 public class AuthorizationValidator extends BaseValidator{
