@@ -14,7 +14,7 @@ public class CustomerBuilder extends UserBuilder {
      * @return return the updated Customer object
      */
     public Customer build(Customer customer, CustomerRequestModel customerRequestModel) {
-        Customer c = (Customer)super.build(customer, customerRequestModel);
+        Customer c = (Customer) super.build(customer, customerRequestModel);
         c.setRole(User.RoleEnum.CUSTOMER);
         c.setAllergens(customerRequestModel.getAllergens());
         c.setHomeAddress(customerRequestModel.getHomeAddress());

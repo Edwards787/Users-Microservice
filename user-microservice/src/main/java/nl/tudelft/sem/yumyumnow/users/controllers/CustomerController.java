@@ -1,20 +1,17 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
+import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.api.CustomerApi;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
-
-import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.services.CustomerService;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Controller
 public class CustomerController implements CustomerApi {

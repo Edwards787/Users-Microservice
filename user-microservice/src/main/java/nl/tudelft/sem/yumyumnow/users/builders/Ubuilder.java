@@ -1,12 +1,11 @@
 package nl.tudelft.sem.yumyumnow.users.builders;
 
+import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 
-import java.util.List;
-
-public class Ubuilder implements Builder{
+public class Ubuilder implements Builder {
     private User.RoleEnum role;
     private String name;
 
@@ -14,11 +13,13 @@ public class Ubuilder implements Builder{
     private String surname;
     private String email;
     private boolean blocked;
-    private List<String> Allergens;
+    private List<String> allergens;
     private Address homeAddress;
+
     public void setRole(User.RoleEnum role) {
         this.role = role;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -39,7 +40,7 @@ public class Ubuilder implements Builder{
 
     @Override
     public void setAllergens(List<String> allergens) {
-        Allergens = allergens;
+        allergens = allergens;
     }
 
     @Override
@@ -49,13 +50,13 @@ public class Ubuilder implements Builder{
 
     @Override
     public User build(User u) {
-        if(role.equals(User.RoleEnum.CUSTOMER)){
+        if (role.equals(User.RoleEnum.CUSTOMER)) {
             Customer c = (Customer) u;
             c.setRole(role);
             c.setName(name);
             c.setSurname(surname);
             c.setEmail(email);
-            c.setAllergens(Allergens);
+            c.setAllergens(allergens);
             c.setHomeAddress(homeAddress);
             c.setBlocked(blocked);
             return c;
@@ -67,4 +68,5 @@ public class Ubuilder implements Builder{
         c.setEmail(email);
         c.setBlocked(blocked);
         return c;
-    }}
+    }
+}

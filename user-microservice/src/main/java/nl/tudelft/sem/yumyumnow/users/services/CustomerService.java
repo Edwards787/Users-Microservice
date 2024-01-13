@@ -1,14 +1,17 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import java.util.List;
+import java.util.Optional;
+import javax.validation.constraints.NotNull;
 import nl.tudelft.sem.yumyumnow.users.builders.Builder;
 import nl.tudelft.sem.yumyumnow.users.builders.Director;
 import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.model.Customer;
+import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.model.Customer;
-import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
@@ -17,9 +20,6 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -31,6 +31,12 @@ public class CustomerService {
     Director director;
     ValidatorConstructor validatorConstructor;
 
+    /**
+     * Customer service constructor.
+     *
+     * @param customerRepository customer repository
+     * @param userRepository     user repository
+     */
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
                            UserRepository userRepository) {
@@ -59,10 +65,10 @@ public class CustomerService {
         }
 
         director.constructCustomer(builder, customerRequestModel);
-        Customer cUpdated = (Customer) builder.build(new Customer());
+        Customer customerUpdated = (Customer) builder.build(new Customer());
 
-        customerRepository.saveAndFlush(cUpdated);
-        return cUpdated;
+        customerRepository.saveAndFlush(customerUpdated);
+        return customerUpdated;
     }
 
     /**
@@ -74,11 +80,24 @@ public class CustomerService {
     public Customer getCustomerById(Long userId) throws UserNotFoundException {
         Optional<Customer> customer = customerRepository.findById(userId);
 
-        if (customer.isEmpty()) throw new UserNotFoundException();
-        else return customer.get();
+        if (customer.isEmpty()) {
+            throw new UserNotFoundException();
+        } else {
+            return customer.get();
+        }
 
     }
 
+    /**
+     * Service that handles the deletion of a customer by id.
+     *
+     * @param userId1 user that is deleted
+     * @param userId2 user that does the deleting
+     * @throws NotAuthorizedException throw exception in case the user with adminId2 is not an admin
+     * @throws UserNotFoundException  throw exception in case the user is not found
+     * @throws MissingBodyException   throw exception in case the body is missing
+     * @throws InvalidFieldException  throw exception in case invalid fields were provided
+     */
     public void deleteCustomer(Long userId1, Long userId2)
             throws NotAuthorizedException, UserNotFoundException, MissingBodyException,
             InvalidFieldException {
@@ -118,10 +137,17 @@ public class CustomerService {
         director.constructCustomer(builder, customerRequestModel);
 
         //Set the right attributes for customer
-        Customer cUpdated = (Customer) builder.build(customer);
-        customerRepository.saveAndFlush(cUpdated);
+        Customer customerUpdated = (Customer) builder.build(customer);
+        customerRepository.saveAndFlush(customerUpdated);
     }
 
+    /**
+     * Service that handles the retrieval of the customer location.
+     *
+     * @param userId the id of the customer
+     * @return the coordinates of his location
+     * @throws UserNotFoundException throw exception in case the user is not found
+     */
     public Location getLocation(Long userId) throws UserNotFoundException {
         Optional<Customer> customer = customerRepository.findById(userId);
         if (customer.isEmpty()) {
@@ -131,6 +157,13 @@ public class CustomerService {
         }
     }
 
+    /**
+     * Service that handles the retrieval of the customer's favourite restaurants.
+     *
+     * @param userId id of the customer
+     * @return a list of the customer's favourite restaurant ids
+     * @throws UserNotFoundException throw exception in case the user is not found
+     */
     public List<Long> getFavoriteRestaurants(Long userId) throws UserNotFoundException {
         Optional<Customer> customer = customerRepository.findById(userId);
         if (customer.isEmpty()) {
@@ -140,6 +173,17 @@ public class CustomerService {
         }
     }
 
+    /**
+     * Service that handles the update of the customer's favourite restaurants.
+     *
+     * @param id1            id of the customer whose list is updated
+     * @param id2            id of the customer who does the updating of the list
+     * @param favRestaurants list of the id's of the new favourite restaurants
+     * @throws NotAuthorizedException throw exception in case the user with adminId2 is not an admin
+     * @throws UserNotFoundException  throw exception in case the user is not found
+     * @throws MissingBodyException   throw exception in case the body is missing
+     * @throws InvalidFieldException  throw exception in case invalid fields were provided
+     */
     public void updateFavRestaurants(Long id1, Long id2, List<Long> favRestaurants)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
@@ -157,14 +201,34 @@ public class CustomerService {
         customerRepository.saveAndFlush(customer);
     }
 
-
+    /**
+     * Service that handles the retrieval of the customer's past saved order.
+     *
+     * @param userId id of the customer
+     * @return the past saved order's id
+     * @throws UserNotFoundException throw exception in case the user is not found
+     */
     public Long getPastSavedOrderIdForUser(Long userId) throws UserNotFoundException {
 
         Optional<Customer> customer = customerRepository.findById(userId);
-        if (customer.isEmpty()) throw new UserNotFoundException();
-        else return customer.get().getSavedOrder();
+        if (customer.isEmpty()) {
+            throw new UserNotFoundException();
+        } else {
+            return customer.get().getSavedOrder();
+        }
     }
 
+    /**
+     * Service that handles the update of the customer's past saved order.
+     *
+     * @param userId1 id of customer whose past saved order is updated
+     * @param userId2 id of user whose doing the updating
+     * @param orderId id of the new saved order
+     * @throws UserNotFoundException  throw exception in case the user is not found
+     * @throws NotAuthorizedException throw exception in case the user is not authorized
+     * @throws MissingBodyException   throw exception in case a body is missing
+     * @throws InvalidFieldException  throw exception in case invalid fields were provided
+     */
     public void updatePastSavedOrderIdForUser(Long userId1, Long userId2, Long orderId)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
@@ -177,12 +241,24 @@ public class CustomerService {
         customer.setSavedOrder(orderId);
     }
 
-
+    /**
+     * Service that handles the update of the customer's block status.
+     *
+     * @param userId1 id of user who we are updating the block status
+     * @param userId2 id of user who is doing the updating of the status
+     * @param body    if we are blocking or unblocking a user (true/false)
+     * @throws UserNotFoundException throw exception in case the user is not found
+     * @throws NotAuthorizedException throw exception in case the user is not authorized
+     * @throws InvalidFieldException throw exception in case invalid fields were provided
+     * @throws MissingBodyException throw exception in case a body is missing
+     */
     public void updateCustomerBlockStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, InvalidFieldException,
             MissingBodyException {
 
-        if (body == null) throw new InvalidFieldException("value", "null");
+        if (body == null) {
+            throw new InvalidFieldException("value", "null");
+        }
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationObject(userId1,

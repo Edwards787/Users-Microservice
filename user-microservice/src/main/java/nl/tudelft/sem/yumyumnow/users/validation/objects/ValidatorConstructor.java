@@ -1,6 +1,14 @@
 package nl.tudelft.sem.yumyumnow.users.validation.objects;
 
-import nl.tudelft.sem.yumyumnow.users.validation.validators.*;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.AddressValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.AllergenValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.AuthorizationValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.ClosingTimesValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.EmailValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.NameValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.OpeningTimesValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.RequestModelValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.SurnameValidator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -157,7 +165,12 @@ public class ValidatorConstructor {
         return requestModelValidator;
     }
 
-    public Validator customerWithoutAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the customer.
+     *
+     * @return the chain of responsibility for the customer
+     */
+    public Validator customerWithoutAuthorization() {
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
         SurnameValidator surnameValidator = new SurnameValidator();
@@ -175,7 +188,13 @@ public class ValidatorConstructor {
         return requestModelValidator;
     }
 
-    public Validator customerWithAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the customer.
+     *
+     * @return the chain of responsibility for the customer
+     */
+
+    public Validator customerWithAuthorization() {
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
