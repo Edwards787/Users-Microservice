@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -23,7 +24,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserByEmail(String email) throws UserNotFoundException {
+    public User getUserByEmail(String email) throws UserNotFoundException, InvalidFieldException {
+        if (email == null) throw new InvalidFieldException("email", "null");
+
         Optional<User> user = userRepository.findByEmail(email);
         if(user.isEmpty()) throw new UserNotFoundException();
         return user.get();
@@ -34,6 +37,4 @@ public class UserService {
         if(user.isEmpty()) throw new UserNotFoundException();
         return user.get();
     }
-
-
 }

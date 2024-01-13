@@ -1,6 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.api.UserApi;
+import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.services.UserService;
@@ -44,6 +45,8 @@ public class UserController implements UserApi {
         }
         catch (UserNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given email not found.");
+        } catch(InvalidFieldException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 

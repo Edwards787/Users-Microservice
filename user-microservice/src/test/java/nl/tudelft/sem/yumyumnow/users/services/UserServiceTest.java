@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -26,14 +28,13 @@ public class UserServiceTest {
 
     @Test
     public void testGetAllUsers() {
-
         when(userRepository.findAll()).thenReturn(new ArrayList<>());
         List<User> users = userService.getAllUsers();
         assertNotNull(users);
     }
 
     @Test
-    public void testGetUserByEmail() throws UserNotFoundException {
+    public void testGetUserByEmailSuccess() throws UserNotFoundException, InvalidFieldException {
         //(user found)
         String email = "test@example.com";
         User user = new User();
@@ -43,8 +44,10 @@ public class UserServiceTest {
 
         User result = userService.getUserByEmail(email);
         assertNotNull(result);
-
-        // (user not found)
+        assertThat(result).isEqualTo(user);
+    }
+    @Test
+    public void testGetUserByEmailNotFound() throws UserNotFoundException, InvalidFieldException {
         String nonExistingEmail = "nonexistent@example.com";
         when(userRepository.findByEmail(nonExistingEmail)).thenReturn(Optional.empty());
 
