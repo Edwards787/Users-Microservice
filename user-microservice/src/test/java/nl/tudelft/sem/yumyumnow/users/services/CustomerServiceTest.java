@@ -35,20 +35,20 @@ class CustomerServiceTest {
     Director director;
     @BeforeEach
     public void setUp(){
-         customerRepository = mock(CustomerRepository.class);
-         userRepository  = mock(UserRepository.class);
+        customerRepository = mock(CustomerRepository.class);
+        userRepository  = mock(UserRepository.class);
         director = new Director();
         builder = new Ubuilder();
         customerService = new CustomerService(customerRepository, userRepository);
-          Location l = new Location();
-          l.lat(12.1f);
-          l._long(6.9f);
-          adr = new Address();
-          adr.setCoordinates(l);
-          favs = new ArrayList<>();
-          favs.add(1L);
-          favs.add(6L);
-          favs.add(10L);
+        Location l = new Location();
+        l.lat(12.1f);
+        l._long(6.9f);
+        adr = new Address();
+        adr.setCoordinates(l);
+        favs = new ArrayList<>();
+        favs.add(1L);
+        favs.add(6L);
+        favs.add(10L);
     }
     @Test
     public void testGetCustomerByIDExisting() throws UserNotFoundException {
@@ -143,7 +143,6 @@ class CustomerServiceTest {
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
-
 
         customerService.updateCustomerById(customerId, userId, customerUpdate);
 
@@ -401,7 +400,6 @@ class CustomerServiceTest {
 
         List<Long> favs2 = null;
         assertThrows(MissingBodyException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs2));
-
     }
 
     @Test
@@ -412,10 +410,7 @@ class CustomerServiceTest {
         Customer mockCustomer = new Customer();
         mockCustomer.setId(1L);
 
-
         assertThrows(UserNotFoundException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs));
-
-
     }
 
     @Test
@@ -430,10 +425,8 @@ class CustomerServiceTest {
         mockAdmin.setId(userId);
         mockAdmin.setRole(User.RoleEnum.COURIER);
 
-
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockAdmin));
-
 
         assertThrows(NotAuthorizedException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs));
 
@@ -451,9 +444,6 @@ class CustomerServiceTest {
         mockAdmin.setRole(User.RoleEnum.COURIER);
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
-
         assertThrows(NotAuthorizedException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs));
-
     }
-
 }

@@ -329,7 +329,6 @@ class CustomerControllerTest {
         }
     }
 
-
     @Test
     void getAllCustomersSuccess() {
         when(customerService.getAllCustomers()).thenReturn(List.of(c1,c2));
@@ -458,10 +457,8 @@ class CustomerControllerTest {
                 ResponseStatusException.class,
                 () -> customerController.updateCustomerBlockStatus(userId1, userId2, body)
         );
-
+        
         assertThat(exception.getStatus().value()).isEqualTo(403);
         assertThat(exception.getReason()).isEqualTo("Unauthorized action");
     }
-
-
 }

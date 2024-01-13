@@ -18,10 +18,7 @@ import java.util.List;
 
 @Controller
 public class CustomerController implements CustomerApi {
-
-
     private final CustomerService customerService;
-
     @Autowired
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
@@ -40,7 +37,7 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         catch(UserNotFoundException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         catch(EmailAlreadyInUseException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
@@ -63,9 +60,9 @@ public class CustomerController implements CustomerApi {
         }
         catch (NotAuthorizedException e){
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
-
+        } catch (MissingBodyException | InvalidFieldException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "something went wrong");
         }
-
     }
 
     @Override
@@ -78,7 +75,6 @@ public class CustomerController implements CustomerApi {
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Something went wrong");
         }
-
     }
 
     @Override
@@ -90,7 +86,6 @@ public class CustomerController implements CustomerApi {
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
-
     }
 
     @Override
@@ -153,6 +148,8 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        } catch (InvalidFieldException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "something went wrong");
         }
     }
 
@@ -165,6 +162,8 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (MissingBodyException | InvalidFieldException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "something went wrong");
         }
     }
 
@@ -177,7 +176,8 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch(InvalidFieldException | MissingBodyException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
 }

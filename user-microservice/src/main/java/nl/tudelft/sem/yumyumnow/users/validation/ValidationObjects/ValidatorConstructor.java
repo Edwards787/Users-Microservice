@@ -122,4 +122,42 @@ public class ValidatorConstructor {
         return requestModelValidator;
     }
 
+    public Validator customerWithoutAuthorization(){
+        RequestModelValidator requestModelValidator = new RequestModelValidator();
+        NameValidator nameValidator = new NameValidator();
+        SurnameValidator surnameValidator = new SurnameValidator();
+        EmailValidator emailValidator = new EmailValidator();
+        AddressValidator addressValidator = new AddressValidator();
+        AllergenValidator allergenValidator = new AllergenValidator();
+
+        requestModelValidator.setNext(nameValidator);
+        nameValidator.setNext(surnameValidator);
+        surnameValidator.setNext(emailValidator);
+        emailValidator.setNext(addressValidator);
+        addressValidator.setNext(allergenValidator);
+        addressValidator.setNext(null);
+
+        return requestModelValidator;
+    }
+
+    public Validator customerWithAuthorization(){
+        AuthorizationValidator authorizationValidator = new AuthorizationValidator();
+        RequestModelValidator requestModelValidator = new RequestModelValidator();
+        NameValidator nameValidator = new NameValidator();
+        SurnameValidator surnameValidator = new SurnameValidator();
+        EmailValidator emailValidator = new EmailValidator();
+        AddressValidator addressValidator = new AddressValidator();
+        AllergenValidator allergenValidator = new AllergenValidator();
+
+        authorizationValidator.setNext(requestModelValidator);
+        requestModelValidator.setNext(nameValidator);
+        nameValidator.setNext(surnameValidator);
+        surnameValidator.setNext(emailValidator);
+        emailValidator.setNext(addressValidator);
+        addressValidator.setNext(allergenValidator);
+        addressValidator.setNext(null);
+
+        return authorizationValidator;
+    }
+
 }
