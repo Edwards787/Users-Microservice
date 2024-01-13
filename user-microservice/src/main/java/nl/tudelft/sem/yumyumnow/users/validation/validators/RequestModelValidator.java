@@ -7,11 +7,11 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 
-public class RequestModelValidator extends BaseValidator{
+public class RequestModelValidator extends BaseValidator {
     @Override
     public boolean handle(ValidationObject validationObject)
-        throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
-        UserNotFoundException {
+            throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
+            UserNotFoundException {
 
         UserRequestModel userRequestModel = validationObject.getUserRequestModel();
         if (userRequestModel == null) {

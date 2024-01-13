@@ -7,11 +7,11 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 
-public class ClosingTimesValidator extends BaseValidator{
+public class ClosingTimesValidator extends BaseValidator {
     @Override
     public boolean handle(ValidationObject validationObject)
-        throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
-        UserNotFoundException {
+            throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
+            UserNotFoundException {
 
         VendorRequestModel vendorRequestModel = (VendorRequestModel) validationObject.getUserRequestModel();
         if (vendorRequestModel.getClosingTimes() == null || vendorRequestModel.getClosingTimes().isEmpty()) {

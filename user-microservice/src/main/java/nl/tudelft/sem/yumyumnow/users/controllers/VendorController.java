@@ -45,7 +45,7 @@ public class VendorController implements VendorApi {
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "User with id " + userid2 + " not authorized to delete vendor with id " + userid1);
-        } catch ( MissingBodyException | InvalidFieldException e) {
+        } catch (MissingBodyException | InvalidFieldException e) {
             throw new RuntimeException(e);
         }
     }

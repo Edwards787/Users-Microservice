@@ -10,14 +10,14 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 public abstract class BaseValidator implements Validator {
     private transient Validator next;
 
-    public void setNext(Validator next){
+    public void setNext(Validator next) {
         this.next = next;
     }
 
     protected boolean checkNext(ValidationObject validationObject)
-        throws NotAuthorizedException, InvalidFieldException, MissingBodyException,
-        UserNotFoundException {
-        if (next == null){
+            throws NotAuthorizedException, InvalidFieldException, MissingBodyException,
+            UserNotFoundException {
+        if (next == null) {
             return true;
         }
         return next.handle(validationObject);

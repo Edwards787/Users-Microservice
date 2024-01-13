@@ -1,21 +1,22 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import java.util.List;
+import java.util.Optional;
+import javax.validation.constraints.NotNull;
 import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
-import nl.tudelft.sem.yumyumnow.users.model.*;
+import nl.tudelft.sem.yumyumnow.users.model.Courier;
+import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
+import nl.tudelft.sem.yumyumnow.users.model.Rating;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CourierService {
@@ -33,20 +34,36 @@ public class CourierService {
      * @param courierBuilder    courier builder
      */
     @Autowired
-    public CourierService(CourierRepository courierRepository, UserRepository userRepository, CourierBuilder courierBuilder) {
+    public CourierService(
+            CourierRepository courierRepository,
+            UserRepository userRepository,
+            CourierBuilder courierBuilder) {
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
         this.courierBuilder = courierBuilder;
         this.validatorConstructor = new ValidatorConstructor();
     }
 
+    /**
+     * Service that handles the retrieval of a courier by id.
+     *
+     * @return courier object
+     */
     public Courier getCourierById(Long courierId) throws UserNotFoundException {
         Optional<Courier> courier = courierRepository.findById(courierId);
 
-        if (courier.isEmpty()) throw new UserNotFoundException();
-        else return courier.get();
+        if (courier.isEmpty()) {
+            throw new UserNotFoundException();
+        } else {
+            return courier.get();
+        }
     }
 
+    /**
+     * Service that handles the creation of a courier.
+     *
+     * @return courier object
+     */
     public Courier createCourier(@NotNull CourierRequestModel courierRequestModel)
             throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
             UserNotFoundException, NotAuthorizedException {
@@ -71,6 +88,14 @@ public class CourierService {
         return courierRepository.findAll();
     }
 
+    /**
+     * Service that handles the deletion of a courier.
+     *
+     * @throws UserNotFoundException   throw exception in case user was not found
+     * @throws NotAuthorizedException  throw exception in case user was not authorized
+     * @throws MissingBodyException    throw exception in case a body was missing
+     * @throws InvalidFieldException   throw exception in case invalid fields were provided
+     */
     public void deleteCourier(Long userId1, Long userId2)
             throws NotAuthorizedException, UserNotFoundException, MissingBodyException,
             InvalidFieldException {
@@ -84,6 +109,14 @@ public class CourierService {
         courierRepository.flush();
     }
 
+    /**
+     * Service that handles the update of a courier.
+     *
+     * @throws UserNotFoundException   throw exception in case user was not found
+     * @throws NotAuthorizedException  throw exception in case user was not authorized
+     * @throws MissingBodyException    throw exception in case a body was missing
+     * @throws InvalidFieldException   throw exception in case invalid fields were provided
+     */
     public void updateCourier(Long userId1, Long userId2, CourierRequestModel courierRequestModel)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
@@ -97,26 +130,51 @@ public class CourierService {
         courierInitial = getCourierById(userId1);
         Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
         courierRepository.saveAndFlush(courier);
+
     }
 
+    /**
+     * Service that handles the retrieval of past orders for a courier.
+     *
+     * @return list of order ids
+     */
     public List<Long> getPastOrderIdsForCourier(Long userId) throws UserNotFoundException {
         Optional<Courier> courier = courierRepository.findById(userId);
-        if (courier.isEmpty()) throw new UserNotFoundException();
-            //TODO : MAKE SURE TO IMPLEMENT THIS WHEN WE AGREE ON HOW TO GET THEM
-        else return List.of(1L, 2L, 3L);
+        if (courier.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        // TODO : MAKE SURE TO IMPLEMENT THIS WHEN WE AGREE ON HOW TO GET THEM
+        return List.of(1L, 2L, 3L);
     }
 
+    /**
+     * Service that handles the retrieval of ratings for a courier.
+     *
+     * @return list of ratings
+     */
     public List<Rating> getRatingsForCourier(Long userId) throws UserNotFoundException {
         Optional<Courier> courier = courierRepository.findById(userId);
-        if (courier.isEmpty()) throw new UserNotFoundException();
-        else return courier.get().getRatings();
+        if (courier.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        return courier.get().getRatings();
     }
 
+    /**
+     * Service that handles the update of ratings for a courier.
+     *
+     * @throws UserNotFoundException   throw exception in case user was not found
+     * @throws NotAuthorizedException  throw exception in case user was not authorized
+     * @throws MissingBodyException    throw exception in case a body was missing
+     * @throws InvalidFieldException   throw exception in case invalid fields were provided
+     */
     public void updateRatingsForCourier(Long userId1, Long userId2, List<Rating> ratings)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
 
-        if (ratings == null) throw new InvalidFieldException("ratings", "null");
+        if (ratings == null) {
+            throw new InvalidFieldException("ratings", "null");
+        }
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
@@ -127,12 +185,21 @@ public class CourierService {
         courierRepository.saveAndFlush(courier);
     }
 
-
+    /**
+     * Service that handles the update of activation status for a courier.
+     *
+     * @throws UserNotFoundException   throw exception in case user was not found
+     * @throws NotAuthorizedException  throw exception in case user was not authorized
+     * @throws MissingBodyException    throw exception in case a body was missing
+     * @throws InvalidFieldException   throw exception in case invalid fields were provided
+     */
     public void updateCourierActivationStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
 
-        if (body == null) throw new InvalidFieldException("activation status", "null");
+        if (body == null) {
+            throw new InvalidFieldException("activation status", "null");
+        }
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
@@ -143,11 +210,21 @@ public class CourierService {
         courierRepository.saveAndFlush(courier);
     }
 
+    /**
+     * Service that handles the update of block status for a courier.
+     *
+     * @throws UserNotFoundException   throw exception in case user was not found
+     * @throws NotAuthorizedException  throw exception in case user was not authorized
+     * @throws MissingBodyException    throw exception in case a body was missing
+     * @throws InvalidFieldException   throw exception in case invalid fields were provided
+     */
     public void updateCourierBlockStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
 
-        if (body == null) throw new InvalidFieldException("block status", "null");
+        if (body == null) {
+            throw new InvalidFieldException("block status", "null");
+        }
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,

@@ -7,6 +7,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 
 public interface Validator {
     void setNext(Validator handler);
+
     boolean handle(ValidationObject validationObject) throws
-        InvalidFieldException, NotAuthorizedException, MissingBodyException, UserNotFoundException;
+            InvalidFieldException, NotAuthorizedException, MissingBodyException, UserNotFoundException;
 }

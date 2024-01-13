@@ -7,16 +7,16 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 
-public class IBANValidator extends BaseValidator{
+public class IbanValidator extends BaseValidator {
     @Override
     public boolean handle(ValidationObject validationObject)
-        throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
-        UserNotFoundException {
+            throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
+            UserNotFoundException {
 
         CourierRequestModel courierRequestModel = (CourierRequestModel) validationObject.getUserRequestModel();
         String iban = courierRequestModel.getIbanNumber();
 
-        if (iban == null){
+        if (iban == null) {
             throw new InvalidFieldException("iban", "null");
         }
 

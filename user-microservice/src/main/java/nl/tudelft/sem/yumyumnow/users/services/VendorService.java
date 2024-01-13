@@ -11,8 +11,8 @@ import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Accessibility;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -13,12 +13,12 @@ public class AuthorizationObject {
     private final Accessibility accessibility;
 
     /**
+     * Creates an AuthorizationObject.
      *
-     *
-     * @param id1
-     * @param id2
-     * @param userRepository
-     * @param accessibility
+     * @param id1 id of the target
+     * @param id2 id of the requester
+     * @param userRepository user repository
+     * @param accessibility accessibility strategy
      */
     public AuthorizationObject(Long id1, Long id2, UserRepository userRepository, Accessibility accessibility) {
         this.id1 = id1;
