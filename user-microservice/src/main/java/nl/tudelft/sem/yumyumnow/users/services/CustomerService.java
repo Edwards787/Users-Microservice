@@ -1,49 +1,71 @@
 package nl.tudelft.sem.yumyumnow.users.services;
-
 import com.sun.xml.bind.v2.TODO;
 import nl.tudelft.sem.yumyumnow.users.builders.Builder;
 import nl.tudelft.sem.yumyumnow.users.builders.Director;
 
+import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
 import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
 import nl.tudelft.sem.yumyumnow.users.validators.Validator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
-
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
-    private final CustomerValidator customerValidator;
     Builder builder;
     Director director;
-    Validator validator;
+     ValidatorConstructor validatorConstructor;
+
 
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
-                           UserRepository userRepository, CustomerValidator customerValidator, Builder builder, Director director, Validator validator) {
+                           UserRepository userRepository) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
-        this.customerValidator = customerValidator;
-        this.director = director;
-        this.builder = builder;
-        this.validator = validator;
+        this.director = new Director();
+        this.builder = new Ubuilder();
+        this.validatorConstructor = new ValidatorConstructor();
+    }
+    /**
+     * Creates a customer.
+     *
+     * @param customerRequestModel the customer request model
+     * @return the response entity
+     */
+    public Customer createCustomer (@NotNull CustomerRequestModel customerRequestModel)
+            throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
+            UserNotFoundException, NotAuthorizedException{
+        // Little demo
+        Customer customer = new Customer();
+        //Makes sure we have a correct request model
+        nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator validator = validatorConstructor.userWithoutAuthorization();
+        validator.handle(new ValidationObject(customerRequestModel, null));
 
+        director.constructCustomer(builder, customerRequestModel);
+        Customer cUpdated = (Customer)builder.build(customer);
+
+        if (userRepository.findByEmail(customerRequestModel.getEmail()).isPresent()) {
+            throw new EmailAlreadyInUseException(customerRequestModel.getEmail());
+        }
+
+        customerRepository.saveAndFlush(cUpdated);
+        return cUpdated;
     }
 
     /**
@@ -61,16 +83,6 @@ public class CustomerService {
     }
 
 
-        public Customer createCustomer (CustomerRequestModel customerRequestModel)throws MissingBodyException, InvalidFieldException{
-            // Little demo
-            Customer customer = new Customer();
-            //Makes sure we have a correct request model
-            customerValidator.validate(customerRequestModel);
-            director.constructCustomer(builder, customerRequestModel);
-            Customer cUpdated = (Customer)builder.build(customer);
-            customerRepository.saveAndFlush(customer);
-            return customer;
-    }
 
     public void deleteCustomer (Long userId1, Long userId2)
             throws NotAuthorizedException, UserNotFoundException{
@@ -114,7 +126,12 @@ public class CustomerService {
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
             Customer customer;
             //Makes sure we have a correct request model
-            customerValidator.validate(customerRequestModel);
+            if(customerRequestModel == null){
+                throw new MissingBodyException();
+            }
+            if(customerRequestModel.getSurname() == ""){
+                throw new InvalidFieldException("Email", "2");
+            }
             //Make sure that we can find the customer to be updated
             customer = getCustomerById(id1);
             director.constructCustomer(builder, customerRequestModel);

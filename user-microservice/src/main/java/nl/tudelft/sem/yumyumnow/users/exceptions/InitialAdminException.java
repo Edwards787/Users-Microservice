@@ -2,7 +2,11 @@ package nl.tudelft.sem.yumyumnow.users.exceptions;
 
 import java.io.Serial;
 
-public class InitialAdminException extends Exception{
+public class InitialAdminException extends Exception {
     @Serial
     private static final long serialVersionUID = 3731220472101318320L;
+
+    public InitialAdminException() {
+        super("Trying to delete the initial admin");
+    }
 }

@@ -1,7 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.repositories;
 
 import java.util.Optional;
-
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,4 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Check if an existing user already uses an id.
      */
     boolean existsById(Long id);
+
+    Optional<User> findByEmail(String email);
 }

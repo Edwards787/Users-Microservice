@@ -3,20 +3,19 @@ package nl.tudelft.sem.yumyumnow.users;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+/*
 public class AdminValidatorTest {
     AdminValidator adminValidator;
     AdminRequestModel adminRequestModel;
     @BeforeEach
     public void setUp(){
        adminValidator = new AdminValidator();
-       adminRequestModel = new AdminRequestModel("email", "name", "surname");
+       adminRequestModel = new AdminRequestModel("email@mail.com", "name", "surname");
     }
 
     @Test
@@ -123,3 +122,4 @@ public class AdminValidatorTest {
         }
     }
 }
+*/

@@ -77,7 +77,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void createCustomerSuccess() throws MissingBodyException, InvalidFieldException {
+    void createCustomerSuccess() throws MissingBodyException, InvalidFieldException,EmailAlreadyInUseException, NotAuthorizedException, UserNotFoundException{
         when(customerService.createCustomer(customerUpdate)).thenReturn(c1);
         ResponseEntity<Customer> res = customerController.createCustomer(customerUpdate);
         assertThat(res.getStatusCodeValue()).isEqualTo(200);
@@ -85,7 +85,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void createCustomerMissingBody() throws MissingBodyException, InvalidFieldException {
+    void createCustomerMissingBody() throws MissingBodyException, InvalidFieldException,EmailAlreadyInUseException, NotAuthorizedException, UserNotFoundException {
         when(customerService.createCustomer(any())).thenThrow(new MissingBodyException());
         assertThatThrownBy(() -> customerController.createCustomer(null))
                 .isInstanceOf(ResponseStatusException.class)
@@ -93,7 +93,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void createCustomerInvalidField() throws MissingBodyException, InvalidFieldException {
+    void createCustomerInvalidField() throws MissingBodyException, InvalidFieldException,EmailAlreadyInUseException, NotAuthorizedException, UserNotFoundException {
         when(customerService.createCustomer(any())).thenThrow(new InvalidFieldException("fieldName","value"));
         assertThatThrownBy(() -> customerController.createCustomer(customerUpdate))
                 .isInstanceOf(ResponseStatusException.class)

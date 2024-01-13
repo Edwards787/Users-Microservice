@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.services;
 
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.Builder;
@@ -9,8 +9,8 @@ import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
-import nl.tudelft.sem.yumyumnow.users.services.AdminService;
-import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,8 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
-    private  AdminRepository adminRepository;
-    private AdminValidator adminValidator;
+    private AdminRepository adminRepository;
+    private UserRepository userRepository;
+    private ValidatorConstructor validatorConstructor;
     private AdminBuilder adminBuilder;
     private AdminService adminService;
     private Admin admin1;
@@ -34,11 +35,10 @@ public class AdminServiceTest {
     @BeforeEach
     public void setUp(){
         adminRepository = mock(AdminRepository.class);
-        adminValidator = new AdminValidator();
+        userRepository = mock(UserRepository.class);
+        validatorConstructor = new ValidatorConstructor();
         adminBuilder = new AdminBuilder();
-        Builder builder = new Ubuilder();
-        Director director = new Director();
-        adminService = new AdminService(adminRepository, adminValidator, builder, director);
+        adminService = new AdminService(adminRepository, userRepository);
     }
 
     @BeforeEach
@@ -46,18 +46,23 @@ public class AdminServiceTest {
         admin1 = new Admin();
         admin1.setSurname("surname 1");
         admin1.setName("name 1");
-        admin1.setEmail("email 1");
+        admin1.setEmail("email1@mail.com");
         admin1.setRole(User.RoleEnum.ADMIN);
         admin1.setId(0L);
 
         admin2 = new Admin();
         admin2.setSurname("surname 2");
         admin2.setName("name 2");
-        admin2.setEmail("email 2");
+        admin2.setEmail("email2@mail.com");
         admin2.setRole(User.RoleEnum.ADMIN);
         admin2.setId(1L);
 
-        adminRequestModel = new AdminRequestModel("email 1", "name 1", "surname 1");
+        adminRequestModel = new AdminRequestModel("email1@mail.com", "name 1", "surname 1");
+
+        when(userRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin2));
+        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
+        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
     }
     @Test
     public void testGetAdminByIdValid() throws UserNotFoundException {
@@ -75,27 +80,29 @@ public class AdminServiceTest {
 
     @Test
     public void testCreateAdminValid()
-        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
-        when(adminRepository.findByEmail("email 1")).thenReturn(Optional.empty());
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
+        when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.empty());
         when(adminRepository.saveAndFlush(adminBuilder.build(new Admin(), adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);
     }
     @Test
     public void testCreateAdminInvalid() {
-        when(adminRepository.findByEmail("email 1")).thenReturn(Optional.of(admin1));
+        when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.of(admin1));
         assertThrows(EmailAlreadyInUseException.class, () -> {
             adminService.createAdmin(adminRequestModel);
         });
     }
     @Test
     public void testDeleteAdminByIdValid()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
         doNothing().when(adminRepository).deleteById(1L);
 
         adminService.deleteAdminById(1L, 0L);
 
-        verify(adminRepository).findById(0L);
+        verify(userRepository, times(2)).findById(0L);
         verify(adminRepository).deleteById(1L);
     }
     @Test
@@ -109,7 +116,11 @@ public class AdminServiceTest {
     }
     @Test
     public void testDeleteAdminByIdNotAuthorized(){
-        when(adminRepository.findById(1L)).thenReturn(Optional.empty());
+        User user3 = new User();
+        user3.setRole(User.RoleEnum.VENDOR);
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user3));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user3));
         assertThrows(NotAuthorizedException.class, () -> {
             adminService.deleteAdminById(2L, 1L);
             verify(adminRepository).findById(1L);
@@ -150,10 +161,14 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdUnauthorized()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
+        User user = new User();
+        user.setRole(User.RoleEnum.VENDOR);
+
         when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+
         assertThrows(NotAuthorizedException.class, () -> {
-            adminService.updateAdminById(0L, 1L, adminRequestModel);
+            adminService.updateAdminById(0L, 2L, adminRequestModel);
             verify(adminRepository).findById(1L);
             verify(adminRepository).findById(0L);
         });
@@ -162,8 +177,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdMissingBody()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         assertThrows(MissingBodyException.class, () -> {
             adminService.updateAdminById(0L, 1L, null);
             verify(adminRepository).findById(1L);
@@ -174,8 +187,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNoEmail()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setEmail("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -195,8 +206,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNullEmail()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setEmail(null);
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -216,8 +225,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNoName()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setName("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -237,8 +244,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNullName()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setName(null);
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -258,8 +263,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNoSurname()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setSurname("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -279,8 +282,6 @@ public class AdminServiceTest {
     public void testUpdateAdminByIdNullSurname()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
-        when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
         adminRequestModel.setSurname(null);
 
         assertThrows(InvalidFieldException.class, () -> {

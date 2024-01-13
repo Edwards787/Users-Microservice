@@ -7,6 +7,7 @@ import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.CustomerService;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,14 @@ public class CustomerController implements CustomerApi {
 
 
     private final CustomerService customerService;
+
     @Autowired
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
     @Override
-    public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel) {
+    public ResponseEntity<Customer> createCustomer(CustomerRequestModel customerRequestModel){
         Customer c;
         try{
            c =  customerService.createCustomer(customerRequestModel);
@@ -36,6 +38,15 @@ public class CustomerController implements CustomerApi {
         }
         catch(InvalidFieldException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        catch(UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
+        }
+        catch(EmailAlreadyInUseException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
+        }
+        catch(NotAuthorizedException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authorized to create");
         }
         return ResponseEntity.ok(c);
     }

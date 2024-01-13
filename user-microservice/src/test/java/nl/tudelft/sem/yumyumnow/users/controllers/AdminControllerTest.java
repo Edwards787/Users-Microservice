@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.controllers.AdminController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
@@ -48,6 +48,63 @@ public class AdminControllerTest {
     }
 
     @Test
+    public void testAdminCreateValid()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
+        when(adminService.createAdmin(adminRequestModel)).thenReturn(admin1);
+        assertThat(adminController.createAdmin(adminRequestModel)).isEqualTo(ResponseEntity.ok(admin1));
+    }
+
+    @Test
+    public void testAdminCreateNullRequest()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
+        when(adminService.createAdmin(null)).thenThrow(new MissingBodyException());
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.createAdmin(null);
+        });
+        try{
+            adminController.createAdmin(null);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getReason()).isEqualTo("Body is missing");
+        }
+    }
+
+    @Test
+    public void testAdminCreateNoEmail()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
+        adminRequestModel.setEmail("");
+        when(adminService.createAdmin(adminRequestModel)).thenThrow(new InvalidFieldException("email", ""));
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.createAdmin(adminRequestModel);
+        });
+        try{
+            adminController.createAdmin(adminRequestModel);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getReason()).isEqualTo("Field 'email' with value '' is invalid");
+        }
+    }
+
+    @Test
+    public void testAdminCreateEmailExists()
+        throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
+        UserNotFoundException, NotAuthorizedException {
+        when(adminService.createAdmin(adminRequestModel)).thenThrow(new EmailAlreadyInUseException("email"));
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.createAdmin(adminRequestModel);
+        });
+        try{
+            adminController.createAdmin(adminRequestModel);
+        }catch (ResponseStatusException e){
+            assertThat(e.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+            assertThat(e.getReason()).isEqualTo("User with email 'email' already exists");
+        }
+    }
+
+    @Test
     public void testAdminGetByIdValid() throws UserNotFoundException {
         when(adminService.getAdminById(0L)).thenReturn(admin1);
         assertThat(adminController.getAdminById(0L)).isEqualTo(ResponseEntity.ok(admin1));
@@ -68,7 +125,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteAdminValid()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doNothing().when(adminService).deleteAdminById(1L, 2L);
         assertThat(adminController.deleteAdmin(1L, 2L)).isEqualTo(new ResponseEntity<>(HttpStatus.OK));
         verify(adminService).deleteAdminById(1L, 2L);
@@ -76,7 +134,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteInitialAdmin()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doThrow(new InitialAdminException()).when(adminService).deleteAdminById(0L, 1L);
 
         assertThrows(ResponseStatusException.class, () -> {
@@ -92,7 +151,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteAdminUnauthorized()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doThrow(new NotAuthorizedException()).when(adminService).deleteAdminById(2L, 0L);
         assertThrows(ResponseStatusException.class, () -> {
             adminController.deleteAdmin(2L, 0L);
@@ -107,7 +167,8 @@ public class AdminControllerTest {
 
     @Test
     public void testDeleteAdminNotFound()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException {
+        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+        MissingBodyException, InvalidFieldException {
         doThrow(new UserNotFoundException()).when(adminService).deleteAdminById(3L, 0L);
         assertThrows(ResponseStatusException.class, () -> {
             adminController.deleteAdmin(3L, 0L);

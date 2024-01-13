@@ -24,6 +24,10 @@
     <module name="BeforeExecutionExclusionFileFilter">
         <property name="fileNamePattern" value="module\-info\.java$"/>
     </module>
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern"
+                  value=".*[\\/]build[\\/].*$"/>
+    </module>
     <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
     <module name="SuppressionFilter">
         <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
@@ -54,7 +58,9 @@
             <property name="allowByTailComment" value="true"/>
             <property name="allowNonPrintableEscapes" value="true"/>
         </module>
-        <module name="AvoidStarImport"/>
+        <module name="AvoidStarImport">
+            <property name="excludes" value="nl.tudelft.sem.yumyumnow.users.exceptions"/>
+        </module>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap">
             <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>

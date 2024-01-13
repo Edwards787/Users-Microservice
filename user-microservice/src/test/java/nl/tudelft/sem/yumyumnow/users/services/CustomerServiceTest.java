@@ -6,10 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.builders.Builder;
 import nl.tudelft.sem.yumyumnow.users.builders.CustomerBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.Director;
 import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
-import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -29,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CustomerServiceTest {
-    CustomerValidator customerValidator;
     CustomerRepository customerRepository;
     UserRepository userRepository;
     private CustomerService customerService;
@@ -39,22 +35,11 @@ class CustomerServiceTest {
     Director director;
     @BeforeEach
     public void setUp(){
-        customerValidator = new CustomerValidator();
          customerRepository = mock(CustomerRepository.class);
          userRepository  = mock(UserRepository.class);
-          builder = new Ubuilder();
-          director = new Director();
-          Validator v1 = new EmailValidator();
-        Validator v2 = new NameValidator();
-        Validator v3 = new SurnameValidator();
-        Validator v4 = new AllergenValidator();
-        Validator v5 = new AddressValidator();
-        v4.setNext(v5);
-        v3.setNext(v4);
-        v2.setNext(v3);
-        v1.setNext(v2);
-
-        customerService = new CustomerService(customerRepository, userRepository, customerValidator, builder, director, v1);
+        director = new Director();
+        builder = new Ubuilder();
+        customerService = new CustomerService(customerRepository, userRepository);
           Location l = new Location();
           l.lat(12.1f);
           l._long(6.9f);
@@ -266,12 +251,13 @@ class CustomerServiceTest {
 
     }
     @Test
-    public void createCustomer() throws MissingBodyException, InvalidFieldException{
+    public void createCustomer() throws MissingBodyException, InvalidFieldException,
+            NotAuthorizedException, UserNotFoundException, EmailAlreadyInUseException {
         Long customerId = 1L;
         CustomerRequestModel customer = new CustomerRequestModel();
         customer.setName("UpdatedName");
         customer.setSurname("UpdatedName");
-        customer.setEmail("email");
+        customer.setEmail("email1@mail.com");
         customer.setAllergens(new ArrayList<>());
         customer.setHomeAddress(new Address());
         Customer k = new Customer();
