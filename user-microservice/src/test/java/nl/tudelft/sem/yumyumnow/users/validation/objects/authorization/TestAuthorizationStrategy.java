@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization;
+package nl.tudelft.sem.yumyumnow.users.validation.objects.authorization;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.User;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;

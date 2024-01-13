@@ -4,23 +4,24 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 
 public abstract class BaseValidator implements Validator {
-    private Validator next;
-    public Validator getNext(){
+    private transient Validator next;
+
+    public Validator getNext() {
         return next;
     }
 
-    public void setNext(Validator next){
+    public void setNext(Validator next) {
         this.next = next;
     }
 
     protected boolean checkNext(ValidationObject validationObject)
-        throws NotAuthorizedException, InvalidFieldException, MissingBodyException,
-        UserNotFoundException {
-        if (next == null){
+            throws NotAuthorizedException, InvalidFieldException, MissingBodyException,
+            UserNotFoundException {
+        if (next == null) {
             return true;
         }
         return next.handle(validationObject);

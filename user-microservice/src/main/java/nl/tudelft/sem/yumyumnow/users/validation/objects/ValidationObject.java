@@ -1,7 +1,7 @@
-package nl.tudelft.sem.yumyumnow.users.validation.validationObjects;
+package nl.tudelft.sem.yumyumnow.users.validation.objects;
 
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
 
 public class ValidationObject {
 

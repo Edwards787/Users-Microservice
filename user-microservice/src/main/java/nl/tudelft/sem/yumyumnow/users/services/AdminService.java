@@ -15,11 +15,11 @@ import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationData;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationUserAndAdminStrategy;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidatorConstructor;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationUserAndAdminStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +28,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AdminService {
 
-    private final AdminRepository adminRepository;
-    private final UserRepository userRepository;
-    private final ValidatorConstructor validatorConstructor;
-    private final AdminBuilder adminBuilder;
+    private final transient AdminRepository adminRepository;
+    private final transient UserRepository userRepository;
+    private final transient ValidatorConstructor validatorConstructor;
+    private final transient AdminBuilder adminBuilder;
 
     /**
      * Constructor.
@@ -72,14 +72,15 @@ public class AdminService {
      */
 
     public Admin createAdmin(@NotNull AdminRequestModel adminRequestModel)
-        throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
-        UserNotFoundException, NotAuthorizedException {
+            throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
+            UserNotFoundException, NotAuthorizedException {
 
         Validator validator = validatorConstructor.userWithoutAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, null));
 
-        Admin dummy = new Admin();
-        Admin admin = adminBuilder.build(dummy, adminRequestModel);
+        Admin admin = new Admin();
+        adminBuilder.build(admin, adminRequestModel);
+
 
         if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(adminRequestModel.getEmail());
@@ -97,22 +98,26 @@ public class AdminService {
      *
      * @param adminId1 id of admin to be deleted
      * @param adminId2 id of admin that is requesting the deletion
-     * @throws InitialAdminException throw exception in case initial admin is being deleted
+     * @throws InitialAdminException  throw exception in case initial admin is being deleted
      * @throws NotAuthorizedException throw exception in case the user with adminId2 is not an admin
      * @throws UserNotFoundException  throw exception in case the user with adminId1 was not found
      */
     public void deleteAdminById(Long adminId1, Long adminId2)
-        throws InitialAdminException, NotAuthorizedException, UserNotFoundException,
-        MissingBodyException, InvalidFieldException {
+            throws InitialAdminException, NotAuthorizedException, UserNotFoundException,
+            MissingBodyException, InvalidFieldException {
         if (adminId1 == 0) {
             throw new InitialAdminException();
         }
 
         Validator validator = validatorConstructor.userAuthorization();
-        validator.handle(new ValidationObject(null,
-            new AuthorizationData(adminId1, adminId2, userRepository,
-                new AuthorizationUserAndAdminStrategy())));
 
+        validator.handle(
+                new ValidationObject(
+                        null,
+                        new AuthorizationData(
+                                adminId1, adminId2, userRepository,
+                            new AuthorizationUserAndAdminStrategy()
+                        )));
         try {
             adminRepository.deleteById(adminId1);
         } catch (EmptyResultDataAccessException e) {
@@ -123,9 +128,9 @@ public class AdminService {
     /**
      * Service that handles the update of an admin by id.
      *
-     * @param adminId1           id of admin to be updated
-     * @param adminId2           id of admin that is requesting the update
-     * @param adminRequestModel  request model of admin with provided attributes
+     * @param adminId1          id of admin to be updated
+     * @param adminId2          id of admin that is requesting the update
+     * @param adminRequestModel request model of admin with provided attributes
      * @throws UserNotFoundException  throw exception in case the user with adminId1 was not found
      * @throws NotAuthorizedException throw exception in case the user with adminId2 is not an admin
      * @throws MissingBodyException   throw exception in case a body was missing
@@ -137,9 +142,12 @@ public class AdminService {
         Admin admin = getAdminById(adminId1);
 
         Validator validator = validatorConstructor.userWithAuthorization();
-        validator.handle(new ValidationObject(adminRequestModel, new AuthorizationData
-            (adminId1, adminId2, userRepository, new AuthorizationUserAndAdminStrategy())));
 
+        validator.handle(new ValidationObject(
+                adminRequestModel,
+                new AuthorizationData(
+                        adminId1, adminId2, userRepository, new AuthorizationUserAndAdminStrategy()
+                )));
         adminBuilder.build(admin, adminRequestModel);
         adminRepository.saveAndFlush(admin);
     }

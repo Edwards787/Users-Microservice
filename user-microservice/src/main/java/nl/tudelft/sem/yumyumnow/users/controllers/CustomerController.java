@@ -10,9 +10,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class CustomerController implements CustomerApi {
-
-
-    private final CustomerService customerService;
+    private final transient CustomerService customerService;
 
     @Autowired
     public CustomerController(CustomerService customerService) {

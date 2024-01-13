@@ -5,11 +5,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
-import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationAdminOnlyStrategy;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationData;
-import org.junit.jupiter.api.BeforeEach;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

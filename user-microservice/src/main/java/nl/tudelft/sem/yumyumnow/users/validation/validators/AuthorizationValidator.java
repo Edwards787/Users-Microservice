@@ -4,10 +4,10 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationData;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
 
-public class AuthorizationValidator extends BaseValidator{
+public class AuthorizationValidator extends BaseValidator {
 
     @Override
     public boolean handle(ValidationObject validationObject)

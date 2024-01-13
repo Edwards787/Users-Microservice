@@ -1,6 +1,14 @@
-package nl.tudelft.sem.yumyumnow.users.validation.validationObjects;
+package nl.tudelft.sem.yumyumnow.users.validation.objects;
 
-import nl.tudelft.sem.yumyumnow.users.validation.validators.*;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.AddressValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.AuthorizationValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.ClosingTimesValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.EmailValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.IbanValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.NameValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.OpeningTimesValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.RequestModelValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.SurnameValidator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,7 +17,12 @@ public class ValidatorConstructor {
     public ValidatorConstructor() {
     }
 
-    public Validator userWithoutAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the user.
+     *
+     * @return the chain of responsibility for the user
+     */
+    public Validator userWithoutAuthorization() {
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
         SurnameValidator surnameValidator = new SurnameValidator();
@@ -23,7 +36,12 @@ public class ValidatorConstructor {
         return requestModelValidator;
     }
 
-    public Validator userWithAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the user.
+     *
+     * @return the chain of responsibility for the user
+     */
+    public Validator userWithAuthorization() {
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
@@ -40,13 +58,23 @@ public class ValidatorConstructor {
         return authorizationValidator;
     }
 
-    public Validator userAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the user.
+     *
+     * @return the chain of responsibility for the user
+     */
+    public Validator userAuthorization() {
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
         authorizationValidator.setNext(null);
         return authorizationValidator;
     }
 
-    public Validator courierWithoutAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the courier.
+     *
+     * @return the chain of responsibility for the courier
+     */
+    public Validator courierWithoutAuthorization() {
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         IbanValidator ibanValidator = new IbanValidator();
         NameValidator nameValidator = new NameValidator();
@@ -62,7 +90,12 @@ public class ValidatorConstructor {
         return requestModelValidator;
     }
 
-    public Validator courierWithAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the courier.
+     *
+     * @return the chain of responsibility for the courier
+     */
+    public Validator courierWithAuthorization() {
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         IbanValidator ibanValidator = new IbanValidator();
@@ -80,7 +113,12 @@ public class ValidatorConstructor {
         return authorizationValidator;
     }
 
-    public Validator vendorWithAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the vendor.
+     *
+     * @return the chain of responsibility for the vendor
+     */
+    public Validator vendorWithAuthorization() {
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
@@ -102,7 +140,12 @@ public class ValidatorConstructor {
         return authorizationValidator;
     }
 
-    public Validator vendorWithoutAuthorization(){
+    /**
+     * This method constructs the chain of responsibility for the vendor.
+     *
+     * @return the chain of responsibility for the vendor
+     */
+    public Validator vendorWithoutAuthorization() {
         RequestModelValidator requestModelValidator = new RequestModelValidator();
         NameValidator nameValidator = new NameValidator();
         SurnameValidator surnameValidator = new SurnameValidator();

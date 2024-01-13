@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization;
+package nl.tudelft.sem.yumyumnow.users.validation.objects.authorization;
 
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

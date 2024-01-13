@@ -1,9 +1,9 @@
-package nl.tudelft.sem.yumyumnow.users.validation.validationObjects;
+package nl.tudelft.sem.yumyumnow.users.validation.objects;
 
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationAdminOnlyStrategy;
-import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationAdminOnlyStrategy;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

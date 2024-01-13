@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.validationObjects.authorization;
+package nl.tudelft.sem.yumyumnow.users.validation.objects.authorization;
 
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 
@@ -9,7 +9,16 @@ public class AuthorizationData {
     private final UserRepository userRepository;
     private final AuthorizationStrategy authorizationStrategy;
 
-    public AuthorizationData(Long id1, Long id2, UserRepository userRepository, AuthorizationStrategy authorizationStrategy) {
+    /**
+     * Creates an AuthorizationObject.
+     *
+     * @param id1 id of the target
+     * @param id2 id of the requester
+     * @param userRepository user repository
+     * @param authorizationStrategy accessibility strategy
+     */
+    public AuthorizationData(Long id1, Long id2, UserRepository userRepository,
+                             AuthorizationStrategy authorizationStrategy) {
         this.id1 = id1;
         this.id2 = id2;
         this.userRepository = userRepository;
