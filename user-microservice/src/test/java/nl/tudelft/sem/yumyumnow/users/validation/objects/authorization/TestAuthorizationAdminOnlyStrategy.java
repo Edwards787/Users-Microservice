@@ -16,8 +16,8 @@ import static org.mockito.Mockito.when;
 
 public class TestAuthorizationAdminOnlyStrategy {
 
-    UserRepository userRepository;
-    AuthorizationAdminOnlyStrategy strategy;
+    transient UserRepository userRepository;
+    transient AuthorizationAdminOnlyStrategy strategy;
     @BeforeEach
     void setUp(){
         User user = new User();

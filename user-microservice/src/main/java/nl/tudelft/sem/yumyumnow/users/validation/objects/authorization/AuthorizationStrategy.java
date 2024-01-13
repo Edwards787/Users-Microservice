@@ -22,11 +22,11 @@ public interface AuthorizationStrategy {
     default void checkExists(Long target, Long request, UserRepository userRepository)
         throws UserNotFoundException {
         Optional<User> targetUser = userRepository.findById(target);
-        Optional<User> requestUser = userRepository.findById(request);
-
         if (targetUser.isEmpty()) {
             throw new UserNotFoundException(target);
         }
+
+        Optional<User> requestUser = userRepository.findById(request);
         if (requestUser.isEmpty()) {
             throw new UserNotFoundException(request);
         }

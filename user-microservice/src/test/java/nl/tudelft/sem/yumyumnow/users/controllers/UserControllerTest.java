@@ -1,6 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
-import nl.tudelft.sem.yumyumnow.users.controllers.UserController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.User;
@@ -28,13 +27,13 @@ import static org.mockito.Mockito.*;
 public class UserControllerTest {
 
     @Mock
-    private UserService userService;
+    transient UserService userService;
 
     @InjectMocks
-    private UserController userController;
+    transient UserController userController;
 
-    private MockMvc mockMvc;
-    private User user;
+    transient MockMvc mockMvc;
+    transient User user;
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -44,8 +43,6 @@ public class UserControllerTest {
         user.setName("user1");
         user.setEmail( "user1@example.com");
     }
-
-
     @Test
     void getAllUsers_Success() {
         List<User> userList = List.of(user);
@@ -61,7 +58,6 @@ public class UserControllerTest {
     @Test
     void getAllUsers_ExceptionThrown() {
         when(userService.getAllUsers()).thenThrow(new RuntimeException("Test Exception"));
-
         assertThrows(ResponseStatusException.class, () -> userController.getAllUsers());
     }
 
@@ -72,7 +68,6 @@ public class UserControllerTest {
         when(userService.getUserByEmail(userEmail)).thenReturn(user);
 
         ResponseEntity<User> responseEntity = userController.getUserByEmail(userEmail);
-
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(user, responseEntity.getBody());
     }
@@ -130,14 +125,12 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/user/all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-
         verify(userService, times(1)).getAllUsers();
     }
 
     @Test
     void getUserByEmail_MockMvc_Success() throws Exception {
         String userEmail = user.getEmail();
-
         when(userService.getUserByEmail(userEmail)).thenReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/user/byEmail/{email}", userEmail)

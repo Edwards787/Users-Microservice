@@ -18,10 +18,10 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public class SurnameValidatorTest {
-    SurnameValidator surnameValidator = new SurnameValidator();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    UserRequestModel userRequestModel;
+    transient SurnameValidator surnameValidator = new SurnameValidator();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient UserRequestModel userRequestModel;
 
     @BeforeEach
     void setUp(){

@@ -17,10 +17,10 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.mock;
 
 public class NameValidatorTest {
-    NameValidator nameValidator = new NameValidator();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    UserRequestModel userRequestModel;
+    transient NameValidator nameValidator = new NameValidator();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient UserRequestModel userRequestModel;
 
     @BeforeEach
     void setUp(){

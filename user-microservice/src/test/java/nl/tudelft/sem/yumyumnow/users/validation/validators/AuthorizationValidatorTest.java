@@ -19,10 +19,10 @@ import static org.mockito.Mockito.when;
 
 public class AuthorizationValidatorTest {
 
-    AuthorizationValidator authorizationValidator = new AuthorizationValidator();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    UserRepository userRepository;
+    transient AuthorizationValidator authorizationValidator = new AuthorizationValidator();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient UserRepository userRepository;
 
     @BeforeEach
     void setUp(){

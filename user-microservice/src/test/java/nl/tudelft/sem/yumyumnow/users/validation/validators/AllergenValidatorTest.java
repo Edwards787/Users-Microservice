@@ -20,10 +20,10 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.mock;
 
 public class AllergenValidatorTest {
-    AllergenValidator allergenValidator = new AllergenValidator();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    CustomerRequestModel customerRequestModel;
+    transient AllergenValidator allergenValidator = new AllergenValidator();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient CustomerRequestModel customerRequestModel;
 
     @BeforeEach
     void setUp(){

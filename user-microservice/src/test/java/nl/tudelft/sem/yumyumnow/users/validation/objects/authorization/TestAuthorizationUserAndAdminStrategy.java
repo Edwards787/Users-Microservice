@@ -15,8 +15,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TestAuthorizationUserAndAdminStrategy {
-    UserRepository userRepository;
-    AuthorizationUserAndAdminStrategy strategy;
+    transient UserRepository userRepository;
+    transient AuthorizationUserAndAdminStrategy strategy;
     @BeforeEach
     void setUp(){
         User user = new User();

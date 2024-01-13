@@ -1,6 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.builders;
 
-import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
@@ -10,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AdminBuilderTest {
-    AdminBuilder adminBuilder;
-    AdminRequestModel adminRequestModel;
-    Admin admin;
+    transient AdminBuilder adminBuilder;
+    transient AdminRequestModel adminRequestModel;
+    transient Admin admin;
     @BeforeEach
     public void setUp(){
         adminBuilder = new AdminBuilder();

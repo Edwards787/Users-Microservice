@@ -13,7 +13,7 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.mock;
 
 public class RequestModelValidatorTest {
-    RequestModelValidator requestModelValidator = new RequestModelValidator();
+    transient RequestModelValidator requestModelValidator = new RequestModelValidator();
 
     @Test
     void testRequestModelValid()

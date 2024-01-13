@@ -17,10 +17,10 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.mock;
 
 public class EmailValidatorTest {
-    EmailValidator emailValidator = new EmailValidator();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    UserRequestModel userRequestModel;
+    transient EmailValidator emailValidator = new EmailValidator();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient UserRequestModel userRequestModel;
 
     @BeforeEach
     void setUp(){

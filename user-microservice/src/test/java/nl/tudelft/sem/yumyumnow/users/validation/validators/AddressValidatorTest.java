@@ -18,13 +18,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 public class AddressValidatorTest {
-    AddressValidator addressValidator = new AddressValidator();
-    ValidationObject validationObject1;
-    ValidationObject validationObject2;
-    AuthorizationData authorizationData;
-    CustomerRequestModel customerRequestModel;
-    VendorRequestModel vendorRequestModel;
-    Address address;
+    transient AddressValidator addressValidator = new AddressValidator();
+    transient ValidationObject validationObject1;
+    transient ValidationObject validationObject2;
+    transient AuthorizationData authorizationData;
+    transient CustomerRequestModel customerRequestModel;
+    transient VendorRequestModel vendorRequestModel;
+    transient Address address;
 
     @BeforeEach
     void setUp(){

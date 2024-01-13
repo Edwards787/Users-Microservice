@@ -18,10 +18,10 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.mock;
 
 public class ClosingTimesValidatorTest {
-    ClosingTimesValidator closingTimesValidator = new ClosingTimesValidator();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    VendorRequestModel vendorRequestModel;
+    transient ClosingTimesValidator closingTimesValidator = new ClosingTimesValidator();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient VendorRequestModel vendorRequestModel;
 
     @BeforeEach
     void setUp(){

@@ -17,10 +17,10 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.mock;
 
 public class IbanValidatorTest {
-    IbanValidator ibanValidator = new IbanValidator();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    CourierRequestModel courierRequestModel;
+    transient IbanValidator ibanValidator = new IbanValidator();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient CourierRequestModel courierRequestModel;
 
     @BeforeEach
     void setUp(){

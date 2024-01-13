@@ -13,10 +13,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class ValidatorConstructorTest {
-    ValidatorConstructor validatorConstructor = new ValidatorConstructor();
-    ValidationObject validationObject;
-    AuthorizationData authorizationData;
-    VendorRequestModel vendorRequestModel;
+    transient ValidatorConstructor validatorConstructor = new ValidatorConstructor();
+    transient ValidationObject validationObject;
+    transient AuthorizationData authorizationData;
+    transient VendorRequestModel vendorRequestModel;
 
     @BeforeEach
     void setUp(){

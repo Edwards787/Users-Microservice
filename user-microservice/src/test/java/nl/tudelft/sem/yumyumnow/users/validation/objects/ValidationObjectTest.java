@@ -12,9 +12,9 @@ import static org.mockito.Mockito.mock;
 
 public class ValidationObjectTest {
 
-    ValidationObject validationObject;
-    UserRequestModel userRequestModel;
-    AuthorizationData authorizationData;
+    transient ValidationObject validationObject;
+    transient UserRequestModel userRequestModel;
+    transient AuthorizationData authorizationData;
 
     @BeforeEach
     void setUp(){

@@ -19,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 public class AdminController implements AdminApi {
-
     private final transient AdminService adminService;
 
     @Autowired

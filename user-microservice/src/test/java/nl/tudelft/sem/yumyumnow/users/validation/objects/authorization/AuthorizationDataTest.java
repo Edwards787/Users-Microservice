@@ -9,11 +9,11 @@ import static org.mockito.Mockito.mock;
 
 public class AuthorizationDataTest {
 
-    Long id1;
-    Long id2;
-    UserRepository userRepository;
-    AuthorizationStrategy authorizationStrategy;
-    AuthorizationData authorizationData;
+    transient Long id1;
+    transient Long id2;
+    transient UserRepository userRepository;
+    transient AuthorizationStrategy authorizationStrategy;
+    transient AuthorizationData authorizationData;
 
     @BeforeEach
     void setUp(){
