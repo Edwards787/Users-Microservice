@@ -8,12 +8,8 @@ import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 public class AuthorizationAdminOnlyStrategy implements AuthorizationStrategy{
 
     @Override
-    public void authorize(AuthorizationObject authorizationObject)
+    public void authorize(Long target, Long requester, UserRepository userRepository)
         throws NotAuthorizedException, UserNotFoundException {
-        UserRepository userRepository = authorizationObject.getUserRepository();
-        Long target = authorizationObject.getId1();
-        Long requester = authorizationObject.getId2();
-
         checkExists(target, requester, userRepository);
 
         User requesterUser = userRepository.findById(requester).get();

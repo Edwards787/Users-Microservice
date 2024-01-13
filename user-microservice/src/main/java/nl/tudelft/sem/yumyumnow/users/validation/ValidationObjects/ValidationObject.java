@@ -1,24 +1,24 @@
 package nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects;
 
 import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization.AuthorizationData;
 
 public class ValidationObject {
 
     private final UserRequestModel userRequestModel;
-    private final AuthorizationObject authorizationObject;
+    private final AuthorizationData authorizationData;
 
 
-    public ValidationObject(UserRequestModel userRequestModel, AuthorizationObject authorizationObject) {
+    public ValidationObject(UserRequestModel userRequestModel, AuthorizationData authorizationData) {
         this.userRequestModel = userRequestModel;
-        this.authorizationObject = authorizationObject;
+        this.authorizationData = authorizationData;
     }
 
     public UserRequestModel getUserRequestModel() {
         return userRequestModel;
     }
 
-    public AuthorizationObject getAuthorizationObject() {
-        return authorizationObject;
+    public AuthorizationData getAuthorizationData() {
+        return authorizationData;
     }
 }

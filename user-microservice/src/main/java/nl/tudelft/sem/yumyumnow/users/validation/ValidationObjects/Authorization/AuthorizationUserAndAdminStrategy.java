@@ -10,12 +10,8 @@ import java.util.Optional;
 public class AuthorizationUserAndAdminStrategy implements AuthorizationStrategy{
 
     @Override
-    public void authorize(AuthorizationObject authorizationObject)
+    public void authorize(Long target, Long requester, UserRepository userRepository)
         throws NotAuthorizedException, UserNotFoundException {
-        UserRepository userRepository = authorizationObject.getUserRepository();
-        Long target = authorizationObject.getId1();
-        Long requester = authorizationObject.getId2();
-
         checkExists(target, requester, userRepository);
         if (target.equals(requester)) return;
 

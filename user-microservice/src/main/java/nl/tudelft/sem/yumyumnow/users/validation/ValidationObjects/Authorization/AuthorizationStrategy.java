@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AuthorizationStrategy {
 
-    void authorize(AuthorizationObject authorizationObject)
+    void authorize(Long target, Long requester, UserRepository userRepository)
         throws NotAuthorizedException, UserNotFoundException;
     default void checkExists(Long target, Long request, UserRepository userRepository)
         throws UserNotFoundException {

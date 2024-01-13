@@ -4,7 +4,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization.AuthorizationData;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
@@ -69,7 +69,7 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-            new AuthorizationObject(userId1, userId2, userRepository,
+            new AuthorizationData(userId1, userId2, userRepository,
                 Accessibility.USER_AND_ADMIN)));
 
         courierRepository.deleteById(userId1);
@@ -82,7 +82,7 @@ public class CourierService {
 
         Validator validator = validatorConstructor.courierWithAuthorization();
         validator.handle(new ValidationObject(courierRequestModel,
-            new AuthorizationObject(userId1, userId2, userRepository,
+            new AuthorizationData(userId1, userId2, userRepository,
                 Accessibility.USER_AND_ADMIN)));
 
         Courier courierInitial;
@@ -112,7 +112,7 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-            new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+            new AuthorizationData(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
 
         Courier courier = getCourierById(userId1);
         courier.setRatings(ratings);
@@ -128,7 +128,7 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-            new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+            new AuthorizationData(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
 
         Courier courier = getCourierById(userId1);
         courier.setActivated(body);
@@ -143,7 +143,7 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-            new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+            new AuthorizationData(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
 
         Courier courier = getCourierById(userId1);
         courier.setBlocked(body);

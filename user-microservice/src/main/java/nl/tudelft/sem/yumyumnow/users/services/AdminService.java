@@ -15,7 +15,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Authorization.AuthorizationData;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
@@ -108,7 +108,7 @@ public class AdminService {
         }
 
         Validator validator = validatorConstructor.userAuthorization();
-        validator.handle(new ValidationObject(null, new AuthorizationObject(adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
+        validator.handle(new ValidationObject(null, new AuthorizationData(adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
 
         try {
             adminRepository.deleteById(adminId1);
@@ -134,7 +134,7 @@ public class AdminService {
         Admin admin = getAdminById(adminId1);
 
         Validator validator = validatorConstructor.userWithAuthorization();
-        validator.handle(new ValidationObject(adminRequestModel, new AuthorizationObject
+        validator.handle(new ValidationObject(adminRequestModel, new AuthorizationData
             (adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
         adminBuilder.build(admin, adminRequestModel);
         adminRepository.saveAndFlush(admin);
