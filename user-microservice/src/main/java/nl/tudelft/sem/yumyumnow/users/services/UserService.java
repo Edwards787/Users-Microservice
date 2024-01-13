@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    private final transient UserRepository userRepository;
 
     @Autowired
     public UserService(UserRepository userRepository) {

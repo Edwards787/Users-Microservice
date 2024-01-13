@@ -114,7 +114,7 @@ public class VendorControllerTest {
         assertThatThrownBy(() -> vendorController.deleteVendor(1L, 10L))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 404)
-                .hasFieldOrPropertyWithValue("reason", "User with id 1 was not found");
+                .hasFieldOrPropertyWithValue("reason", "User with id 1 not found");
     }
 
     @Test
@@ -142,7 +142,7 @@ public class VendorControllerTest {
         assertThatThrownBy(() -> vendorController.getVendorById(1L))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 404)
-                .hasFieldOrPropertyWithValue("reason", "User with id 1 was not found");
+                .hasFieldOrPropertyWithValue("reason", "User with id 1 not found");
     }
 
     @Test
@@ -167,7 +167,7 @@ public class VendorControllerTest {
         assertThatThrownBy(() -> vendorController.updateVendor(1L, 1L, vendorRequestModel))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 404)
-                .hasFieldOrPropertyWithValue("reason", "User with id 1 was not found");
+                .hasFieldOrPropertyWithValue("reason", "User with id 1 not found");
     }
 
     @Test

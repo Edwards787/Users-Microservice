@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomerService {
 
-    private final CustomerRepository customerRepository;
+    private final transient CustomerRepository customerRepository;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository) {

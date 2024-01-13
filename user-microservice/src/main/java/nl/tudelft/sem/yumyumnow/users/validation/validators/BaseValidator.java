@@ -1,14 +1,14 @@
-package nl.tudelft.sem.yumyumnow.users.validation.Validators;
+package nl.tudelft.sem.yumyumnow.users.validation.validators;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 
 public abstract class BaseValidator implements Validator {
-    private Validator next;
+    private transient Validator next;
 
     public void setNext(Validator next){
         this.next = next;

@@ -1,6 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.exceptions;
 
 import java.io.Serial;
+
 import lombok.Getter;
 
 @Getter
@@ -20,5 +21,12 @@ public class UserNotFoundException extends Exception {
     public UserNotFoundException(Long targetId) {
         super(defaultMessage);
         this.targetId = targetId;
+    }
+
+    public String getCustomMessage() {
+        if (targetId == null) {
+            return "User not found";
+        }
+        return "User with id " + targetId + " not found";
     }
 }

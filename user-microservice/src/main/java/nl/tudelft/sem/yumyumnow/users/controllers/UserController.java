@@ -17,7 +17,7 @@ import java.util.List;
 @Controller
 public class UserController implements UserApi {
 
-    private final UserService userService;
+    private final transient UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -25,39 +25,36 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<List<User>> getAllUsers(){
+    public ResponseEntity<List<User>> getAllUsers() {
         List<User> users;
-        try{
+        try {
             users = userService.getAllUsers();
             return ResponseEntity.ok(users);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Something went wrong");
         }
     }
 
     @Override
-    public ResponseEntity<User> getUserByEmail(String email){
+    public ResponseEntity<User> getUserByEmail(String email) {
         User user;
-        try{
+        try {
             user = userService.getUserByEmail(email);
             return ResponseEntity.ok(user);
-        }
-        catch (UserNotFoundException e){
+        } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given email not found.");
-        } catch(InvalidFieldException e){
+        } catch (InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<User> getUserById(Long id){
+    public ResponseEntity<User> getUserById(Long id) {
         User user;
-        try{
+        try {
             user = userService.getUserById(id);
             return ResponseEntity.ok(user);
-        }
-        catch(UserNotFoundException e){
+        } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + id + " not found.");
         }
     }

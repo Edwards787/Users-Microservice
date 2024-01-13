@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.validation.Validators;
+package nl.tudelft.sem.yumyumnow.users.validation.validators;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
@@ -8,22 +8,23 @@ import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 
-public class AddressValidator extends BaseValidator{
+public class AddressValidator extends BaseValidator {
     @Override
     public boolean handle(ValidationObject validationObject)
-        throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
-        UserNotFoundException {
+            throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
+            UserNotFoundException {
 
         Address address = null;
         if (validationObject.getUserRequestModel().getClass() == CustomerRequestModel.class) {
             CustomerRequestModel customerRequestModel = (CustomerRequestModel) validationObject.getUserRequestModel();
             address = customerRequestModel.getHomeAddress();
-        }
-        else if (validationObject.getUserRequestModel().getClass() == VendorRequestModel.class) {
+        } else if (validationObject.getUserRequestModel().getClass() == VendorRequestModel.class) {
             VendorRequestModel vendorRequestModel = (VendorRequestModel) validationObject.getUserRequestModel();
             address = vendorRequestModel.getAddress();
+        } else {
+            throw new InvalidFieldException("address", "no content");
         }
 
         if (address == null) {

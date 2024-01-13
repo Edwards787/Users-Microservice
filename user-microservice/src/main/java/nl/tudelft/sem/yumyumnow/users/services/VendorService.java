@@ -8,21 +8,21 @@ import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Accessibility;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.AuthorizationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
-import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.Accessibility;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class VendorService {
 
-    private final VendorRepository vendorRepository;
-    private final UserRepository userRepository;
-    private final VendorBuilder vendorBuilder;
-    private final ValidatorConstructor validatorConstructor;
+    private final transient VendorRepository vendorRepository;
+    private final transient UserRepository userRepository;
+    private final transient VendorBuilder vendorBuilder;
+    private final transient ValidatorConstructor validatorConstructor;
 
     /**
      * Creates an instance of the VendorService.
