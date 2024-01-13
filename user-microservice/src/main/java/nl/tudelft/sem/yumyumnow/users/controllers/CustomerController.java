@@ -18,6 +18,8 @@ import java.util.List;
 
 @Controller
 public class CustomerController implements CustomerApi {
+    private final transient CustomerService customerService;
+
     private final CustomerService customerService;
     @Autowired
     public CustomerController(CustomerService customerService) {

@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class AdminController implements AdminApi {
 
-    private final AdminService adminService;
+    private final transient AdminService adminService;
 
     @Autowired
     public AdminController(AdminService adminService) {
@@ -29,13 +29,13 @@ public class AdminController implements AdminApi {
 
     @Override
     public ResponseEntity<Admin> getAdminById(Long adminId) {
-        Admin admin;
         try {
-            admin = adminService.getAdminById(adminId);
+            Admin admin = adminService.getAdminById(adminId);
+            return ResponseEntity.ok(admin);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
         }
-        return ResponseEntity.ok(admin);
+
     }
 
     @Override

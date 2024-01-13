@@ -21,4 +21,16 @@ public class UserNotFoundException extends Exception {
         super(defaultMessage);
         this.targetId = targetId;
     }
+
+    /**
+     * Returns a custom message for the exception, taking account of the ID.
+     *
+     * @return a custom message
+     */
+    public String getCustomMessage() {
+        if (targetId == null) {
+            return "User not found";
+        }
+        return "User with id " + targetId + " not found";
+    }
 }

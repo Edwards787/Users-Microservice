@@ -20,6 +20,7 @@ import java.util.Optional;
 @Service
 public class CustomerService {
 
+    private final transient CustomerRepository customerRepository;
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     Builder builder;
