@@ -95,7 +95,7 @@ public class CustomerService {
 
     Optional<User> admin = userRepository.findById(userId2);
         if(admin.isEmpty()){
-        throw new NotAuthorizedException();
+        throw new UserNotFoundException();
     }
     User user = admin.get();
         if(!user.getRole().equals(User.RoleEnum.ADMIN)){
@@ -225,7 +225,7 @@ public class CustomerService {
 
         Optional<User> admin = userRepository.findById(userId2);
         if(admin.isEmpty()){
-            throw new NotAuthorizedException();
+            throw new UserNotFoundException();
         }
         User user = admin.get();
         if(!user.getRole().equals(User.RoleEnum.ADMIN)){
