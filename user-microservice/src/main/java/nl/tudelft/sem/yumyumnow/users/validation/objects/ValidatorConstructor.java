@@ -1,14 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.validation.objects;
 
-import nl.tudelft.sem.yumyumnow.users.validation.validators.AddressValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.AuthorizationValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.ClosingTimesValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.EmailValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.IbanValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.NameValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.OpeningTimesValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.RequestModelValidator;
-import nl.tudelft.sem.yumyumnow.users.validation.validators.SurnameValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.*;
 import org.springframework.stereotype.Service;
 
 @Service
