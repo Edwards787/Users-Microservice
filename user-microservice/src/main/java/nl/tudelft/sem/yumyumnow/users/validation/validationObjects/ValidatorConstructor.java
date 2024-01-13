@@ -48,7 +48,7 @@ public class ValidatorConstructor {
 
     public Validator courierWithoutAuthorization(){
         RequestModelValidator requestModelValidator = new RequestModelValidator();
-        IBANValidator ibanValidator = new IBANValidator();
+        IbanValidator ibanValidator = new IbanValidator();
         NameValidator nameValidator = new NameValidator();
         SurnameValidator surnameValidator = new SurnameValidator();
         EmailValidator emailValidator = new EmailValidator();
@@ -65,7 +65,7 @@ public class ValidatorConstructor {
     public Validator courierWithAuthorization(){
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
         RequestModelValidator requestModelValidator = new RequestModelValidator();
-        IBANValidator ibanValidator = new IBANValidator();
+        IbanValidator ibanValidator = new IbanValidator();
         NameValidator nameValidator = new NameValidator();
         SurnameValidator surnameValidator = new SurnameValidator();
         EmailValidator emailValidator = new EmailValidator();

@@ -16,7 +16,7 @@ public class BaseValidatorTest {
     BaseValidator validator;
     @BeforeEach
     void setUp(){
-        validator = new IBANValidator();
+        validator = new IbanValidator();
         validator.setNext(new EmailValidator());
     }
 
@@ -28,8 +28,8 @@ public class BaseValidatorTest {
     }
     @Test
     void testSetNext(){
-        validator.setNext(new IBANValidator());
-        assertThat(validator.getNext()).isInstanceOf(IBANValidator.class);
+        validator.setNext(new IbanValidator());
+        assertThat(validator.getNext()).isInstanceOf(IbanValidator.class);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class BaseValidatorTest {
     @Test
     void testFalse() throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        IBANValidator ibanValidator = mock(IBANValidator.class);
+        IbanValidator ibanValidator = mock(IbanValidator.class);
         ValidationObject validationObject = new ValidationObject(null, null);
         when(ibanValidator.handle(validationObject)).thenReturn(false);
 

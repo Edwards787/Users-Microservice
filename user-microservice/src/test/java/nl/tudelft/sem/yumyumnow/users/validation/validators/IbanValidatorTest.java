@@ -16,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.mock;
 
-public class IBANValidatorTest {
-    IBANValidator ibanValidator = new IBANValidator();
+public class IbanValidatorTest {
+    IbanValidator ibanValidator = new IbanValidator();
     ValidationObject validationObject;
     AuthorizationData authorizationData;
     CourierRequestModel courierRequestModel;

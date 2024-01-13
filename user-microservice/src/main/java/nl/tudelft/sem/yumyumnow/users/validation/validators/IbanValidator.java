@@ -7,7 +7,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.validationObjects.ValidationObject;
 
-public class IBANValidator extends BaseValidator{
+public class IbanValidator extends BaseValidator{
     @Override
     public boolean handle(ValidationObject validationObject)
         throws InvalidFieldException, NotAuthorizedException, MissingBodyException,

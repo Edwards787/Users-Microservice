@@ -81,9 +81,9 @@ public class ValidatorConstructorTest {
         assertThat(surnameValidator.getNext()).isInstanceOf(EmailValidator.class);
 
         EmailValidator emailValidator = (EmailValidator) surnameValidator.getNext();
-        assertThat(emailValidator.getNext()).isInstanceOf(IBANValidator.class);
+        assertThat(emailValidator.getNext()).isInstanceOf(IbanValidator.class);
 
-        IBANValidator ibanValidator = (IBANValidator) emailValidator.getNext();
+        IbanValidator ibanValidator = (IbanValidator) emailValidator.getNext();
         assertThat(ibanValidator.getNext()).isNull();
     }
     @Test
@@ -103,9 +103,9 @@ public class ValidatorConstructorTest {
         assertThat(surnameValidator.getNext()).isInstanceOf(EmailValidator.class);
 
         EmailValidator emailValidator = (EmailValidator) surnameValidator.getNext();
-        assertThat(emailValidator.getNext()).isInstanceOf(IBANValidator.class);
+        assertThat(emailValidator.getNext()).isInstanceOf(IbanValidator.class);
 
-        IBANValidator ibanValidator = (IBANValidator) emailValidator.getNext();
+        IbanValidator ibanValidator = (IbanValidator) emailValidator.getNext();
         assertThat(ibanValidator.getNext()).isNull();
     }
 
