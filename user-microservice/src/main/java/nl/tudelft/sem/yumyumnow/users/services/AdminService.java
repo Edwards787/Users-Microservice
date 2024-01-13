@@ -14,7 +14,12 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
-import nl.tudelft.sem.yumyumnow.users.validators.AdminValidator;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Accessibility;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +29,8 @@ import org.springframework.stereotype.Service;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final AdminValidator adminValidator;
+    private final UserRepository userRepository;
+    private final ValidatorConstructor validatorConstructor;
     private final AdminBuilder adminBuilder;
 
     /**
@@ -32,14 +38,13 @@ public class AdminService {
      *
      * @param adminRepository admin repository
      * @param adminBuilder    admin builder
-     * @param adminValidator  admin validator
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder,
-                        AdminValidator adminValidator) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
-        this.adminValidator = adminValidator;
+        this.validatorConstructor = new ValidatorConstructor();
+        this.userRepository = userRepository;
     }
 
     /**
@@ -67,9 +72,12 @@ public class AdminService {
      */
 
     public Admin createAdmin(@NotNull AdminRequestModel adminRequestModel)
-            throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
+        throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
 
-        adminValidator.validate(adminRequestModel);
+        Validator validator = validatorConstructor.userWithoutAuthorization();
+        validator.handle(new ValidationObject(adminRequestModel, null));
+
         Admin dummy = new Admin();
         Admin admin = adminBuilder.build(dummy, adminRequestModel);
 
@@ -94,15 +102,15 @@ public class AdminService {
      * @throws UserNotFoundException  throw exception in case the user with adminId1 was not found
      */
     public void deleteAdminById(Long adminId1, Long adminId2)
-            throws InitialAdminException, NotAuthorizedException, UserNotFoundException {
+        throws InitialAdminException, NotAuthorizedException, UserNotFoundException,
+        MissingBodyException, InvalidFieldException {
         if (adminId1 == 0) {
             throw new InitialAdminException();
         }
-        try {
-            getAdminById(adminId2);
-        } catch (UserNotFoundException exception) {
-            throw new NotAuthorizedException();
-        }
+
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(new ValidationObject(null, new AuthorizationObject(adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
+
         try {
             adminRepository.deleteById(adminId1);
         } catch (EmptyResultDataAccessException e) {
@@ -125,13 +133,10 @@ public class AdminService {
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
         Admin admin = getAdminById(adminId1);
-        try {
-            getAdminById(adminId2);
-        } catch (UserNotFoundException exception) {
-            throw new NotAuthorizedException();
-        }
 
-        adminValidator.validate(adminRequestModel);
+        Validator validator = validatorConstructor.userWithAuthorization();
+        validator.handle(new ValidationObject(adminRequestModel, new AuthorizationObject
+            (adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN)));
         adminBuilder.build(admin, adminRequestModel);
         adminRepository.saveAndFlush(admin);
     }

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users;
+package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.controllers.VendorController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
@@ -58,7 +58,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void createVendorSuccess() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+    void createVendorSuccess()
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         when(vendorService.createVendor(vendorRequestModel)).thenReturn(vendor);
         ResponseEntity<Vendor> res = vendorController.createVendor(vendorRequestModel);
         assertThat(res.getStatusCodeValue()).isEqualTo(200);
@@ -66,7 +68,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void createVendorMissingBody() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+    void createVendorMissingBody()
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         when(vendorService.createVendor(any())).thenThrow(new MissingBodyException());
         assertThatThrownBy(() -> vendorController.createVendor(null))
                 .isInstanceOf(ResponseStatusException.class)
@@ -74,7 +78,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void createVendorInvalidField() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+    void createVendorInvalidField()
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         when(vendorService.createVendor(any())).thenThrow(new InvalidFieldException("fieldName","value"));
         assertThatThrownBy(() -> vendorController.createVendor(vendorRequestModel))
                 .isInstanceOf(ResponseStatusException.class)
@@ -83,7 +89,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void createVendorEmailAlreadyInUse() throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException {
+    void createVendorEmailAlreadyInUse()
+        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
         when(vendorService.createVendor(any())).thenThrow(new EmailAlreadyInUseException("email"));
         assertThatThrownBy(() -> vendorController.createVendor(vendorRequestModel))
                 .isInstanceOf(ResponseStatusException.class)
@@ -99,7 +107,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void deleteVendorNotFound() throws UserNotFoundException, NotAuthorizedException {
+    void deleteVendorNotFound()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         when(vendorService.deleteVendor(any(), any())).thenThrow(new UserNotFoundException(1L));
         assertThatThrownBy(() -> vendorController.deleteVendor(1L, 10L))
                 .isInstanceOf(ResponseStatusException.class)
@@ -108,7 +118,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void deleteVendorNotAuthorized() throws UserNotFoundException, NotAuthorizedException {
+    void deleteVendorNotAuthorized()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         when(vendorService.deleteVendor(any(), any())).thenThrow(new NotAuthorizedException());
         assertThatThrownBy(() -> vendorController.deleteVendor(1L, 10L))
                 .isInstanceOf(ResponseStatusException.class)

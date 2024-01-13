@@ -42,6 +42,8 @@ public class CourierController implements CourierApi {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (EmailAlreadyInUseException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (UserNotFoundException | NotAuthorizedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -70,6 +72,8 @@ public class CourierController implements CourierApi {
         catch (NotAuthorizedException e){
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
 
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -83,6 +87,8 @@ public class CourierController implements CourierApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -121,6 +127,8 @@ public class CourierController implements CourierApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         } catch (NotAuthorizedException e){
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -135,6 +143,8 @@ public class CourierController implements CourierApi {
         }
         catch(NotAuthorizedException e){
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -147,6 +157,8 @@ public class CourierController implements CourierApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new RuntimeException(e);
         }
     }
 }

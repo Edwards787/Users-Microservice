@@ -6,8 +6,13 @@ import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
+import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.VendorRepository;
-import nl.tudelft.sem.yumyumnow.users.validators.VendorValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Accessibility;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.AuthorizationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,27 +20,24 @@ import org.springframework.stereotype.Service;
 public class VendorService {
 
     private final VendorRepository vendorRepository;
+    private final UserRepository userRepository;
     private final VendorBuilder vendorBuilder;
-    private final VendorValidator vendorValidator;
-    private final AuthorizationService authorizationService;
+    private final ValidatorConstructor validatorConstructor;
 
     /**
      * Creates an instance of the VendorService.
      *
      * @param vendorRepository     the vendor repository
      * @param vendorBuilder        the vendor builder
-     * @param vendorValidator      the vendor validator
-     * @param authorizationService responsible for authorizing requests
      */
     @Autowired
     public VendorService(VendorRepository vendorRepository,
-                         VendorBuilder vendorBuilder,
-                         VendorValidator vendorValidator,
-                         AuthorizationService authorizationService) {
+                         UserRepository userRepository,
+                         VendorBuilder vendorBuilder) {
         this.vendorRepository = vendorRepository;
         this.vendorBuilder = vendorBuilder;
-        this.vendorValidator = vendorValidator;
-        this.authorizationService = authorizationService;
+        this.userRepository = userRepository;
+        this.validatorConstructor = new ValidatorConstructor();
     }
 
     /**
@@ -48,9 +50,12 @@ public class VendorService {
      * @throws EmailAlreadyInUseException if the email is already in use, specifying the email
      */
     public Vendor createVendor(VendorRequestModel vendorRequestModel)
-            throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException {
+        throws InvalidFieldException, MissingBodyException, EmailAlreadyInUseException,
+        UserNotFoundException, NotAuthorizedException {
 
-        vendorValidator.validate(vendorRequestModel);
+        Validator validator = validatorConstructor.vendorWithoutAuthorization();
+        validator.handle(new ValidationObject(vendorRequestModel, null));
+
         Vendor dummy = new Vendor();
         Vendor vendor = vendorBuilder.build(dummy, vendorRequestModel);
 
@@ -89,8 +94,14 @@ public class VendorService {
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to delete the vendor
      */
-    public Void deleteVendor(Long userid1, Long userid2) throws UserNotFoundException, NotAuthorizedException {
-        authorizationService.authorize(userid1, userid2);
+    public Void deleteVendor(Long userid1, Long userid2)
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
+
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(new ValidationObject(null, new AuthorizationObject(userid1,
+            userid2, userRepository, Accessibility.USER_AND_ADMIN)));
+
         vendorRepository.deleteById(userid1);
         return null;
     }
@@ -113,10 +124,13 @@ public class VendorService {
      */
     public Void updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel)
             throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
-        authorizationService.authorize(userId1, userId2);
         Optional<Vendor> vendor = vendorRepository.findById(userId1);
-        vendorValidator.validate(vendorRequestModel);
-        @SuppressWarnings("OptionalGetWithoutIsPresent")
+
+        Validator validator = validatorConstructor.vendorWithAuthorization();
+        validator.handle(new ValidationObject(vendorRequestModel,
+            new AuthorizationObject(userId1, userId2, userRepository,
+                Accessibility.USER_AND_ADMIN)));
+
         Vendor updated = vendorBuilder.build(vendor.get(), vendorRequestModel);
         vendorRepository.saveAndFlush(updated);
         return null;

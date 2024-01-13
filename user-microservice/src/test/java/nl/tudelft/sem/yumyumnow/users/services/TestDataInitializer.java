@@ -5,7 +5,9 @@ import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 
 public class TestDataInitializer {
     public static CourierRequestModel createValidCourierRequestModel() {
-        return new CourierRequestModel("johndoe@gmail.com", "John", "Doe");
+        CourierRequestModel valid = new CourierRequestModel("johndoe@gmail.com", "John", "Doe");
+        valid.setIbanNumber("LT12312423423423");
+        return valid;
     }
 
     public static CourierRequestModel createInvalidCourierRequestModel() {
