@@ -4,18 +4,18 @@ import nl.tudelft.sem.yumyumnow.users.builders.Builder;
 import nl.tudelft.sem.yumyumnow.users.builders.Director;
 import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
-import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.*;
-
-import java.util.List;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
+import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
-import nl.tudelft.sem.yumyumnow.users.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Optional;
 @Service
 public class CustomerService {
@@ -25,7 +25,6 @@ public class CustomerService {
     Builder builder;
     Director director;
     ValidatorConstructor validatorConstructor;
-
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository,

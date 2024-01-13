@@ -353,7 +353,7 @@ class CustomerControllerTest {
     void updateCustomerBlockStatusSuccess() throws UserNotFoundException, NotAuthorizedException {
         Long userId1 = 1L;
         Long userId2 = 2L;
-        Boolean body = true; // or false, depending on your test case
+        Boolean body = true;
 
         doNothing().when(customerService).updateCustomerBlockStatus(userId1, userId2, body);
 
