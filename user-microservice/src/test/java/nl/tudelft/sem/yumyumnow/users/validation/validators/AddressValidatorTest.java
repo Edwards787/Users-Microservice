@@ -127,7 +127,7 @@ public class AddressValidatorTest {
 
     @Test
     public void testNullCountry() {
-        address.setCountry("");
+        address.setCountry(null);
         assertThatThrownBy(() -> addressValidator.handle(validationObject1))
             .isInstanceOf(InvalidFieldException.class)
             .hasMessage("Field 'country' with value 'null' is invalid");
