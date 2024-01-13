@@ -10,8 +10,6 @@ import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.ValidationObjects.ValidatorConstructor;
-import nl.tudelft.sem.yumyumnow.users.validators.CustomerValidator;
-import nl.tudelft.sem.yumyumnow.users.validators.Validator;
 import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;

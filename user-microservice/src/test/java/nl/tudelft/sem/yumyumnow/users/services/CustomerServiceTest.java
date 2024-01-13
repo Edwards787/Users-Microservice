@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -455,5 +456,106 @@ class CustomerServiceTest {
         assertThrows(NotAuthorizedException.class, () -> customerService.updateFavRestaurants(customerId, userId, favs));
 
     }
+
+    @Test
+    void updateCustomerBlockStatusByAdminSuccess() throws UserNotFoundException, NotAuthorizedException {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Boolean body = true;
+
+        Customer customer = new Customer();
+        customer.setId(userId1);
+
+        User adminUser = new User();
+        adminUser.setId(userId2);
+        adminUser.setRole(User.RoleEnum.ADMIN);
+
+        when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
+
+        customerService.updateCustomerBlockStatus(userId1, userId2, body);
+
+        verify(customerRepository, times(1)).saveAndFlush(customer);
+        assertThat(customer.getBlocked()).isEqualTo(body);
+    }
+
+    @Test
+    void updateCustomerBlockStatusNotAuthorizedExceptionNonAdmin() {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Boolean body = true;
+
+        Customer customer = new Customer();
+        customer.setId(userId1);
+
+        User adminUser = new User();
+        adminUser.setId(userId2);
+        adminUser.setRole(User.RoleEnum.CUSTOMER);
+
+        when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
+
+        assertThrows(NotAuthorizedException.class,
+                () -> customerService.updateCustomerBlockStatus(userId1, userId2, body));
+    }
+
+    @Test
+    void updatePastSavedOrderIdForUserBySelfSuccess() throws UserNotFoundException, NotAuthorizedException {
+        Long userId1 = 1L;
+        Long userId2 = 1L;
+        Long orderId = 123L;
+
+        Customer customer = new Customer();
+        customer.setId(userId1);
+        customer.setSavedOrder(0L);
+
+        when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
+
+        customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId);
+
+        assertThat(customer.getSavedOrder()).isEqualTo(orderId);
+    }
+
+    @Test
+    void updatePastSavedOrderIdForUserByAdminSuccess() throws UserNotFoundException, NotAuthorizedException {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 123L;
+
+        Customer customer = new Customer();
+        customer.setId(userId1);
+
+        User adminUser = new User();
+        adminUser.setId(userId2);
+        adminUser.setRole(User.RoleEnum.ADMIN);
+
+        when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
+
+        customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId);
+
+        assertThat(customer.getSavedOrder()).isEqualTo(orderId);
+    }
+
+    @Test
+    void updatePastSavedOrderIdForUserNotAuthorizedExceptionNonAdmin() throws UserNotFoundException, NotAuthorizedException {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 123L;
+
+        Customer customer = new Customer();
+        customer.setId(userId1);
+
+        User nonAdminUser = new User();
+        nonAdminUser.setId(userId2);
+        nonAdminUser.setRole(User.RoleEnum.CUSTOMER);
+
+        when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(nonAdminUser));
+
+        assertThrows(NotAuthorizedException.class,
+                () -> customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId));
+    }
+
 
 }
