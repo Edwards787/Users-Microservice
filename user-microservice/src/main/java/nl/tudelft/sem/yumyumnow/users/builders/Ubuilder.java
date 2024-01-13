@@ -6,15 +6,15 @@ import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 
 public class Ubuilder implements Builder {
-    private User.RoleEnum role;
-    private String name;
+    private transient User.RoleEnum role;
+    private transient String name;
 
 
-    private String surname;
-    private String email;
-    private boolean blocked;
-    private List<String> allergens;
-    private Address homeAddress;
+    private transient String surname;
+    private transient String email;
+    private transient boolean blocked;
+    private transient List<String> allergens;
+    private transient Address homeAddress;
 
     public void setRole(User.RoleEnum role) {
         this.role = role;
@@ -40,7 +40,7 @@ public class Ubuilder implements Builder {
 
     @Override
     public void setAllergens(List<String> allergens) {
-        allergens = allergens;
+        this.allergens = allergens;
     }
 
     @Override
