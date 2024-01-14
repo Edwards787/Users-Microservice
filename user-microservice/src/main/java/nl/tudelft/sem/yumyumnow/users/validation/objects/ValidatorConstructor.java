@@ -1,6 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.validation.objects;
 
 import nl.tudelft.sem.yumyumnow.users.validation.validators.AddressValidator;
+import nl.tudelft.sem.yumyumnow.users.validation.validators.AllergenValidator;
 import nl.tudelft.sem.yumyumnow.users.validation.validators.AuthorizationValidator;
 import nl.tudelft.sem.yumyumnow.users.validation.validators.ClosingTimesValidator;
 import nl.tudelft.sem.yumyumnow.users.validation.validators.EmailValidator;
@@ -163,6 +164,55 @@ public class ValidatorConstructor {
         addressValidator.setNext(null);
 
         return requestModelValidator;
+    }
+
+    /**
+     * This method constructs the chain of responsibility for the customer.
+     *
+     * @return the chain of responsibility for the customer
+     */
+    public Validator customerWithoutAuthorization() {
+        RequestModelValidator requestModelValidator = new RequestModelValidator();
+        NameValidator nameValidator = new NameValidator();
+        SurnameValidator surnameValidator = new SurnameValidator();
+        EmailValidator emailValidator = new EmailValidator();
+        AddressValidator addressValidator = new AddressValidator();
+        AllergenValidator allergenValidator = new AllergenValidator();
+
+        requestModelValidator.setNext(nameValidator);
+        nameValidator.setNext(surnameValidator);
+        surnameValidator.setNext(emailValidator);
+        emailValidator.setNext(addressValidator);
+        addressValidator.setNext(allergenValidator);
+        addressValidator.setNext(null);
+
+        return requestModelValidator;
+    }
+
+    /**
+     * This method constructs the chain of responsibility for the customer.
+     *
+     * @return the chain of responsibility for the customer
+     */
+
+    public Validator customerWithAuthorization() {
+        AuthorizationValidator authorizationValidator = new AuthorizationValidator();
+        RequestModelValidator requestModelValidator = new RequestModelValidator();
+        NameValidator nameValidator = new NameValidator();
+        SurnameValidator surnameValidator = new SurnameValidator();
+        EmailValidator emailValidator = new EmailValidator();
+        AddressValidator addressValidator = new AddressValidator();
+        AllergenValidator allergenValidator = new AllergenValidator();
+
+        authorizationValidator.setNext(requestModelValidator);
+        requestModelValidator.setNext(nameValidator);
+        nameValidator.setNext(surnameValidator);
+        surnameValidator.setNext(emailValidator);
+        emailValidator.setNext(addressValidator);
+        addressValidator.setNext(allergenValidator);
+        addressValidator.setNext(null);
+
+        return authorizationValidator;
     }
 
 }

@@ -77,8 +77,8 @@ public class AdminServiceTest {
 
     @Test
     public void testCreateAdminValid()
-        throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
-        UserNotFoundException, NotAuthorizedException {
+            throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+            UserNotFoundException, NotAuthorizedException {
         when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.empty());
         when(adminRepository.saveAndFlush(adminBuilder.build(new Admin(), adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);
@@ -92,8 +92,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testDeleteAdminByIdValid()
-        throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
-        MissingBodyException, InvalidFieldException {
+            throws UserNotFoundException, InitialAdminException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
         when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
         doNothing().when(adminRepository).deleteById(1L);
 
@@ -132,8 +132,8 @@ public class AdminServiceTest {
 
     @Test
     public void testUpdateAdminByIdValid()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         when(adminRepository.findById(0L)).thenReturn(Optional.of(admin1));
         when(adminRepository.findById(1L)).thenReturn(Optional.of(admin2));
 
@@ -145,19 +145,19 @@ public class AdminServiceTest {
 
     @Test
     public void testUpdateAdminByIdNotFound()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         when(adminRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> {
-           adminService.updateAdminById(1L, 0L, adminRequestModel);
-           verify(adminRepository).findById(1L);
+            adminService.updateAdminById(1L, 0L, adminRequestModel);
+            verify(adminRepository).findById(1L);
         });
     }
 
     @Test
     public void testUpdateAdminByIdUnauthorized()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         User user = new User();
         user.setRole(User.RoleEnum.VENDOR);
 
@@ -172,8 +172,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testUpdateAdminByIdMissingBody()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         assertThrows(MissingBodyException.class, () -> {
             adminService.updateAdminById(0L, 1L, null);
             verify(adminRepository).findById(1L);
@@ -182,8 +182,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testUpdateAdminByIdNoEmail()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         adminRequestModel.setEmail("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -201,8 +201,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testUpdateAdminByIdNullEmail()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         adminRequestModel.setEmail(null);
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -220,8 +220,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testUpdateAdminByIdNoName()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         adminRequestModel.setName("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -239,8 +239,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testUpdateAdminByIdNullName()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         adminRequestModel.setName(null);
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -258,8 +258,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testUpdateAdminByIdNoSurname()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         adminRequestModel.setSurname("");
 
         assertThrows(InvalidFieldException.class, () -> {
@@ -277,8 +277,8 @@ public class AdminServiceTest {
     }
     @Test
     public void testUpdateAdminByIdNullSurname()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         adminRequestModel.setSurname(null);
 
         assertThrows(InvalidFieldException.class, () -> {
