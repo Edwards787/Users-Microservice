@@ -12,11 +12,12 @@ import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.Accessibility;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationAdminOnlyStrategy;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationUserAndAdminStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -104,8 +105,8 @@ public class CustomerService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-                new AuthorizationObject(userId1, userId2,
-                        userRepository, Accessibility.USER_AND_ADMIN)));
+                new AuthorizationData(userId1, userId2,
+                        userRepository,new AuthorizationUserAndAdminStrategy())));
 
         customerRepository.deleteById(userId1);
         customerRepository.flush();
@@ -129,8 +130,8 @@ public class CustomerService {
             InvalidFieldException {
 
         Validator validator = validatorConstructor.customerWithAuthorization();
-        validator.handle(new ValidationObject(customerRequestModel, new AuthorizationObject(id1,
-                id2, userRepository, Accessibility.USER_AND_ADMIN)));
+        validator.handle(new ValidationObject(customerRequestModel, new AuthorizationData(id1,
+                id2, userRepository, new AuthorizationUserAndAdminStrategy())));
 
         //Make sure that we can find the customer to be updated
         Customer customer = getCustomerById(id1);
@@ -191,11 +192,11 @@ public class CustomerService {
         validator.handle(
                 new ValidationObject(
                         null,
-                        new AuthorizationObject(
+                        new AuthorizationData(
                                 id1,
                                 id2,
                                 userRepository,
-                                Accessibility.USER_AND_ADMIN
+                                new AuthorizationUserAndAdminStrategy()
                         )));
 
 
@@ -242,8 +243,8 @@ public class CustomerService {
             InvalidFieldException {
 
         Validator validator = validatorConstructor.userAuthorization();
-        validator.handle(new ValidationObject(null, new AuthorizationObject(userId1,
-                userId2, userRepository, Accessibility.USER_AND_ADMIN)));
+        validator.handle(new ValidationObject(null, new AuthorizationData(userId1,
+                userId2, userRepository, new AuthorizationUserAndAdminStrategy())));
 
         Customer customer = getCustomerById(userId1);
         customer.setSavedOrder(orderId);
@@ -270,8 +271,8 @@ public class CustomerService {
         }
 
         Validator validator = validatorConstructor.userAuthorization();
-        validator.handle(new ValidationObject(null, new AuthorizationObject(userId1,
-                userId2, userRepository, Accessibility.ADMIN_ONLY)));
+        validator.handle(new ValidationObject(null, new AuthorizationData(userId1,
+                userId2, userRepository, new AuthorizationAdminOnlyStrategy())));
 
         Customer customer = getCustomerById(userId1);
         customer.setBlocked(body);
