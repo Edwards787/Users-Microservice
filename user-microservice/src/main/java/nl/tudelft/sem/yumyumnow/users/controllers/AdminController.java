@@ -100,8 +100,8 @@ public class AdminController implements AdminApi {
     }
 
     @Override
-    public ResponseEntity<Long> updateRefundRequestStatus(Long userId, Long orderId, Boolean body){
-        try{
+    public ResponseEntity<Long> updateRefundRequestStatus(Long userId, Long orderId, Boolean body) {
+        try {
             Long order = adminService.updateRefundRequestStatus(userId, orderId, body);
             return ResponseEntity.ok(order);
         } catch (UserNotFoundException e) {

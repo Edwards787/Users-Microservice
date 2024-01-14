@@ -167,8 +167,8 @@ public class CustomerController implements CustomerApi {
     }
 
     @Override
-    public ResponseEntity<List<Long>> getCurrentOrderIdsForUser(Long userId){
-        try{
+    public ResponseEntity<List<Long>> getCurrentOrderIdsForUser(Long userId) {
+        try {
             List<Long> ids = customerService.getCurrentOrderIdsForUser(userId);
             return ResponseEntity.ok(ids);
         } catch (UserNotFoundException e) {
@@ -177,8 +177,8 @@ public class CustomerController implements CustomerApi {
     }
 
     @Override
-    public ResponseEntity<Void> requestRefundByCustomerIdForOrderId(Long userId1, Long userId2, Long orderId){
-        try{
+    public ResponseEntity<Void> requestRefundByCustomerIdForOrderId(Long userId1, Long userId2, Long orderId) {
+        try {
             customerService.requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
             return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {

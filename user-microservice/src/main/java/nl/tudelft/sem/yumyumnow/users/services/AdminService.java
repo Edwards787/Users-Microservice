@@ -157,6 +157,16 @@ public class AdminService {
         adminRepository.saveAndFlush(admin);
     }
 
+    /**
+     * Service that handles gets the refund requests.
+     *
+     * @param userId id of user
+     * @return List of order id to refund
+     * @throws UserNotFoundException if user not found
+     * @throws NotAuthorizedException if user not authorized
+     * @throws MissingBodyException if body is missing
+     * @throws InvalidFieldException if invalid field
+     */
     public List<Long> getRefundRequests(Long userId) throws UserNotFoundException, NotAuthorizedException,
             MissingBodyException, InvalidFieldException {
 
@@ -172,6 +182,18 @@ public class AdminService {
     }
 
 
+    /**
+     * Service that handles operating the refund or not.
+     *
+     * @param userId id of user
+     * @param orderId order id
+     * @param body what to change to True if refunded False if not
+     * @return ID of order that was acted on
+     * @throws UserNotFoundException user not found
+     * @throws NotAuthorizedException not authorized
+     * @throws MissingBodyException  body missing
+     * @throws InvalidFieldException invalid field
+     */
     public Long updateRefundRequestStatus(Long userId, Long orderId, Boolean body) throws UserNotFoundException,
             NotAuthorizedException, MissingBodyException, InvalidFieldException {
 
