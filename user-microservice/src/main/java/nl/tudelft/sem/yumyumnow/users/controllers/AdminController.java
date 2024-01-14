@@ -32,7 +32,7 @@ public class AdminController implements AdminApi {
             Admin admin = adminService.getAdminById(adminId);
             return ResponseEntity.ok(admin);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
     }
@@ -56,11 +56,11 @@ public class AdminController implements AdminApi {
             adminService.deleteAdminById(userId1, userId2);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (InitialAdminException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Initial admin can not be deleted");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (MissingBodyException | InvalidFieldException e) {
             throw new RuntimeException(e);
         }
@@ -73,13 +73,13 @@ public class AdminController implements AdminApi {
             adminService.updateAdminById(userId1, userId2, adminRequestModel);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -89,13 +89,13 @@ public class AdminController implements AdminApi {
             List<Long> orderToBeRefunded = adminService.getRefundRequests(userId);
             return ResponseEntity.ok(orderToBeRefunded);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -105,12 +105,10 @@ public class AdminController implements AdminApi {
             Long order = adminService.updateRefundRequestStatus(userId, orderId, body);
             return ResponseEntity.ok(order);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
-        } catch (MissingBodyException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
-        } catch (InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
+        } catch (MissingBodyException | InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

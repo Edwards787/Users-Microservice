@@ -119,7 +119,7 @@ public class AdminControllerTest {
             adminController.getAdminById(0L);
         }catch (ResponseStatusException e){
             assertThat(e.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-            assertThat(e.getReason()).isEqualTo("Admin not found");
+            assertThat(e.getReason()).isEqualTo("User not found");
         }
     }
 
@@ -145,7 +145,7 @@ public class AdminControllerTest {
             adminController.deleteAdmin(0L, 1L);
         }catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(400);
-            assertThat(e.getReason()).isEqualTo("Initial admin can not be deleted");
+            assertThat(e.getReason()).isEqualTo("Trying to delete the initial admin");
         }
     }
 
@@ -161,7 +161,7 @@ public class AdminControllerTest {
             adminController.deleteAdmin(2L, 0L);
         }catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(403);
-            assertThat(e.getReason()).isEqualTo("Unauthorized action");
+            assertThat(e.getReason()).isEqualTo("Not authorized");
         }
     }
 
@@ -177,7 +177,7 @@ public class AdminControllerTest {
             adminController.deleteAdmin(3L, 0L);
         }catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(404);
-            assertThat(e.getReason()).isEqualTo("Admin not found");
+            assertThat(e.getReason()).isEqualTo("User not found");
         }
     }
     @Test
@@ -203,7 +203,7 @@ public class AdminControllerTest {
             adminController.updateAdmin(3L, 0L, null);
         } catch (ResponseStatusException e) {
             assertThat(e.getStatus().value()).isEqualTo(400);
-            assertThat(e.getReason()).isEqualTo("Body not present");
+            assertThat(e.getReason()).isEqualTo("Body is missing");
         }
     }
     @Test
@@ -335,7 +335,7 @@ public class AdminControllerTest {
             adminController.updateAdmin(3L, 0L, adminRequestModel);
         } catch (ResponseStatusException e) {
             assertThat(e.getStatus().value()).isEqualTo(404);
-            assertThat(e.getReason()).isEqualTo("Admin not found");
+            assertThat(e.getReason()).isEqualTo("User not found");
         }
     }
     @Test
@@ -352,7 +352,7 @@ public class AdminControllerTest {
             adminController.updateAdmin(3L, 1L, adminRequestModel);
         } catch (ResponseStatusException e) {
             assertThat(e.getStatus().value()).isEqualTo(403);
-            assertThat(e.getReason()).isEqualTo("Unauthorized action");
+            assertThat(e.getReason()).isEqualTo("Not authorized");
         }
     }
 }

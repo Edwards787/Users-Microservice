@@ -28,13 +28,15 @@ class CustomerServiceTest {
     Long customerId;
     CustomerRequestModel customerUpdate;
     Address address;
+    HttpService httpService;
     @BeforeEach
     public void setUp(){
         customerRepository = mock(CustomerRepository.class);
         userRepository  = mock(UserRepository.class);
+        httpService = mock(HttpService.class);
         director = new Director();
         builder = new Ubuilder();
-        customerService = new CustomerService(customerRepository, userRepository);
+        customerService = new CustomerService(customerRepository, userRepository, httpService);
         Location l = new Location();
         l.lat(12.1f);
         l._long(6.9f);
