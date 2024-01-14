@@ -106,7 +106,7 @@ public class CustomerService {
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
                 new AuthorizationData(userId1, userId2,
-                        userRepository,new AuthorizationUserAndAdminStrategy())));
+                        userRepository, new AuthorizationUserAndAdminStrategy())));
 
         customerRepository.deleteById(userId1);
         customerRepository.flush();
