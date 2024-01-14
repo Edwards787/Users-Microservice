@@ -20,5 +20,4 @@ public class EmailAlreadyInUseException extends Exception {
     public String getEmail() {
         return this.email;
     }
-
 }

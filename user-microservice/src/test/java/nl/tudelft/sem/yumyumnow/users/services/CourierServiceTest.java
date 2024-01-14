@@ -20,10 +20,10 @@ import java.util.Optional;
 
 public class CourierServiceTest {
 
-    private CourierRepository courierRepository = mock(CourierRepository.class);
-    private UserRepository userRepository  = mock(UserRepository.class);
-    private CourierBuilder courierBuilder = mock(CourierBuilder.class);
-    private CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder);
+    transient CourierRepository courierRepository = mock(CourierRepository.class);
+    transient UserRepository userRepository  = mock(UserRepository.class);
+    transient CourierBuilder courierBuilder = mock(CourierBuilder.class);
+    transient CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder);
 
     @Test
     public void testGetCourierById_WhenCourierExists() throws UserNotFoundException {

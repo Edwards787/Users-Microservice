@@ -10,6 +10,10 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 public abstract class BaseValidator implements Validator {
     private transient Validator next;
 
+    public Validator getNext() {
+        return next;
+    }
+
     public void setNext(Validator next) {
         this.next = next;
     }

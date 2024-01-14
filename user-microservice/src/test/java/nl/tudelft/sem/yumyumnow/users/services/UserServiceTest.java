@@ -21,10 +21,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class UserServiceTest {
     @Mock
-    private UserRepository userRepository;
+    transient UserRepository userRepository;
 
     @InjectMocks
-    private UserService userService;
+    transient UserService userService;
 
     @Test
     public void testGetAllUsers() {

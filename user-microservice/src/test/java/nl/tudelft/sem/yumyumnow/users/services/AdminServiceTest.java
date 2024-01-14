@@ -20,14 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
-    private AdminRepository adminRepository;
-    private UserRepository userRepository;
-    private ValidatorConstructor validatorConstructor;
-    private AdminBuilder adminBuilder;
-    private AdminService adminService;
-    private Admin admin1;
-    private Admin admin2;
-    private AdminRequestModel adminRequestModel;
+    transient AdminRepository adminRepository;
+    transient UserRepository userRepository;
+    transient ValidatorConstructor validatorConstructor;
+    transient AdminBuilder adminBuilder;
+    transient AdminService adminService;
+    transient Admin admin1;
+    transient Admin admin2;
+    transient AdminRequestModel adminRequestModel;
 
     @BeforeEach
     public void setUp(){

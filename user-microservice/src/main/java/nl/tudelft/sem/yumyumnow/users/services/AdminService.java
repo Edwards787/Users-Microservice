@@ -15,11 +15,11 @@ import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.Accessibility;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationUserAndAdminStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -110,13 +110,14 @@ public class AdminService {
         }
 
         Validator validator = validatorConstructor.userAuthorization();
+
         validator.handle(
                 new ValidationObject(
                         null,
-                        new AuthorizationObject(
-                                adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN
+                        new AuthorizationData(
+                                adminId1, adminId2, userRepository,
+                            new AuthorizationUserAndAdminStrategy()
                         )));
-
         try {
             adminRepository.deleteById(adminId1);
         } catch (EmptyResultDataAccessException e) {
@@ -141,10 +142,11 @@ public class AdminService {
         Admin admin = getAdminById(adminId1);
 
         Validator validator = validatorConstructor.userWithAuthorization();
+
         validator.handle(new ValidationObject(
                 adminRequestModel,
-                new AuthorizationObject(
-                        adminId1, adminId2, userRepository, Accessibility.USER_AND_ADMIN
+                new AuthorizationData(
+                        adminId1, adminId2, userRepository, new AuthorizationUserAndAdminStrategy()
                 )));
         adminBuilder.build(admin, adminRequestModel);
         adminRepository.saveAndFlush(admin);

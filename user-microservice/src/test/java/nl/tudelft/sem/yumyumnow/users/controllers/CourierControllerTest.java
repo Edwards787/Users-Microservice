@@ -1,7 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 
-import nl.tudelft.sem.yumyumnow.users.controllers.CourierController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
@@ -12,17 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class CourierControllerTest {
-    private CourierService courierService;
-    private CourierController courierController;
+    transient CourierService courierService;
+    transient CourierController courierController;
 
     @BeforeEach
     public void setUp(){

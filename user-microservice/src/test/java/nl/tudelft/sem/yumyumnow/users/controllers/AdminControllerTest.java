@@ -1,6 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
-import nl.tudelft.sem.yumyumnow.users.controllers.AdminController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
@@ -16,11 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class AdminControllerTest {
-    private AdminService adminService;
-    private AdminController adminController;
-    private Admin admin1;
-    private Admin admin2;
-    private AdminRequestModel adminRequestModel;
+    transient AdminService adminService;
+    transient AdminController adminController;
+    transient Admin admin1;
+    transient Admin admin2;
+    transient AdminRequestModel adminRequestModel;
+    transient String email = "email";
 
     @BeforeEach
     public void setUp(){
@@ -76,7 +76,7 @@ public class AdminControllerTest {
         throws EmailAlreadyInUseException, MissingBodyException, InvalidFieldException,
         UserNotFoundException, NotAuthorizedException {
         adminRequestModel.setEmail("");
-        when(adminService.createAdmin(adminRequestModel)).thenThrow(new InvalidFieldException("email", ""));
+        when(adminService.createAdmin(adminRequestModel)).thenThrow(new InvalidFieldException(email, ""));
         assertThrows(ResponseStatusException.class, () -> {
             adminController.createAdmin(adminRequestModel);
         });
