@@ -9,9 +9,10 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 
 public class ClosingTimesValidator extends BaseValidator {
     @Override
-    public boolean handle(ValidationObject validationObject)
-            throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
-            UserNotFoundException {
+    public boolean handle(
+        ValidationObject validationObject)
+        throws InvalidFieldException, NotAuthorizedException, MissingBodyException,
+        UserNotFoundException {
 
         VendorRequestModel vendorRequestModel = (VendorRequestModel) validationObject.getUserRequestModel();
         if (vendorRequestModel.getClosingTimes() == null || vendorRequestModel.getClosingTimes().isEmpty()) {

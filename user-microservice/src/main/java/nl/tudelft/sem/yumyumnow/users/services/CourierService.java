@@ -10,11 +10,12 @@ import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.Accessibility;
-import nl.tudelft.sem.yumyumnow.users.validation.objects.AuthorizationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationAdminOnlyStrategy;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationUserAndAdminStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,8 +103,8 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-                new AuthorizationObject(userId1, userId2, userRepository,
-                        Accessibility.USER_AND_ADMIN)));
+                new AuthorizationData(userId1, userId2, userRepository,
+                    new AuthorizationUserAndAdminStrategy())));
 
         courierRepository.deleteById(userId1);
         courierRepository.flush();
@@ -123,8 +124,8 @@ public class CourierService {
 
         Validator validator = validatorConstructor.courierWithAuthorization();
         validator.handle(new ValidationObject(courierRequestModel,
-                new AuthorizationObject(userId1, userId2, userRepository,
-                        Accessibility.USER_AND_ADMIN)));
+                new AuthorizationData(userId1, userId2, userRepository,
+                    new AuthorizationUserAndAdminStrategy())));
 
         Courier courierInitial;
         courierInitial = getCourierById(userId1);
@@ -178,7 +179,8 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-                new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+                new AuthorizationData(userId1, userId2, userRepository,
+                    new AuthorizationAdminOnlyStrategy())));
 
         Courier courier = getCourierById(userId1);
         courier.setRatings(ratings);
@@ -203,7 +205,7 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-                new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+                new AuthorizationData(userId1, userId2, userRepository, new AuthorizationAdminOnlyStrategy())));
 
         Courier courier = getCourierById(userId1);
         courier.setActivated(body);
@@ -228,7 +230,8 @@ public class CourierService {
 
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null,
-                new AuthorizationObject(userId1, userId2, userRepository, Accessibility.ADMIN_ONLY)));
+                new AuthorizationData(userId1, userId2, userRepository,
+                    new AuthorizationAdminOnlyStrategy())));
 
         Courier courier = getCourierById(userId1);
         courier.setBlocked(body);

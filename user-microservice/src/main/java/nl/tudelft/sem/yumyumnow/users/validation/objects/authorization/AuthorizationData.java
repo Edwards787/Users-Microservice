@@ -1,16 +1,13 @@
-package nl.tudelft.sem.yumyumnow.users.validation.objects;
+package nl.tudelft.sem.yumyumnow.users.validation.objects.authorization;
 
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 
-/**
- * Takes the ids of the target and requester, checking whether there are authorisation issues.
- */
-public class AuthorizationObject {
+public class AuthorizationData {
 
     private final Long id1;
     private final Long id2;
     private final UserRepository userRepository;
-    private final Accessibility accessibility;
+    private final AuthorizationStrategy authorizationStrategy;
 
     /**
      * Creates an AuthorizationObject.
@@ -18,13 +15,14 @@ public class AuthorizationObject {
      * @param id1 id of the target
      * @param id2 id of the requester
      * @param userRepository user repository
-     * @param accessibility accessibility strategy
+     * @param authorizationStrategy accessibility strategy
      */
-    public AuthorizationObject(Long id1, Long id2, UserRepository userRepository, Accessibility accessibility) {
+    public AuthorizationData(Long id1, Long id2, UserRepository userRepository,
+                             AuthorizationStrategy authorizationStrategy) {
         this.id1 = id1;
         this.id2 = id2;
         this.userRepository = userRepository;
-        this.accessibility = accessibility;
+        this.authorizationStrategy = authorizationStrategy;
     }
 
     public Long getId1() {
@@ -39,7 +37,7 @@ public class AuthorizationObject {
         return userRepository;
     }
 
-    public Accessibility getAccessibility() {
-        return accessibility;
+    public AuthorizationStrategy getAuthorizationStrategy() {
+        return authorizationStrategy;
     }
 }

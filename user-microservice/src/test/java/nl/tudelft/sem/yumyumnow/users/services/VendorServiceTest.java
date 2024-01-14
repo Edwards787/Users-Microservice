@@ -16,12 +16,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class VendorServiceTest {
-    private VendorRepository vendorRepository;
-    private UserRepository userRepository;
-    private VendorBuilder vendorBuilder;
-    private VendorService vendorService;
-    private Vendor vendor;
-    private VendorRequestModel vendorRequestModel;
+    transient VendorRepository vendorRepository;
+    transient UserRepository userRepository;
+    transient VendorBuilder vendorBuilder;
+    transient VendorService vendorService;
+    transient Vendor vendor;
+    transient VendorRequestModel vendorRequestModel;
     @BeforeEach
     public void setUp() {
         vendorRepository = mock(VendorRepository.class);

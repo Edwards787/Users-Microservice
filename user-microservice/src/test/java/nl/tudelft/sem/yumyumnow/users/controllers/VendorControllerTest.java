@@ -1,6 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
-import nl.tudelft.sem.yumyumnow.users.controllers.VendorController;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
@@ -9,22 +8,18 @@ import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.VendorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class VendorControllerTest {
-    private VendorController vendorController;
-    private VendorService vendorService;
-    private Vendor vendor;
-    private VendorRequestModel vendorRequestModel;
+    transient VendorController vendorController;
+    transient VendorService vendorService;
+    transient Vendor vendor;
+    transient VendorRequestModel vendorRequestModel;
     @BeforeEach
     public void setUp() {
         vendorService = mock(VendorService.class);

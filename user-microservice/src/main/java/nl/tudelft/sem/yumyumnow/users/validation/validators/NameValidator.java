@@ -8,7 +8,6 @@ import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 
 public class NameValidator extends BaseValidator {
-
     @Override
     public boolean handle(ValidationObject validationObject)
         throws InvalidFieldException, NotAuthorizedException, MissingBodyException,

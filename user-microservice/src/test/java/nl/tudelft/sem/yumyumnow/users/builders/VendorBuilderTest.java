@@ -1,6 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.builders;
 
-import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
@@ -11,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VendorBuilderTest {
-    private VendorBuilder vendorBuilder;
-    private VendorRequestModel vendorRequestModel;
-    private Vendor vendor;
+    transient VendorBuilder vendorBuilder;
+    transient VendorRequestModel vendorRequestModel;
+    transient Vendor vendor;
 
     @BeforeEach
     public void setUp() {
