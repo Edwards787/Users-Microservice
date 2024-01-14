@@ -23,7 +23,9 @@ public class CourierServiceTest {
     transient CourierRepository courierRepository = mock(CourierRepository.class);
     transient UserRepository userRepository  = mock(UserRepository.class);
     transient CourierBuilder courierBuilder = mock(CourierBuilder.class);
-    transient CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder);
+    transient HttpService httpService = mock(HttpService.class);
+    transient CourierService courierService = new CourierService(courierRepository, userRepository,
+            courierBuilder, httpService);
 
     @Test
     public void testGetCourierById_WhenCourierExists() throws UserNotFoundException {

@@ -29,9 +29,7 @@ public class CustomerController implements CustomerApi {
             return ResponseEntity.ok(c);
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
-        } catch (InvalidFieldException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (UserNotFoundException e) {
+        } catch (InvalidFieldException | UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (EmailAlreadyInUseException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
@@ -164,6 +162,30 @@ public class CustomerController implements CustomerApi {
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (InvalidFieldException | MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Long>> getCurrentOrderIdsForUser(Long userId){
+        try{
+            List<Long> ids = customerService.getCurrentOrderIdsForUser(userId);
+            return ResponseEntity.ok(ids);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> requestRefundByCustomerIdForOrderId(Long userId1, Long userId2, Long orderId){
+        try{
+            customerService.requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
+        } catch (MissingBodyException | InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

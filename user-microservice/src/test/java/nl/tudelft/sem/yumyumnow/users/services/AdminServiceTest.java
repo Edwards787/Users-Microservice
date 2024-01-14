@@ -28,6 +28,7 @@ public class AdminServiceTest {
     transient Admin admin1;
     transient Admin admin2;
     transient AdminRequestModel adminRequestModel;
+    transient HttpService httpService;
 
     @BeforeEach
     public void setUp(){
@@ -35,7 +36,8 @@ public class AdminServiceTest {
         userRepository = mock(UserRepository.class);
         validatorConstructor = new ValidatorConstructor();
         adminBuilder = new AdminBuilder();
-        adminService = new AdminService(adminRepository, userRepository, adminBuilder);
+        httpService = mock(HttpService.class);
+        adminService = new AdminService(adminRepository, userRepository, adminBuilder, httpService);
     }
 
     @BeforeEach

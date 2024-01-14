@@ -31,6 +31,7 @@ public class CustomerService {
     private final transient Builder builder;
     private final transient Director director;
     private final transient ValidatorConstructor validatorConstructor;
+    private final transient HttpService httpService;
 
     /**
      * Customer service constructor.
@@ -40,12 +41,13 @@ public class CustomerService {
      */
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository, HttpService httpService) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.director = new Director();
         this.builder = new Ubuilder();
         this.validatorConstructor = new ValidatorConstructor();
+        this.httpService = httpService;
     }
 
     /**
@@ -277,6 +279,25 @@ public class CustomerService {
         Customer customer = getCustomerById(userId1);
         customer.setBlocked(body);
         customerRepository.saveAndFlush(customer);
+    }
+
+    public List<Long> getCurrentOrderIdsForUser(Long userId) throws UserNotFoundException {
+        Optional<Customer> customer = customerRepository.findById(userId);
+        if (customer.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        return httpService.getCurrentOrderIdsForUser("http://localhost:8082", userId);
+
+    }
+
+    public void requestRefundByCustomerIdForOrderId(Long userId1, Long userId2, Long orderId)
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(new ValidationObject(null, new AuthorizationData(userId1,
+                userId2, userRepository, new AuthorizationUserAndAdminStrategy())));
+
+        httpService.requestRefundByCustomerIdForOrderId("http://localhost:8082", orderId);
+
     }
 }
 

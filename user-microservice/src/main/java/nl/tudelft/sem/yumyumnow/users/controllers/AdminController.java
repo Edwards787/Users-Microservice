@@ -66,6 +66,7 @@ public class AdminController implements AdminApi {
         }
     }
 
+
     @Override
     public ResponseEntity<Void> updateAdmin(Long userId1, Long userId2, AdminRequestModel adminRequestModel) {
         try {
@@ -84,6 +85,35 @@ public class AdminController implements AdminApi {
 
     @Override
     public ResponseEntity<List<Long>> getRefundRequests(Long userId) {
-        return adminService.getRefundRequests(userId);
+        try {
+            List<Long> orderToBeRefunded = adminService.getRefundRequests(userId);
+            return ResponseEntity.ok(orderToBeRefunded);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        }
     }
+
+    @Override
+    public ResponseEntity<Long> updateRefundRequestStatus(Long userId, Long orderId, Boolean body){
+        try{
+            Long order = adminService.updateRefundRequestStatus(userId, orderId, body);
+            return ResponseEntity.ok(order);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+        } catch (MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+        } catch (InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+
 }
