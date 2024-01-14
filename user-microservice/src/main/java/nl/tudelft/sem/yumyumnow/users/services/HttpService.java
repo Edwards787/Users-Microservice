@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class HttpService {
 
-    private final WebClient webClient;
+    private final transient WebClient webClient;
 
     @Autowired
     public HttpService(WebClient.Builder webClientBuilder) {
@@ -65,11 +65,11 @@ public class HttpService {
 
     public void updateRefundRequestStatus(String baseUrl, Long orderId, String status)
     {
-        ClientResponse response = webClient.put()
-            .uri(baseUrl + "/order/status/{orderId}", orderId)
-            .body(BodyInserters.fromValue(status))
-            .exchange()
-            .block();
+        webClient.put()
+                .uri(baseUrl + "/order/status/{orderId}", orderId)
+                .body(BodyInserters.fromValue(status))
+                .exchange()
+                .block();
 
     }
 
@@ -98,7 +98,7 @@ public class HttpService {
     public void requestRefundByCustomerIdForOrderId(String baseUrl, Long orderId){
 
         String status = "to-be-refunded";
-        ClientResponse response = webClient.put()
+        webClient.put()
                 .uri(baseUrl + "/order/status/{orderId}", orderId)
                 .body(BodyInserters.fromValue(status))
                 .exchange()
