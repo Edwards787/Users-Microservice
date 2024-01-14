@@ -1,6 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users;
 
-import nl.tudelft.sem.yumyumnow.users.builders.CustomerBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.CustomerFactory;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,12 +10,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CustomerBuilderTest {
-    CustomerBuilder customerBuilder;
+    CustomerFactory customerBuilder;
     CustomerRequestModel customerRequestModel;
     Customer customer;
     @BeforeEach
     public void setUp(){
-        customerBuilder = new CustomerBuilder();
+        customerBuilder = new CustomerFactory();
         Address address = new Address();
         customerRequestModel = new CustomerRequestModel(address,List.of("allergen1"), "email", "name", "surname");
         customer = new Customer();

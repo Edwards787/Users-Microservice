@@ -6,7 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VendorBuilder extends UserBuilder {
+public class VendorFactory extends UserFactory {
     /**
      * Builds a vendor from a vendor request model.
      *

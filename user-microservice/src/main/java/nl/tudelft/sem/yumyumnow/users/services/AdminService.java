@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.AdminFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
@@ -31,7 +31,7 @@ public class AdminService {
     private final transient AdminRepository adminRepository;
     private final transient UserRepository userRepository;
     private final transient ValidatorConstructor validatorConstructor;
-    private final transient AdminBuilder adminBuilder;
+    private final transient AdminFactory adminBuilder;
 
     /**
      * Constructor.
@@ -40,7 +40,7 @@ public class AdminService {
      * @param adminBuilder    admin builder
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminFactory adminBuilder) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
         this.validatorConstructor = new ValidatorConstructor();

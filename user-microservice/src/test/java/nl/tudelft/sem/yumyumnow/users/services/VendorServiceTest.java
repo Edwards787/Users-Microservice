@@ -1,6 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -18,16 +18,16 @@ import static org.mockito.Mockito.*;
 class VendorServiceTest {
     transient VendorRepository vendorRepository;
     transient UserRepository userRepository;
-    transient VendorBuilder vendorBuilder;
+    transient VendorFactory vendorFactory;
     transient VendorService vendorService;
     transient Vendor vendor;
     transient VendorRequestModel vendorRequestModel;
     @BeforeEach
     public void setUp() {
         vendorRepository = mock(VendorRepository.class);
-        vendorBuilder = new VendorBuilder();
+        vendorFactory = new VendorFactory();
         userRepository = mock(UserRepository.class);
-        vendorService = new VendorService(vendorRepository, userRepository, vendorBuilder);
+        vendorService = new VendorService(vendorRepository, userRepository, vendorFactory);
 
         Address address = new Address()
                 .address("StreetName 1A")
@@ -61,7 +61,7 @@ class VendorServiceTest {
         throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
         UserNotFoundException, NotAuthorizedException {
         when(vendorRepository.findByEmail(vendorRequestModel.getEmail())).thenReturn(Optional.empty());
-        when(vendorRepository.saveAndFlush(vendorBuilder.build(new Vendor(), vendorRequestModel))).thenReturn(vendor);
+        when(vendorRepository.saveAndFlush(vendorFactory.build(new Vendor(), vendorRequestModel))).thenReturn(vendor);
         assertThat(vendorService.createVendor(vendorRequestModel)).isEqualTo(vendor);
         verify(vendorRepository, times(1)).saveAndFlush(any());
     }

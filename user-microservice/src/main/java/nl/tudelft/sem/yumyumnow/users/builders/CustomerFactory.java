@@ -4,7 +4,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
 
-public class CustomerBuilder extends UserBuilder {
+public class CustomerFactory extends UserFactory {
     /**
      * Builds an customer object (sets needed fields).
      *

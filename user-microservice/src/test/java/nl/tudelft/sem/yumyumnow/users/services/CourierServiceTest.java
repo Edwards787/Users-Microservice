@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
 import nl.tudelft.sem.yumyumnow.users.model.User;
@@ -22,7 +22,7 @@ public class CourierServiceTest {
 
     transient CourierRepository courierRepository = mock(CourierRepository.class);
     transient UserRepository userRepository  = mock(UserRepository.class);
-    transient CourierBuilder courierBuilder = mock(CourierBuilder.class);
+    transient CourierFactory courierBuilder = mock(CourierFactory.class);
     transient CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder);
 
     @Test

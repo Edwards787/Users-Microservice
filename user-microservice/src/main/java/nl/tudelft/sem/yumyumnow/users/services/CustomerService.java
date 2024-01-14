@@ -3,9 +3,7 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.Builder;
-import nl.tudelft.sem.yumyumnow.users.builders.Director;
-import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.CustomerFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
@@ -28,9 +26,9 @@ public class CustomerService {
     private final transient CustomerRepository customerRepository;
 
     private final transient UserRepository userRepository;
-    private final transient Builder builder;
-    private final transient Director director;
     private final transient ValidatorConstructor validatorConstructor;
+
+    private final transient CustomerFactory customerFactory;
 
     /**
      * Customer service constructor.
@@ -43,9 +41,8 @@ public class CustomerService {
                            UserRepository userRepository) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
-        this.director = new Director();
-        this.builder = new Ubuilder();
         this.validatorConstructor = new ValidatorConstructor();
+        this.customerFactory = new CustomerFactory();
     }
 
     /**
@@ -65,9 +62,7 @@ public class CustomerService {
             throw new EmailAlreadyInUseException(customerRequestModel.getEmail());
         }
 
-        director.constructCustomer(builder, customerRequestModel);
-        Customer customerUpdated = (Customer) builder.build(new Customer());
-
+        Customer customerUpdated = customerFactory.build(new Customer(), customerRequestModel);
         customerRepository.saveAndFlush(customerUpdated);
         return customerUpdated;
     }
@@ -135,10 +130,8 @@ public class CustomerService {
 
         //Make sure that we can find the customer to be updated
         Customer customer = getCustomerById(id1);
-        director.constructCustomer(builder, customerRequestModel);
+        Customer customerUpdated = customerFactory.build(customer, customerRequestModel);
 
-        //Set the right attributes for customer
-        Customer customerUpdated = (Customer) builder.build(customer);
         customerRepository.saveAndFlush(customerUpdated);
     }
 

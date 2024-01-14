@@ -2,7 +2,7 @@ package nl.tudelft.sem.yumyumnow.users.services;
 
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
@@ -21,21 +21,21 @@ public class VendorService {
 
     private final transient VendorRepository vendorRepository;
     private final transient UserRepository userRepository;
-    private final transient VendorBuilder vendorBuilder;
+    private final transient VendorFactory vendorFactory;
     private final transient ValidatorConstructor validatorConstructor;
 
     /**
      * Creates an instance of the VendorService.
      *
      * @param vendorRepository     the vendor repository
-     * @param vendorBuilder        the vendor builder
+     * @param vendorFactory        the vendor builder
      */
     @Autowired
     public VendorService(VendorRepository vendorRepository,
                          UserRepository userRepository,
-                         VendorBuilder vendorBuilder) {
+                         VendorFactory vendorFactory) {
         this.vendorRepository = vendorRepository;
-        this.vendorBuilder = vendorBuilder;
+        this.vendorFactory = vendorFactory;
         this.userRepository = userRepository;
         this.validatorConstructor = new ValidatorConstructor();
     }
@@ -57,7 +57,7 @@ public class VendorService {
         validator.handle(new ValidationObject(vendorRequestModel, null));
 
         Vendor dummy = new Vendor();
-        Vendor vendor = vendorBuilder.build(dummy, vendorRequestModel);
+        Vendor vendor = vendorFactory.build(dummy, vendorRequestModel);
 
         if (vendorRepository.findByEmail(vendor.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(vendor.getEmail());
@@ -131,7 +131,7 @@ public class VendorService {
             new AuthorizationData(userId1, userId2, userRepository,
                 new AuthorizationUserAndAdminStrategy())));
 
-        Vendor updated = vendorBuilder.build(vendor.get(), vendorRequestModel);
+        Vendor updated = vendorFactory.build(vendor.get(), vendorRequestModel);
         vendorRepository.saveAndFlush(updated);
         return null;
     }

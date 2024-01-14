@@ -6,7 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.model.User;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CourierBuilder extends UserBuilder {
+public class CourierFactory extends UserFactory {
     /**
      * Builds a courier object.
      *

@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class VendorBuilderTest {
-    transient VendorBuilder vendorBuilder;
+public class VendorFactoryTest {
+    transient VendorFactory vendorFactory;
     transient VendorRequestModel vendorRequestModel;
     transient Vendor vendor;
 
     @BeforeEach
     public void setUp() {
-        vendorBuilder = new VendorBuilder();
+        vendorFactory = new VendorFactory();
         Address address = new Address()
                 .address("StreetName 1A")
                 .city("CityName")
@@ -36,7 +36,7 @@ public class VendorBuilderTest {
 
     @Test
     public void testEmptyInitialVendor() {
-        Vendor resultVendor = vendorBuilder.build(vendor, vendorRequestModel);
+        Vendor resultVendor = vendorFactory.build(vendor, vendorRequestModel);
         assertThat(resultVendor.getAddress()).isEqualTo(vendorRequestModel.getAddress());
         assertThat(resultVendor.getOpeningTimes()).isEqualTo(vendorRequestModel.getOpeningTimes());
         assertThat(resultVendor.getClosingTimes()).isEqualTo(vendorRequestModel.getClosingTimes());
@@ -55,7 +55,7 @@ public class VendorBuilderTest {
         vendor.setActivated(true);
         vendor.setOpeningTimes("");
 
-        Vendor resultVendor = vendorBuilder.build(vendor, vendorRequestModel);
+        Vendor resultVendor = vendorFactory.build(vendor, vendorRequestModel);
         assertThat(resultVendor.getAddress()).isEqualTo(vendorRequestModel.getAddress());
         assertThat(resultVendor.getOpeningTimes()).isEqualTo(vendorRequestModel.getOpeningTimes());
         assertThat(resultVendor.getClosingTimes()).isEqualTo(vendorRequestModel.getClosingTimes());

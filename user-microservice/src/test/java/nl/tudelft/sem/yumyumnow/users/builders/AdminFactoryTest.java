@@ -8,20 +8,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AdminBuilderTest {
-    transient AdminBuilder adminBuilder;
+public class AdminFactoryTest {
+    transient AdminFactory adminFactory;
     transient AdminRequestModel adminRequestModel;
     transient Admin admin;
     @BeforeEach
     public void setUp(){
-        adminBuilder = new AdminBuilder();
+        adminFactory = new AdminFactory();
         adminRequestModel = new AdminRequestModel("name", "surname", "email");
         admin = new Admin();
     }
 
     @Test
     public void testEmptyInitialAdmin(){
-        Admin resultAdmin = adminBuilder.build(admin, adminRequestModel);
+        Admin resultAdmin = adminFactory.build(admin, adminRequestModel);
         assertEquals(adminRequestModel.getName(), resultAdmin.getName());
         assertEquals(adminRequestModel.getSurname(), resultAdmin.getSurname());
         assertEquals(adminRequestModel.getEmail(), resultAdmin.getEmail());
@@ -34,7 +34,7 @@ public class AdminBuilderTest {
         admin.setEmail("new email");
         admin.setBlocked(true);
 
-        Admin resultAdmin = adminBuilder.build(admin, adminRequestModel);
+        Admin resultAdmin = adminFactory.build(admin, adminRequestModel);
         assertEquals(adminRequestModel.getName(), resultAdmin.getName());
         assertEquals(adminRequestModel.getSurname(), resultAdmin.getSurname());
         assertEquals(adminRequestModel.getEmail(), resultAdmin.getEmail());

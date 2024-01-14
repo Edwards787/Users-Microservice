@@ -5,9 +5,8 @@ import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import org.springframework.stereotype.Service;
 
 @Service
-public abstract class UserBuilder {
-
-    protected User build(User user, UserRequestModel requestModel) {
+public abstract class UserFactory implements Factory {
+    public User build(User user, UserRequestModel requestModel) {
         user.setEmail(requestModel.getEmail());
         user.setName(requestModel.getName());
         user.setSurname(requestModel.getSurname());
@@ -16,4 +15,5 @@ public abstract class UserBuilder {
         }
         return user;
     }
+
 }

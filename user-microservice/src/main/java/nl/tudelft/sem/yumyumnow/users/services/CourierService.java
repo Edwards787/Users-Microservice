@@ -3,7 +3,7 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
@@ -24,7 +24,7 @@ public class CourierService {
     private final transient CourierRepository courierRepository;
     private final transient UserRepository userRepository;
 
-    private final transient CourierBuilder courierBuilder;
+    private final transient CourierFactory courierBuilder;
     private final transient ValidatorConstructor validatorConstructor;
 
     /**
@@ -38,7 +38,7 @@ public class CourierService {
     public CourierService(
             CourierRepository courierRepository,
             UserRepository userRepository,
-            CourierBuilder courierBuilder) {
+            CourierFactory courierBuilder) {
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
         this.courierBuilder = courierBuilder;

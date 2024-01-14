@@ -6,7 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.model.User;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdminBuilder extends UserBuilder {
+public class AdminFactory extends UserFactory {
     /**
      * Builds an admin object (sets needed fields).
      *
