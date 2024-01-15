@@ -1,0 +1,18 @@
+package nl.tudelft.sem.yumyumnow.users.exceptions;
+
+import java.io.Serial;
+import lombok.Getter;
+
+@Getter
+public class ContentNotFoundException extends Exception {
+    @Serial
+    private static final long serialVersionUID = 4169405661066084090L;
+
+    public ContentNotFoundException() {
+        super("Requested content not found");
+    }
+
+    public ContentNotFoundException(String message) {
+        super(message);
+    }
+}
