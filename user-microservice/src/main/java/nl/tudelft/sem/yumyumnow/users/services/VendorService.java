@@ -3,7 +3,6 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
@@ -240,6 +239,14 @@ public class VendorService {
         return null;
     }
 
+    /**
+     * Gets a validation for a vendor.
+     *
+     * @param userId the vendor id
+     * @return the validation
+     * @throws UserNotFoundException   if the vendor is not found, specifying the id
+     * @throws ContentNotFoundException if the validation is not found
+     */
     public Validation getValidationByVendor(Long userId) throws UserNotFoundException, ContentNotFoundException {
         if (userId == null) {
             throw new UserNotFoundException(userId);
@@ -254,6 +261,18 @@ public class VendorService {
         return validation.get();
     }
 
+    /**
+     * Updates a validation for a vendor.
+     *
+     * @param userId1                the vendor id
+     * @param userId2                the user id requesting the update
+     * @param validationRequestModel the validation request model
+     * @return null
+     * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
+     * @throws NotAuthorizedException if the requester is not authorized to update the validation
+     * @throws InvalidFieldException  if the request model contains invalid fields, specifying the field and the value
+     * @throws MissingBodyException   if the request model is null
+     */
     public Void updateValidationByVendor(Long userId1, Long userId2, ValidationRequestModel validationRequestModel)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
         new AuthorizationUserAndAdminStrategy().authorize(userId1, userId2, userRepository);
@@ -270,6 +289,15 @@ public class VendorService {
         return null;
     }
 
+    /**
+     * Deletes a validation for a vendor.
+     *
+     * @param userId1 the vendor id
+     * @param userId2 the user id requesting the deletion
+     * @return null
+     * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
+     * @throws NotAuthorizedException if the requester is not authorized to delete the validation
+     */
     public Void deleteValidationByVendor(Long userId1, Long userId2)
             throws UserNotFoundException, NotAuthorizedException {
         new AuthorizationUserAndAdminStrategy().authorize(userId1, userId2, userRepository);
@@ -281,6 +309,17 @@ public class VendorService {
         return validationRepository.findAll();
     }
 
+    /**
+     * Updates the activation status of a vendor.
+     *
+     * @param userId1 the vendor id
+     * @param userId2 the user id requesting the update
+     * @param body    the new activation status
+     * @return null
+     * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
+     * @throws NotAuthorizedException if the requester is not authorized to update the activation status
+     * @throws MissingBodyException   if the request model is null
+     */
     public Void updateVendorActivationStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
         new AuthorizationAdminOnlyStrategy().authorize(userId1, userId2, userRepository);
@@ -293,6 +332,17 @@ public class VendorService {
         return null;
     }
 
+    /**
+     * Updates the block status of a vendor.
+     *
+     * @param userId1 the vendor id
+     * @param userId2 the user id requesting the update
+     * @param body    the new block status
+     * @return null
+     * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
+     * @throws NotAuthorizedException if the requester is not authorized to update the block status
+     * @throws MissingBodyException   if the request model is null
+     */
     public Void updateVendorBlockStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
         new AuthorizationAdminOnlyStrategy().authorize(userId1, userId2, userRepository);

@@ -1,8 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.exceptions;
 
-import lombok.Getter;
-
 import java.io.Serial;
+import lombok.Getter;
 
 @Getter
 public class ContentNotFoundException extends Exception {

@@ -1,13 +1,12 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
+import java.util.List;
 import nl.tudelft.sem.yumyumnow.users.api.ValidationApi;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
 import nl.tudelft.sem.yumyumnow.users.services.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 @Controller
 public class ValidationController implements ValidationApi {

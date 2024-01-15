@@ -1,9 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import java.util.List;
-
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import nl.tudelft.sem.yumyumnow.users.api.VendorApi;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
@@ -15,11 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
-
-import javax.validation.Valid;
 
 
 @Controller
@@ -124,7 +117,8 @@ public class VendorController implements VendorApi {
     }
 
     @Override
-    public ResponseEntity<Void> updateValidationByVendor(Long userId1, Long userId2, ValidationRequestModel validationRequestModel) {
+    public ResponseEntity<Void> updateValidationByVendor(Long userId1, Long userId2,
+                                                         ValidationRequestModel validationRequestModel) {
         try {
             return ResponseEntity.ok(vendorService.updateValidationByVendor(userId1, userId2, validationRequestModel));
         } catch (UserNotFoundException e) {
@@ -139,7 +133,7 @@ public class VendorController implements VendorApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteValidationByVendor(Long userId1,Long userId2) {
+    public ResponseEntity<Void> deleteValidationByVendor(Long userId1, Long userId2) {
         try {
             return ResponseEntity.ok(vendorService.deleteValidationByVendor(userId1, userId2));
         } catch (UserNotFoundException e) {
@@ -152,9 +146,9 @@ public class VendorController implements VendorApi {
     }
 
     @Override
-    public ResponseEntity<Void> updateVendorActivationStatus (Long userId1, Long userId2,Boolean body) {
+    public ResponseEntity<Void> updateVendorActivationStatus(Long userId1, Long userId2, Boolean body) {
         try {
-            return ResponseEntity.ok(vendorService.updateVendorActivationStatus(userId1, userId2,body));
+            return ResponseEntity.ok(vendorService.updateVendorActivationStatus(userId1, userId2, body));
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
@@ -169,7 +163,7 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> updateVendorBlockStatus(Long userId1, Long userId2, Boolean body) {
         try {
-            return ResponseEntity.ok(vendorService.updateVendorBlockStatus(userId1, userId2,body));
+            return ResponseEntity.ok(vendorService.updateVendorBlockStatus(userId1, userId2, body));
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
