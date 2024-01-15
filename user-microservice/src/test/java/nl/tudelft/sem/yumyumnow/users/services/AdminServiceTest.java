@@ -12,11 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
@@ -295,5 +295,48 @@ public class AdminServiceTest {
             assertThat(e.fieldName).isEqualTo("surname");
             assertThat(e.getMessage()).isEqualTo("Field 'surname' with value 'null' is invalid");
         }
+    }
+
+    @Test
+    public void testGetRefundRequests() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+
+        List<Long> refundRequests = List.of(1L, 2L, 3L);
+        when(httpService.getOrdersToRefund(anyString())).thenReturn(refundRequests);
+
+        List<Long> orders = adminService.getRefundRequests(admin1.getId());
+
+        assertEquals(orders, refundRequests);
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusTrue() throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        Long orderId = 1L;
+        Long userId = admin1.getId();
+        Boolean choice = true;
+        String status = "refunded";
+
+        Long id = adminService.updateRefundRequestStatus(userId, orderId, choice);
+
+        assertEquals(orderId, id);
+        verify(httpService).updateRefundRequestStatus("http://localhost:8082", orderId, status);
+
+
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusFalse() throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        Long orderId = 1L;
+        Long userId = admin1.getId();
+        Boolean choice = false;
+        String status = "rejected";
+
+        Long id = adminService.updateRefundRequestStatus(userId, orderId, choice);
+
+        assertEquals(orderId, id);
+        verify(httpService).updateRefundRequestStatus("http://localhost:8082", orderId, status);
+
     }
 }

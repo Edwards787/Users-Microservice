@@ -56,7 +56,7 @@ public class HttpService {
 
         String status = "to-be-refunded";
         List<Order> orders = webClient.get()
-                .uri(baseUrl + "/order/status/{status}", status)
+                .uri(baseUrl + "/order/status/" + status)
                 .retrieve()
                 .bodyToFlux(Order.class)
                 .collectList()
@@ -135,6 +135,9 @@ public class HttpService {
                 .block();
 
     }
+
+
+
 
 
 }

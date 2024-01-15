@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -355,4 +356,140 @@ public class AdminControllerTest {
             assertThat(e.getReason()).isEqualTo("Not authorized");
         }
     }
+
+    @Test
+    public void testGetRefundRequestsUserNotFoundException() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        when(adminService.getRefundRequests(3L)).thenThrow(new UserNotFoundException());
+
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.getRefundRequests(3L);
+        });
+
+        try {
+            adminController.getRefundRequests(3L);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(404);
+            assertThat(e.getReason()).isEqualTo("User not found");
+        }
+
+        verify(adminService, times(2)).getRefundRequests(3L);
+    }
+
+    @Test
+    public void testGetRefundRequestsNotAuthorizedException() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        when(adminService.getRefundRequests(3L)).thenThrow(new NotAuthorizedException());
+
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.getRefundRequests(3L);
+        });
+
+        try {
+            adminController.getRefundRequests(3L);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(403);
+            assertThat(e.getReason()).isEqualTo("Not authorized");
+        }
+
+        verify(adminService, times(2)).getRefundRequests(3L);
+    }
+
+    @Test
+    public void testGetRefundRequestsMissingBodyException() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        when(adminService.getRefundRequests(3L)).thenThrow(new MissingBodyException());
+
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.getRefundRequests(3L);
+        });
+
+        try {
+            adminController.getRefundRequests(3L);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Body is missing");
+        }
+
+        verify(adminService, times(2)).getRefundRequests(3L);
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusUserNotFoundException() throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        when(adminService.updateRefundRequestStatus(anyLong(), anyLong(), anyBoolean()))
+                .thenThrow(new UserNotFoundException(null));
+
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateRefundRequestStatus(1L, 2L, true);
+        });
+
+        try {
+            adminController.updateRefundRequestStatus(1L, 2L, true);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            assertThat(e.getReason()).isEqualTo("User not found");
+        }
+
+        verify(adminService, times(2)).updateRefundRequestStatus(1L, 2L, true);
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusNotAuthorizedException() throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        when(adminService.updateRefundRequestStatus(anyLong(), anyLong(), anyBoolean()))
+                .thenThrow(new NotAuthorizedException());
+
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateRefundRequestStatus(1L, 2L, true);
+        });
+
+        try {
+            adminController.updateRefundRequestStatus(1L, 2L, true);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(HttpStatus.FORBIDDEN.value());
+            assertThat(e.getReason()).isEqualTo("Not authorized");
+        }
+
+        verify(adminService, times(2)).updateRefundRequestStatus(1L, 2L, true);
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusMissingBodyException() throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        when(adminService.updateRefundRequestStatus(anyLong(), anyLong(), anyBoolean()))
+                .thenThrow(new MissingBodyException());
+
+        assertThrows(ResponseStatusException.class, () -> {
+            adminController.updateRefundRequestStatus(1L, 2L, true);
+        });
+
+        try {
+            adminController.updateRefundRequestStatus(1L, 2L, true);
+        } catch (ResponseStatusException e) {
+            assertThat(e.getStatus().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(e.getReason()).isEqualTo("Body is missing");
+        }
+
+        verify(adminService, times(2)).updateRefundRequestStatus(1L, 2L, true);
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusSuccess() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        when(adminService.updateRefundRequestStatus(anyLong(), anyLong(), anyBoolean()))
+                .thenReturn(123L);
+
+        // Act
+        ResponseEntity<Long> result = adminController.updateRefundRequestStatus(1L, 2L, true);
+
+        assertEquals(123L, result.getBody());
+        assertEquals(200, result.getStatusCodeValue());
+
+        // Verify that the service method was called
+        verify(adminService, times(1)).updateRefundRequestStatus(1L, 2L, true);
+    }
+
+
+
 }

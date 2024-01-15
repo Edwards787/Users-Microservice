@@ -7,6 +7,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
+import org.aspectj.weaver.ast.Not;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -579,5 +580,63 @@ class CustomerServiceTest {
 
         assertThrows(NotAuthorizedException.class,
                 () -> customerService.updatePastSavedOrderIdForUser(userId1, userId2, orderId));
+    }
+
+
+    @Test
+    void testGetCurrentOrderIdsForUser() throws UserNotFoundException {
+        Long userId = 1L;
+        Customer customer = new Customer(); // Create a sample Customer object
+        when(customerRepository.findById(userId)).thenReturn(Optional.of(customer));
+
+        List<Long> orderIds = List.of(101L, 102L, 103L);
+        when(httpService.getCurrentOrderIdsForUser(anyString(), eq(userId))).thenReturn(orderIds);
+
+        List<Long> result = customerService.getCurrentOrderIdsForUser(userId);
+
+        assertEquals(orderIds, result);
+        verify(customerRepository, times(1)).findById(userId);
+        verify(httpService, times(1)).getCurrentOrderIdsForUser(anyString(), eq(userId));
+    }
+
+    @Test
+    void testGetCurrentOrderIdsForUser_UserNotFoundException() {
+        Long userId = 2L;
+        when(customerRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> customerService.getCurrentOrderIdsForUser(userId));
+        verify(customerRepository, times(1)).findById(userId);
+        verifyNoInteractions(httpService);
+    }
+
+
+    @Test
+    void testRequestRefundByCustomerIdForOrderId() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        Admin admin = new Admin();
+        admin.setRole(User.RoleEnum.ADMIN);
+        Long orderId = 1L;
+
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+
+        doNothing().when(httpService).requestRefundByCustomerIdForOrderId(anyString(), eq(orderId));
+
+        customerService.requestRefundByCustomerIdForOrderId(customerId, admin.getId(), orderId);
+
+        verify(httpService, times(1)).requestRefundByCustomerIdForOrderId(anyString(), eq(orderId));
+    }
+
+    @Test
+    void testRequestRefundByCustomerIdForOrderId_UserNotFoundException() {
+        User user = new User();
+        user.setRole(User.RoleEnum.COURIER);
+        Long orderId = 1L;
+
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        assertThrows(NotAuthorizedException.class, () -> customerService.requestRefundByCustomerIdForOrderId(customerId, user.getId(), orderId));
+        verifyNoInteractions(httpService);
     }
 }

@@ -170,7 +170,8 @@ public class AdminService {
     public List<Long> getRefundRequests(Long userId) throws UserNotFoundException, NotAuthorizedException,
             MissingBodyException, InvalidFieldException {
 
-        Validator validator = validatorConstructor.userWithAuthorization();
+
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(
                 new ValidationObject(
                         null,
@@ -197,7 +198,7 @@ public class AdminService {
     public Long updateRefundRequestStatus(Long userId, Long orderId, Boolean body) throws UserNotFoundException,
             NotAuthorizedException, MissingBodyException, InvalidFieldException {
 
-        Validator validator = validatorConstructor.userWithAuthorization();
+        Validator validator = validatorConstructor.userAuthorization();
         validator.handle(
                 new ValidationObject(
                         null,
