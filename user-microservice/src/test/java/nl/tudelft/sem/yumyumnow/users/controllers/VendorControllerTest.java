@@ -284,7 +284,7 @@ public class VendorControllerTest {
         assertThatThrownBy(() -> vendorController.updateValidationByVendor(1L, 9L, null))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 403)
-                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to update validation with id 1");
+                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to update validation for vendor with id 1");
     }
 
     @Test
@@ -319,7 +319,7 @@ public class VendorControllerTest {
         assertThatThrownBy(() -> vendorController.deleteValidationByVendor(1L, 9L))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 403)
-                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to delete validation with id 1");
+                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to delete validation for vendor with id 1");
     }
 
     @Test
@@ -345,7 +345,7 @@ public class VendorControllerTest {
         assertThatThrownBy(() -> vendorController.updateVendorActivationStatus(1L, 9L, true))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 403)
-                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to update activation status of vendor with id 1");
+                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to update activation status for vendor with id 1");
     }
 
     @Test
@@ -380,7 +380,7 @@ public class VendorControllerTest {
         assertThatThrownBy(() -> vendorController.updateVendorBlockStatus(1L, 9L, true))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 403)
-                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to update block status of vendor with id 1");
+                .hasFieldOrPropertyWithValue("reason", "User with id 9 not authorized to update block status for vendor with id 1");
     }
 
     @Test
