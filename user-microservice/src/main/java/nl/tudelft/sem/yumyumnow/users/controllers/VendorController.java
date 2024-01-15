@@ -47,7 +47,7 @@ public class VendorController implements VendorApi {
                     e.getCustomMessage());
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User with id " + userid2 + " not authorized to delete vendor with id " + userid1);
+                    e.customMessage(userid2, "delete", userid1));
         } catch (MissingBodyException | InvalidFieldException e) {
             throw new RuntimeException(e);
         }
@@ -76,7 +76,7 @@ public class VendorController implements VendorApi {
                     e.getCustomMessage());
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User with id " + userId2 + " not authorized to update vendor with id " + userId1);
+                    e.customMessage(userId2, "update", userId1));
         } catch (InvalidFieldException | MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -126,7 +126,7 @@ public class VendorController implements VendorApi {
                     e.getCustomMessage());
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User with id " + userId2 + " not authorized to update validation with id " + userId1);
+                    e.customMessage(userId2, "update validation for", userId1));
         } catch (InvalidFieldException | MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -141,7 +141,7 @@ public class VendorController implements VendorApi {
                     e.getCustomMessage());
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User with id " + userId2 + " not authorized to delete validation with id " + userId1);
+                    e.customMessage(userId2, "delete validation for", userId1));
         }
     }
 
@@ -154,7 +154,7 @@ public class VendorController implements VendorApi {
                     e.getCustomMessage());
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User with id " + userId2 + " not authorized to update activation status of vendor with id " + userId1);
+                    e.customMessage(userId2, "update activation status for", userId1));
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -169,7 +169,7 @@ public class VendorController implements VendorApi {
                     e.getCustomMessage());
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User with id " + userId2 + " not authorized to update block status of vendor with id " + userId1);
+                    e.customMessage(userId2, "update block status for", userId1));
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
