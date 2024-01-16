@@ -187,7 +187,7 @@ pitest {
 	junit5PluginVersion = '0.12'
 
 	targetClasses = ['nl.tudelft.sem.yumyumnow.*']  //by default "${project.group}.*"
-	excludedClasses = ['nl.tudelft.sem.yumyumnow.users.api.*', 'nl.tudelft.sem.yumyumnow.users.model.*']
+	excludedClasses = ['nl.tudelft.sem.yumyumnow.users.api.*', 'nl.tudelft.sem.yumyumnow.users.model.*', 'nl.tudelft.sem.yumyumnow.users.builders.email.templates.*']
 	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
 	threads = 4
 	outputFormats = ['XML', 'HTML']
