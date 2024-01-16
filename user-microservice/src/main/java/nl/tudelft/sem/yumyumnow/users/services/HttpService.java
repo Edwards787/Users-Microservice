@@ -130,7 +130,7 @@ public class HttpService {
      */
     public void requestRefundByCustomerIdForOrderId(String baseUrl, Long orderId) {
 
-        String status = "TO_BE_REFUNDED";
+        String status = "to_be_refunded";
         webClient.put()
                 .uri(baseUrl + "/order/status/{orderId}", orderId)
                 .body(BodyInserters.fromValue(status))

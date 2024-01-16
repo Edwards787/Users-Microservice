@@ -206,7 +206,7 @@ public class AdminService {
                                 userId, userId, userRepository,
                                 new AuthorizationAdminOnlyStrategy()
                         )));
-        String status = body ? "REFUNDED" : "REJECTED";
+        String status = body ? "refunded" : "rejected";
         httpService.updateRefundRequestStatus("http://localhost:8082", orderId, status);
         return orderId;
     }
