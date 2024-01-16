@@ -6,6 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Delivery;
 import nl.tudelft.sem.yumyumnow.users.model.Order;
 import nl.tudelft.sem.yumyumnow.users.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -87,6 +88,7 @@ public class HttpService {
     public void updateRefundRequestStatus(String baseUrl, Long orderId, String status) {
         webClient.put()
                 .uri(baseUrl + "/order/status/{orderId}", orderId)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(status))
                 .exchange()
                 .block();
@@ -130,9 +132,10 @@ public class HttpService {
      */
     public void requestRefundByCustomerIdForOrderId(String baseUrl, Long orderId) {
 
-        String status = "to_be_refunded";
+        String status = "to-be-refunded";
         webClient.put()
                 .uri(baseUrl + "/order/status/{orderId}", orderId)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(status))
                 .exchange()
                 .block();
