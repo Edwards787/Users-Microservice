@@ -1,0 +1,6 @@
+[submodule "team-15a"]
+	path = team-15a
+	url = git@gitlab.ewi.tudelft.nl:cse2115/2023-2024/group-15/team-15a.git
+[submodule "team-15b"]
+	path = team-15b
+	url = git@gitlab.ewi.tudelft.nl:cse2115/2023-2024/group-15/team-15b.git

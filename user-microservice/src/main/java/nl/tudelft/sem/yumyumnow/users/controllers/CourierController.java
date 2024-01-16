@@ -92,8 +92,6 @@ public class CourierController implements CourierApi {
 
     @Override
     public ResponseEntity<List<Long>> getPastOrderIdsForCourier(Long userId) {
-        //TODO : MAKE SURE TO ADD THE MOCKING OF CALLING AN API ENDPOINT
-        //RIGHT NOW I JUST RETURN RANDOM NUMBERS
         List<Long> pastOrders;
         try {
             pastOrders = courierService.getPastOrderIdsForCourier(userId);
