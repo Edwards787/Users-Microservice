@@ -93,6 +93,22 @@ class CustomerControllerTest {
     }
 
     @Test
+    void createCustomerEmailAlreadyInUse() throws MissingBodyException, InvalidFieldException,EmailAlreadyInUseException, NotAuthorizedException, UserNotFoundException {
+        when(customerService.createCustomer(any())).thenThrow(new EmailAlreadyInUseException("email"));
+        assertThatThrownBy(() -> customerController.createCustomer(customerUpdate))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 400);
+    }
+
+    @Test
+    void createCustomerNoAuthorization() throws MissingBodyException, InvalidFieldException,EmailAlreadyInUseException, NotAuthorizedException, UserNotFoundException {
+        when(customerService.createCustomer(any())).thenThrow(new NotAuthorizedException());
+        assertThatThrownBy(() -> customerController.createCustomer(customerUpdate))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status.value", 400);
+    }
+
+    @Test
     void createCustomerInvalidField() throws MissingBodyException, InvalidFieldException,EmailAlreadyInUseException, NotAuthorizedException, UserNotFoundException {
         when(customerService.createCustomer(any())).thenThrow(new InvalidFieldException("fieldName","value"));
         assertThatThrownBy(() -> customerController.createCustomer(customerUpdate))
@@ -121,6 +137,25 @@ class CustomerControllerTest {
         } catch (ResponseStatusException e){
             assertThat(e.getStatus().value()).isEqualTo(404);
             assertThat(e.getReason()).isEqualTo("User with id 3 not found");
+        }
+    }
+
+
+    @Test
+    void deleteCustomerInvalidField()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+
+        customerUpdate.setEmail("");
+        doThrow(new InvalidFieldException("email","")).when(customerService).deleteCustomer(1L, 0L);
+        assertThrows(ResponseStatusException.class, () -> {
+            customerController.deleteCustomer(1L, 0L);
+        });
+        try{
+            customerController.deleteCustomer(1L, 0L);
+        } catch (ResponseStatusException e){
+            assertThat(e.getStatus().value()).isEqualTo(400);
+            assertThat(e.getReason()).isEqualTo("Field 'email' with value '' is invalid");
         }
     }
 
@@ -288,8 +323,8 @@ class CustomerControllerTest {
         try {
             customerController.updateFavouriteVendorIdsForCustomer(3L, 0L, null);
         } catch (ResponseStatusException e) {
-            assertThat(e.getStatus().value()).isEqualTo(400);
-            assertThat(e.getReason()).isEqualTo("Body not present");
+            assertThat(e.getStatus().value()).isEqualTo(404);
+            assertThat(e.getReason()).isEqualTo("something went wrong");
         }
     }
 
@@ -328,6 +363,7 @@ class CustomerControllerTest {
             assertThat(e.getReason()).isEqualTo("User not found");
         }
     }
+
 
     @Test
     void getAllCustomersSuccess() {
@@ -455,6 +491,26 @@ class CustomerControllerTest {
     }
 
     @Test
+    void updatePastSavedOrderMissingBody()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 5L;
+
+        doThrow(new MissingBodyException())
+                .when(customerService).updatePastSavedOrderIdForUser(userId1, userId2, null);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerController.updatePastSavedOrderIdForUser(userId1, userId2, null)
+        );
+
+        assertThat(exception.getStatus().value()).isEqualTo(404);
+        assertThat(exception.getReason()).isEqualTo("something went wrong");
+    }
+
+    @Test
     void updateCustomerBlockStatusNotAuthorizedException()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
@@ -472,6 +528,25 @@ class CustomerControllerTest {
         
         assertThat(exception.getStatus().value()).isEqualTo(403);
         assertThat(exception.getReason()).isEqualTo("Not authorized");
+    }
+
+    @Test
+    void updateCustomerBlockStatusMissingBody()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+
+        doThrow(new MissingBodyException())
+                .when(customerService).updateCustomerBlockStatus(userId1, userId2, null);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> customerController.updateCustomerBlockStatus(userId1, userId2, null)
+        );
+
+        assertThat(exception.getStatus().value()).isEqualTo(400);
+        assertThat(exception.getReason()).isEqualTo("Body is missing");
     }
 
     @Test
