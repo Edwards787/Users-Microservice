@@ -140,7 +140,11 @@ class VendorServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(vendor));
         when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
         vendorRequestModel.setEmail("newEmail@email.com");
-        assertThat(vendorService.updateVendor(1L, 1L, vendorRequestModel)).isNull();
+        try{
+            vendorService.updateVendor(1L, 1L, vendorRequestModel);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
         verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
         assertThat(vendorCaptor.getValue().getEmail()).isEqualTo("newEmail@email.com");
@@ -246,7 +250,11 @@ class VendorServiceTest {
         when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
         ValidationRequestModel vrm = new ValidationRequestModel();
         vrm.setDocument("document");
-        assertThat(vendorService.uploadValidationByVendor(1L, vrm)).isNull();
+        try{
+            vendorService.uploadValidationByVendor(1L, vrm);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Validation> validationCaptor = ArgumentCaptor.forClass(Validation.class);
         verify(validationRepository, times(1)).saveAndFlush(validationCaptor.capture());
         assertThat(validationCaptor.getValue().getVendorId()).isEqualTo(1L);
@@ -308,7 +316,11 @@ class VendorServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(vendor));
         ValidationRequestModel vrm = new ValidationRequestModel();
         vrm.setDocument("document");
-        assertThat(vendorService.updateValidationByVendor(1L, 1L, vrm)).isNull();
+        try{
+            vendorService.updateValidationByVendor(1L, 1L, vrm);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Validation> validationCaptor = ArgumentCaptor.forClass(Validation.class);
         verify(validationRepository, times(1)).saveAndFlush(validationCaptor.capture());
         assertThat(validationCaptor.getValue().getVendorId()).isEqualTo(1L);
@@ -347,7 +359,11 @@ class VendorServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(
                 new User().id(2L).role(User.RoleEnum.ADMIN)
         ));
-        assertThat(vendorService.updateVendorActivationStatus(1L, 2L, true)).isNull();
+        try{
+            vendorService.updateVendorActivationStatus(1L, 2L, true);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
         verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
         assertThat(vendorCaptor.getValue().getActivated()).isEqualTo(true);
@@ -372,7 +388,11 @@ class VendorServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(
                 new User().id(2L).role(User.RoleEnum.ADMIN)
         ));
-        assertThat(vendorService.updateVendorBlockStatus(1L, 2L, true)).isNull();
+        try{
+            vendorService.updateVendorBlockStatus(1L, 2L, true);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
         verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
         assertThat(vendorCaptor.getValue().getBlocked()).isEqualTo(true);

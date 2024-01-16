@@ -131,7 +131,7 @@ public class VendorService {
      * @throws InvalidFieldException  if the request model contains invalid fields, specifying the field and the value
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel)
+    public void updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel)
             throws UserNotFoundException, NotAuthorizedException, InvalidFieldException,
         MissingBodyException {
         Vendor vendor = getVendorById(userId1);
@@ -149,7 +149,6 @@ public class VendorService {
         vendor.setAddress(vendorRequestModel.getAddress());
 
         vendorRepository.saveAndFlush(vendor);
-        return null;
     }
 
     private double distance(double lat1,
@@ -221,7 +220,7 @@ public class VendorService {
      * @throws InvalidFieldException if the request model contains invalid fields, specifying the field and the value
      * @throws MissingBodyException  if the request model is null
      */
-    public Void uploadValidationByVendor(Long userId, ValidationRequestModel validationRequestModel)
+    public void uploadValidationByVendor(Long userId, ValidationRequestModel validationRequestModel)
             throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         if (userId == null) {
             throw new InvalidFieldException("userId", String.valueOf(userId));
@@ -244,7 +243,6 @@ public class VendorService {
         validation.setVendorId(userId);
         validation.setDocument(validationRequestModel.getDocument());
         validationRepository.saveAndFlush(validation);
-        return null;
     }
 
     /**
@@ -281,7 +279,7 @@ public class VendorService {
      * @throws InvalidFieldException  if the request model contains invalid fields, specifying the field and the value
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateValidationByVendor(Long userId1, Long userId2, ValidationRequestModel validationRequestModel)
+    public void updateValidationByVendor(Long userId1, Long userId2, ValidationRequestModel validationRequestModel)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
         new AuthorizationUserAndAdminStrategy().authorize(userId1, userId2, userRepository);
         if (validationRequestModel == null) {
@@ -294,7 +292,6 @@ public class VendorService {
         validation.setVendorId(userId1);
         validation.setDocument(validationRequestModel.getDocument());
         validationRepository.saveAndFlush(validation);
-        return null;
     }
 
     /**
@@ -328,7 +325,7 @@ public class VendorService {
      * @throws NotAuthorizedException if the requester is not authorized to update the activation status
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateVendorActivationStatus(Long userId1, Long userId2, Boolean body)
+    public void updateVendorActivationStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
         new AuthorizationAdminOnlyStrategy().authorize(userId1, userId2, userRepository);
         if (body == null) {
@@ -337,7 +334,6 @@ public class VendorService {
         Vendor vendor = vendorRepository.findById(userId1).get();
         vendor.setActivated(body);
         vendorRepository.saveAndFlush(vendor);
-        return null;
     }
 
     /**
@@ -351,7 +347,7 @@ public class VendorService {
      * @throws NotAuthorizedException if the requester is not authorized to update the block status
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateVendorBlockStatus(Long userId1, Long userId2, Boolean body)
+    public void updateVendorBlockStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
         new AuthorizationAdminOnlyStrategy().authorize(userId1, userId2, userRepository);
         if (body == null) {
@@ -360,6 +356,5 @@ public class VendorService {
         Vendor vendor = vendorRepository.findById(userId1).get();
         vendor.setBlocked(body);
         vendorRepository.saveAndFlush(vendor);
-        return null;
     }
 }
