@@ -336,7 +336,8 @@ public class CustomerService {
      * @throws MissingBodyException if the request body is missing or invalid
      * @throws InvalidFieldException if any field in the request body is invalid
      */
-    public List<PaymentMethod> getCustomerPaymentById(Long issuerId, Long customerId) throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+    public List<PaymentMethod> getCustomerPaymentById(Long issuerId, Long customerId)
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationData(customerId,
                 issuerId, userRepository, new AuthorizationUserAndAdminStrategy())));
@@ -361,7 +362,8 @@ public class CustomerService {
      * @throws MissingBodyException if the request body is missing or invalid
      * @throws InvalidFieldException if any field in the request body is invalid
      */
-    public void updateCustomerPaymentById(Long issuerId, Long customerId, List<PaymentMethod> paymentMethods) throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+    public void updateCustomerPaymentById(Long issuerId, Long customerId, List<PaymentMethod> paymentMethods)
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationData(customerId,
                 issuerId, userRepository, new AuthorizationUserAndAdminStrategy())));
