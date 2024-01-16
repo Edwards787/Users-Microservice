@@ -131,9 +131,7 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
-        } catch (MissingBodyException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
-        } catch (InvalidFieldException e) {
+        } catch (InvalidFieldException | MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "something went wrong");
         }
     }
