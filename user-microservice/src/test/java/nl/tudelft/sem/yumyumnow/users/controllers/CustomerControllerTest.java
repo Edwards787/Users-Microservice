@@ -148,10 +148,10 @@ class CustomerControllerTest {
 
         customerUpdate.setEmail("");
         doThrow(new InvalidFieldException("email","")).when(customerService).deleteCustomer(1L, 0L);
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> {
             customerController.deleteCustomer(1L, 0L);
         });
-        assertThat(e.getStatus().value()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(e.getStatus().value()).isEqualTo(400);
         assertThat(e.getReason()).isEqualTo("Field 'email' with value '' is invalid");
     }
 
