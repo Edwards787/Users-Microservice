@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -116,6 +117,7 @@ class HttpServiceTest {
 
         when(webClient.put()).thenReturn(uriSpecBody);
         when(uriSpecBody.uri(eq(baseUrl + "/order/status/{orderId}"), eq(orderId))).thenReturn(uriRequestBody);
+        when(uriRequestBody.contentType(MediaType.APPLICATION_JSON)).thenReturn(uriRequestBody);
         when(uriRequestBody.body(any())).thenReturn(headersSpec);
         when(headersSpec.exchange()).thenReturn(Mono.empty());
 
@@ -136,6 +138,7 @@ class HttpServiceTest {
 
         when(webClient.put()).thenReturn(uriSpecBody);
         when(uriSpecBody.uri(eq(baseUrl + "/order/status/{orderId}"), eq(orderId))).thenReturn(uriRequestBody);
+        when(uriRequestBody.contentType(MediaType.APPLICATION_JSON)).thenReturn(uriRequestBody);
         when(uriRequestBody.body(any())).thenReturn(headersSpec);
         when(headersSpec.exchange()).thenReturn(Mono.empty());
 
@@ -169,7 +172,7 @@ class HttpServiceTest {
         List<Order> orders = List.of(o1, o2, o3);
 
         when(webClient.get()).thenReturn(uriSpec);
-        when(uriSpec.uri(anyString(), anyLong())).thenReturn(headersSpec);  // Use anyString() here
+        when(uriSpec.uri(anyString())).thenReturn(headersSpec);  // Use anyString() here
         when(headersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToFlux(Order.class)).thenReturn(Flux.fromIterable(orders));
 
@@ -179,7 +182,7 @@ class HttpServiceTest {
 
         verify(webClientBuilder).build();
         verify(webClient).get();
-        verify(uriSpec).uri(anyString(), anyLong());
+        verify(uriSpec).uri(anyString());
         verify(responseSpec).bodyToFlux(Order.class);
     }
 

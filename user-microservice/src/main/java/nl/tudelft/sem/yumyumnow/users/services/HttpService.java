@@ -104,7 +104,7 @@ public class HttpService {
      */
     public List<Long> getCurrentOrderIdsForUser(String baseUrl, Long userId) {
         List<Order> orders = webClient.get()
-                .uri(baseUrl + "/order/history/user/{userId}", userId)
+                .uri(baseUrl + "/order/all")
                 .retrieve()
                 .bodyToFlux(Order.class)
                 .collectList()
@@ -115,7 +115,7 @@ public class HttpService {
         }
         ArrayList<Long> ids = new ArrayList<>();
         for (Order order : orders) {
-            if (order.getStatus() == Status.READY_FOR_PICKUP || order.getStatus() == Status.ACCEPTED
+            if ( (order.getId().equals(userId)) && order.getStatus() == Status.READY_FOR_PICKUP || order.getStatus() == Status.ACCEPTED
                     || order.getStatus() == Status.ON_TRANSIT || order.getStatus() == Status.PREPARING
                     || order.getStatus() == Status.PENDING) {
                 ids.add(order.getId());
