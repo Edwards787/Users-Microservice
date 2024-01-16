@@ -6,13 +6,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public abstract class UserFactory implements Factory {
-    public User build(User user, UserRequestModel requestModel) {
+    public User build(UserRequestModel requestModel) {
+        User user = new User();
+
         user.setEmail(requestModel.getEmail());
         user.setName(requestModel.getName());
         user.setSurname(requestModel.getSurname());
-        if (user.getBlocked() == null) {
-            user.setBlocked(false);
-        }
+        user.setBlocked(false);
+
         return user;
     }
 

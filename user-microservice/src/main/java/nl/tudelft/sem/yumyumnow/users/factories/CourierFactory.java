@@ -10,14 +10,15 @@ public class CourierFactory extends UserFactory {
     /**
      * Builds a courier object.
      *
-     * @param courier              courier object
      * @param courierRequestModel courier request model
      * @return courier object
      */
     @SuppressWarnings("unused")
-    public Courier build(Courier courier, CourierRequestModel courierRequestModel) {
-        super.build(courier, courierRequestModel);
+    public Courier build(CourierRequestModel courierRequestModel) {
+
+        Courier courier = (Courier) super.build(courierRequestModel);
         courier.setRole(User.RoleEnum.COURIER);
+
         return courier;
     }
 }

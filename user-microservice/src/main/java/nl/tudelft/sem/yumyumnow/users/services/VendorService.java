@@ -56,8 +56,7 @@ public class VendorService {
         Validator validator = validatorConstructor.vendorWithoutAuthorization();
         validator.handle(new ValidationObject(vendorRequestModel, null));
 
-        Vendor dummy = new Vendor();
-        Vendor vendor = vendorFactory.build(dummy, vendorRequestModel);
+        Vendor vendor = vendorFactory.build(vendorRequestModel);
 
         if (vendorRepository.findByEmail(vendor.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(vendor.getEmail());
@@ -124,15 +123,21 @@ public class VendorService {
      */
     public Void updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel)
             throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
-        Optional<Vendor> vendor = vendorRepository.findById(userId1);
+        Vendor vendor = getVendorById(userId1);
 
         Validator validator = validatorConstructor.vendorWithAuthorization();
         validator.handle(new ValidationObject(vendorRequestModel,
             new AuthorizationData(userId1, userId2, userRepository,
                 new AuthorizationUserAndAdminStrategy())));
 
-        Vendor updated = vendorFactory.build(vendor.get(), vendorRequestModel);
-        vendorRepository.saveAndFlush(updated);
+        vendor.setName(vendorRequestModel.getName());
+        vendor.setSurname(vendorRequestModel.getSurname());
+        vendor.setEmail(vendorRequestModel.getEmail());
+        vendor.setOpeningTimes(vendorRequestModel.getOpeningTimes());
+        vendor.setClosingTimes(vendorRequestModel.getClosingTimes());
+        vendor.setAddress(vendorRequestModel.getAddress());
+
+        vendorRepository.saveAndFlush(vendor);
         return null;
     }
 }

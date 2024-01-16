@@ -31,18 +31,18 @@ public class AdminService {
     private final transient AdminRepository adminRepository;
     private final transient UserRepository userRepository;
     private final transient ValidatorConstructor validatorConstructor;
-    private final transient AdminFactory adminBuilder;
+    private final transient AdminFactory adminFactory;
 
     /**
      * Constructor.
      *
      * @param adminRepository admin repository
-     * @param adminBuilder    admin builder
+     * @param adminFactory    admin builder
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminFactory adminBuilder) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminFactory adminFactory) {
         this.adminRepository = adminRepository;
-        this.adminBuilder = adminBuilder;
+        this.adminFactory = adminFactory;
         this.validatorConstructor = new ValidatorConstructor();
         this.userRepository = userRepository;
     }
@@ -78,9 +78,7 @@ public class AdminService {
         Validator validator = validatorConstructor.userWithoutAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, null));
 
-        Admin admin = new Admin();
-        adminBuilder.build(admin, adminRequestModel);
-
+        Admin admin = adminFactory.build(adminRequestModel);
 
         if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(adminRequestModel.getEmail());
@@ -148,7 +146,11 @@ public class AdminService {
                 new AuthorizationData(
                         adminId1, adminId2, userRepository, new AuthorizationUserAndAdminStrategy()
                 )));
-        adminBuilder.build(admin, adminRequestModel);
+
+        admin.setSurname(adminRequestModel.getSurname());
+        admin.setName(adminRequestModel.getName());
+        admin.setEmail(adminRequestModel.getEmail());
+
         adminRepository.saveAndFlush(admin);
     }
 

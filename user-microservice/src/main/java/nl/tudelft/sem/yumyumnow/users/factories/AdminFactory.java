@@ -10,14 +10,15 @@ public class AdminFactory extends UserFactory {
     /**
      * Builds an admin object (sets needed fields).
      *
-     * @param admin              initial admin object
      * @param adminRequestModel  the attributes that are being updated/posted
      *
      * @return return the updated Admin object
      */
-    public Admin build(Admin admin, AdminRequestModel adminRequestModel) {
-        super.build(admin, adminRequestModel);
+    public Admin build(AdminRequestModel adminRequestModel) {
+
+        Admin admin = (Admin) super.build(adminRequestModel);
         admin.setRole(User.RoleEnum.ADMIN);
+
         return admin;
     }
 }

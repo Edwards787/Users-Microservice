@@ -24,7 +24,7 @@ public class CourierService {
     private final transient CourierRepository courierRepository;
     private final transient UserRepository userRepository;
 
-    private final transient CourierFactory courierBuilder;
+    private final transient CourierFactory courierFactory;
     private final transient ValidatorConstructor validatorConstructor;
 
     /**
@@ -32,16 +32,16 @@ public class CourierService {
      *
      * @param courierRepository courier repository
      * @param userRepository    user repository
-     * @param courierBuilder    courier builder
+     * @param courierFactory    courier builder
      */
     @Autowired
     public CourierService(
             CourierRepository courierRepository,
             UserRepository userRepository,
-            CourierFactory courierBuilder) {
+            CourierFactory courierFactory) {
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
-        this.courierBuilder = courierBuilder;
+        this.courierFactory = courierFactory;
         this.validatorConstructor = new ValidatorConstructor();
     }
 
@@ -72,8 +72,7 @@ public class CourierService {
         Validator validator = validatorConstructor.courierWithoutAuthorization();
         validator.handle(new ValidationObject(courierRequestModel, null));
 
-        Courier courier = new Courier();
-        courierBuilder.build(courier, courierRequestModel);
+        Courier courier = courierFactory.build(courierRequestModel);
 
         if (courierRepository.findByEmail(courierRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(courierRequestModel.getEmail());
@@ -127,9 +126,11 @@ public class CourierService {
                 new AuthorizationData(userId1, userId2, userRepository,
                     new AuthorizationUserAndAdminStrategy())));
 
-        Courier courierInitial;
-        courierInitial = getCourierById(userId1);
-        Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
+        Courier courier = getCourierById(userId1);
+        courier.setName(courierRequestModel.getName());
+        courier.setSurname(courierRequestModel.getSurname());
+        courier.setEmail(courier.getEmail());
+
         courierRepository.saveAndFlush(courier);
 
     }

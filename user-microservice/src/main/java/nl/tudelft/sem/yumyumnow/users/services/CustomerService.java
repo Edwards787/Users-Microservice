@@ -62,9 +62,10 @@ public class CustomerService {
             throw new EmailAlreadyInUseException(customerRequestModel.getEmail());
         }
 
-        Customer customerUpdated = customerFactory.build(new Customer(), customerRequestModel);
-        customerRepository.saveAndFlush(customerUpdated);
-        return customerUpdated;
+        Customer customer = customerFactory.build(customerRequestModel);
+        customerRepository.saveAndFlush(customer);
+
+        return customer;
     }
 
     /**
@@ -130,9 +131,14 @@ public class CustomerService {
 
         //Make sure that we can find the customer to be updated
         Customer customer = getCustomerById(id1);
-        Customer customerUpdated = customerFactory.build(customer, customerRequestModel);
 
-        customerRepository.saveAndFlush(customerUpdated);
+        customer.setName(customerRequestModel.getName());
+        customer.setSurname(customerRequestModel.getSurname());
+        customer.setEmail(customerRequestModel.getEmail());
+        customer.setHomeAddress(customer.getHomeAddress());
+        customer.setAllergens(customerRequestModel.getAllergens());
+
+        customerRepository.saveAndFlush(customer);
     }
 
     /**
