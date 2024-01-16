@@ -8,6 +8,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
+import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
@@ -188,6 +189,37 @@ public class CourierService {
         Courier courier = getCourierById(userId1);
         courier.setRatings(ratings);
         courierRepository.saveAndFlush(courier);
+    }
+
+
+    /**
+     * Post a rating to a courier. Rating can only be given by customers
+     *
+     * @param userId id of courier to be rated
+     * @param rating rating
+     * @throws UserNotFoundException if user not found
+     */
+    public void rateCourier(Long userId, Rating rating) throws UserNotFoundException, InvalidFieldException {
+        // Check if customer exists
+        if (userRepository.findById(rating.getUserId())
+                .map(user -> !user.getRole().equals(User.RoleEnum.CUSTOMER))
+                .orElse(true)) {
+            throw new UserNotFoundException();
+        }
+
+        // Check if courier exists
+        Optional<Courier> courier = courierRepository.findById(userId);
+        if (courier.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        // Check if rating value is valid
+        if (rating.getRating() < 1 || rating.getRating() > 5) {
+            throw new InvalidFieldException("rating", rating.getRating().toString());
+        }
+
+        courier.get().getRatings().add(rating);
+        courierRepository.saveAndFlush(courier.get());
     }
 
     /**
