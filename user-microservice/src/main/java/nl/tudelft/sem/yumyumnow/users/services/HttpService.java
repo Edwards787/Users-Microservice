@@ -2,7 +2,6 @@ package nl.tudelft.sem.yumyumnow.users.services;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import nl.tudelft.sem.yumyumnow.users.model.Delivery;
 import nl.tudelft.sem.yumyumnow.users.model.Order;
 import nl.tudelft.sem.yumyumnow.users.model.Status;
