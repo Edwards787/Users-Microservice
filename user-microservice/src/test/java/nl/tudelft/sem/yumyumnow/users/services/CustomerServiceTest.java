@@ -362,6 +362,19 @@ class CustomerServiceTest {
     }
 
     @Test
+    public void testGetFavsUserNotFound() {
+        mockCustomer.setHomeAddress(adr);
+        Long cId2 = 200L;
+        mockCustomer.setFavRestaurants(favs);
+        when(customerRepository.findById(cId2)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () ->{
+            customerService.getFavoriteRestaurants(cId2);
+        });
+        verify(customerRepository, times(1)).findById(cId2);
+    }
+
+    @Test
     public void testFavsUpdateAdminWorking()
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException{
         Long customerId = 1L;
@@ -456,6 +469,19 @@ class CustomerServiceTest {
         assertThat(actualOrderId).isEqualTo(expectedOrderId);
     }
 
+    @Test
+    void getPastSavedOrderIdForUserNotFound() throws UserNotFoundException {
+        Long userId = 111L;
+        Long expectedOrderId = 123L;
+
+        Customer customer = new Customer();
+        customer.setSavedOrder(expectedOrderId);
+
+        when(customerRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> customerService.getPastSavedOrderIdForUser(userId));
+    }
+
 
     @Test
     void updateCustomerBlockStatusByAdminSuccess()
@@ -500,6 +526,26 @@ class CustomerServiceTest {
 
         assertThrows(NotAuthorizedException.class,
                 () -> customerService.updateCustomerBlockStatus(userId1, userId2, body));
+    }
+
+    @Test
+    void updateCustomerBlockStatusMissingBody() {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+
+        Customer customer = new Customer();
+        customer.setId(userId1);
+
+        User adminUser = new User();
+        adminUser.setId(userId2);
+        adminUser.setRole(User.RoleEnum.ADMIN);
+
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(customer));
+        when(customerRepository.findById(userId1)).thenReturn(Optional.of(customer));
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
+
+        assertThrows(InvalidFieldException.class,
+                () -> customerService.updateCustomerBlockStatus(userId1, userId2, null));
     }
 
     @Test
