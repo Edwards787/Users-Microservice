@@ -579,4 +579,122 @@ class CustomerControllerTest {
         assertEquals("Body is missing", exception.getReason());
         verify(customerService, times(1)).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
     }
+
+    @Test
+    void testGetCustomerPaymentByIdSuccess() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        // Arrange
+        Long userId = 1L;
+        Long issuerId = 2L;
+
+        List<PaymentMethod> expected = List.of(new PaymentMethod());
+        doReturn(expected).when(customerService).getCustomerPaymentById(issuerId, userId);
+
+        // Act
+        ResponseEntity<List<PaymentMethod>> result = customerController.getCustomerPaymentById(userId, issuerId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        verify(customerService, times(1)).getCustomerPaymentById(issuerId, userId);
+        assertEquals(expected, result.getBody());
+    }
+
+    @Test
+    void testGetCustomerPaymentByIdUserNotFound() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        when(customerService.getCustomerPaymentById(any(), any())).thenThrow(new UserNotFoundException());
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> customerController.getCustomerPaymentById(1L, 1L));
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+    }
+
+    @Test
+    void testGetCustomerPaymentByIdNotAuthorized() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        when(customerService.getCustomerPaymentById(any(), any())).thenThrow(new NotAuthorizedException());
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> customerController.getCustomerPaymentById(1L, 1L));
+        assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
+    }
+
+    @Test
+    void testGetCustomerPaymentByIdMissingBody() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        when(customerService.getCustomerPaymentById(any(), any())).thenThrow(new MissingBodyException());
+
+        // Act and assert
+        assertThrows(RuntimeException.class, () -> customerController.getCustomerPaymentById(1L, 1L));
+    }
+
+    @Test
+    void testGetCustomerPaymentByIdInvalidField() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        when(customerService.getCustomerPaymentById(any(), any())).thenThrow(new InvalidFieldException("field", "value"));
+
+        // Act and assert
+        assertThrows(RuntimeException.class, () -> customerController.getCustomerPaymentById(1L, 1L));
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdSuccess() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        // Arrange
+        Long userId = 1L;
+        Long issuerId = 2L;
+
+        List<PaymentMethod> expected = List.of(new PaymentMethod());
+        doNothing().when(customerService).updateCustomerPaymentById(issuerId, userId, expected);
+
+        // Act
+        ResponseEntity<Void> result = customerController.updateCustomerPaymentById(userId, issuerId, expected);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        verify(customerService, times(1)).updateCustomerPaymentById(issuerId, userId, expected);
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdUserNotFound() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        List<PaymentMethod> paymentMethods = List.of(new PaymentMethod());
+        doThrow(new UserNotFoundException()).when(customerService).updateCustomerPaymentById(any(), any(), anyList());
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> customerController.updateCustomerPaymentById(1L, 1L, paymentMethods));
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdNotAuthorized() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        List<PaymentMethod> paymentMethods = List.of(new PaymentMethod());
+        doThrow(new NotAuthorizedException()).when(customerService).updateCustomerPaymentById(any(), any(), anyList());
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> customerController.updateCustomerPaymentById(1L, 1L, paymentMethods));
+        assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdMissingBody() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        List<PaymentMethod> paymentMethods = List.of(new PaymentMethod());
+        doThrow(new MissingBodyException()).when(customerService).updateCustomerPaymentById(any(), any(), anyList());
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> customerController.updateCustomerPaymentById(1L, 1L, paymentMethods));
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdInvalidField() throws MissingBodyException, InvalidFieldException, NotAuthorizedException, UserNotFoundException {
+        // Arrange
+        List<PaymentMethod> paymentMethods = List.of(new PaymentMethod());
+        doThrow(new InvalidFieldException("Field", "Value")).when(customerService).updateCustomerPaymentById(any(), any(), any());
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> customerController.updateCustomerPaymentById(1L, 1L, paymentMethods));
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+    }
+
 }
