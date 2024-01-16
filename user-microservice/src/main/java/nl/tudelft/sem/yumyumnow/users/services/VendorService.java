@@ -125,7 +125,6 @@ public class VendorService {
      * @param userId1            the vendor id being updated
      * @param userId2            the user id requesting the update
      * @param vendorRequestModel the vendor request model
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the vendor
      * @throws InvalidFieldException  if the request model contains invalid fields, specifying the field and the value
@@ -215,7 +214,6 @@ public class VendorService {
      *
      * @param userId                 the vendor id
      * @param validationRequestModel the validation request model
-     * @return null
      * @throws UserNotFoundException if the vendor is not found, specifying the id
      * @throws InvalidFieldException if the request model contains invalid fields, specifying the field and the value
      * @throws MissingBodyException  if the request model is null
@@ -273,7 +271,6 @@ public class VendorService {
      * @param userId1                the vendor id
      * @param userId2                the user id requesting the update
      * @param validationRequestModel the validation request model
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the validation
      * @throws InvalidFieldException  if the request model contains invalid fields, specifying the field and the value
@@ -320,7 +317,6 @@ public class VendorService {
      * @param userId1 the vendor id
      * @param userId2 the user id requesting the update
      * @param body    the new activation status
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the activation status
      * @throws MissingBodyException   if the request model is null
@@ -342,7 +338,6 @@ public class VendorService {
      * @param userId1 the vendor id
      * @param userId2 the user id requesting the update
      * @param body    the new block status
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the block status
      * @throws MissingBodyException   if the request model is null
