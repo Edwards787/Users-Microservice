@@ -56,7 +56,8 @@ public class HttpService {
      */
     public List<Long> getOrdersToRefund(String baseUrl) {
 
-        String status = "to-be-refunded";
+        String status = "TO_BE_REFUNDED";
+
         List<Order> orders = webClient.get()
                 .uri(baseUrl + "/order/status/" + status)
                 .retrieve()
@@ -129,7 +130,7 @@ public class HttpService {
      */
     public void requestRefundByCustomerIdForOrderId(String baseUrl, Long orderId) {
 
-        String status = "to-be-refunded";
+        String status = "TO_BE_REFUNDED";
         webClient.put()
                 .uri(baseUrl + "/order/status/{orderId}", orderId)
                 .body(BodyInserters.fromValue(status))
