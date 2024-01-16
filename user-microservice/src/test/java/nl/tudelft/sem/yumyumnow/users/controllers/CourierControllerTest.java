@@ -78,7 +78,8 @@ public class CourierControllerTest {
         when(courierService.createCourier(courierRequestModel)).thenThrow(new MissingBodyException());
 
         // Act and Assert
-        assertThrows(ResponseStatusException.class, () -> courierController.createCourier(courierRequestModel));
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> courierController.createCourier(courierRequestModel));
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     }
 
     @Test
@@ -90,10 +91,106 @@ public class CourierControllerTest {
         when(courierService.createCourier(courierRequestModel)).thenThrow(new InvalidFieldException("name", null));
 
         // Act and Assert
-        assertThrows(ResponseStatusException.class, () -> courierController.createCourier(courierRequestModel));
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> courierController.createCourier(courierRequestModel));
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     }
 
-    // Add similar tests for getAllCouriers, deleteCourier, and updateCourier
+    @Test
+    public void testCreateCourierAlreadyExists()
+            throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+            UserNotFoundException, NotAuthorizedException {
+        // Arrange
+        CourierRequestModel courierRequestModel = new CourierRequestModel("test@example.com", "John", "Doe");
+        Courier mockCourier = new Courier();
+        when(courierService.createCourier(courierRequestModel)).thenThrow(EmailAlreadyInUseException.class);
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> courierController.createCourier(courierRequestModel));
+        assertEquals(HttpStatus.CONFLICT, ex.getStatus());
+    }
+
+    @Test
+    public void testCreateCourierInternalError1()
+            throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+            UserNotFoundException, NotAuthorizedException {
+        // Arrange
+        CourierRequestModel courierRequestModel = new CourierRequestModel("test@example.com", "John", "Doe");
+        Courier mockCourier = new Courier();
+        when(courierService.createCourier(courierRequestModel)).thenThrow(UserNotFoundException.class);
+
+        // Act and assert
+        assertThrows(RuntimeException.class, () -> courierController.createCourier(courierRequestModel));
+    }
+
+    @Test
+    public void testCreateCourierInternalError2()
+            throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
+            UserNotFoundException, NotAuthorizedException {
+        // Arrange
+        CourierRequestModel courierRequestModel = new CourierRequestModel("test@example.com", "John", "Doe");
+        Courier mockCourier = new Courier();
+        when(courierService.createCourier(courierRequestModel)).thenThrow(NotAuthorizedException.class);
+
+        // Act and assert
+        assertThrows(RuntimeException.class, () -> courierController.createCourier(courierRequestModel));
+    }
+
+    @Test
+    public void testGetAllCouriers() {
+        // Arrange
+        List<Courier> mockCouriers = List.of(new Courier().name("John"), new Courier().name("Jane"));
+        when(courierService.getAllCouriers()).thenReturn(mockCouriers);
+
+        // Act
+        ResponseEntity<List<Courier>> result = courierController.getAllCouriers();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(mockCouriers, result.getBody());
+    }
+
+    @Test
+    public void testGetAllCouriersInternalError() {
+        // Arrange
+        when(courierService.getAllCouriers()).thenThrow(new RuntimeException());
+
+        // Act and assert
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> courierController.getAllCouriers());
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+    }
+
+    @Test
+    public void testDeleteCourier()
+            throws MissingBodyException, InvalidFieldException,
+            UserNotFoundException, NotAuthorizedException {
+        // Arrange
+        Long id = 10L;
+        doNothing().when(courierService).deleteCourier(id, id);
+
+        // Act
+        ResponseEntity<Void> result = courierController.deleteCourier(id, id);
+
+        // Assert
+        verify(courierService, times(1)).deleteCourier(id, id);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    public void testUpdateCourier()
+            throws MissingBodyException, InvalidFieldException,
+            UserNotFoundException, NotAuthorizedException {
+        // Arrange
+        CourierRequestModel courierRequestModel = new CourierRequestModel("test@example.com", "John", "Doe");
+        Long id = 10L;
+        doNothing().when(courierService).updateCourier(id, id, courierRequestModel);
+
+        // Act
+        ResponseEntity<Void> result = courierController.updateCourier(id, id, courierRequestModel);
+
+        // Assert
+        verify(courierService, times(1)).updateCourier(id, id, courierRequestModel);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
 
     @Test
     public void testGetPastOrderIdsForCourierSuccess() throws UserNotFoundException {

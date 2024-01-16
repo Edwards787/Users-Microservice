@@ -27,7 +27,7 @@ public class CustomerService {
 
     private final transient UserRepository userRepository;
     private final transient ValidatorConstructor validatorConstructor;
-
+    private final transient HttpService httpService;
     private final transient CustomerFactory customerFactory;
 
     /**
@@ -38,11 +38,13 @@ public class CustomerService {
      */
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository, HttpService httpService,
+                           CustomerFactory customerFactory) {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.validatorConstructor = new ValidatorConstructor();
-        this.customerFactory = new CustomerFactory();
+        this.customerFactory = customerFactory;
+        this.httpService = httpService;
     }
 
     /**
@@ -277,5 +279,50 @@ public class CustomerService {
         customer.setBlocked(body);
         customerRepository.saveAndFlush(customer);
     }
+
+    /**
+     * Retrieves the current order IDs for a given user.
+     *
+     * @param userId the unique identifier of the user
+     * @return a List of Long representing the current order IDs for the user
+     * @throws UserNotFoundException if the user with the given userId is not found
+     */
+    public List<Long> getCurrentOrderIdsForUser(Long userId) throws UserNotFoundException {
+        Optional<Customer> customer = customerRepository.findById(userId);
+
+        // Check if the user exists
+        if (customer.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        // Retrieve current order IDs using the HTTP service
+        return httpService.getCurrentOrderIdsForUser("http://localhost:8082", userId);
+    }
+
+
+    /**
+     * Requests a refund for a specific order on behalf of a customer identified by their user IDs.
+     *
+     * @param userId1 the unique identifier of the customer initiating the refund request
+     * @param userId2 the unique identifier of the customer on whose behalf the refund is requested
+     * @param orderId the unique identifier of the order for which a refund is requested
+     * @throws UserNotFoundException if either of the user IDs (userId1 or userId2) is not found
+     * @throws NotAuthorizedException if the user initiating the refund (userId1) is not authorized
+     * @throws MissingBodyException if the request body is missing or invalid
+     * @throws InvalidFieldException if any field in the request body is invalid
+     */
+    public void requestRefundByCustomerIdForOrderId(Long userId1, Long userId2, Long orderId)
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        // Validate user authorization
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(new ValidationObject(null, new AuthorizationData(userId1,
+                userId2, userRepository, new AuthorizationUserAndAdminStrategy())));
+
+        // Request refund using the HTTP service
+        httpService.requestRefundByCustomerIdForOrderId("http://localhost:8082", orderId);
+    }
+
+
+
 }
 

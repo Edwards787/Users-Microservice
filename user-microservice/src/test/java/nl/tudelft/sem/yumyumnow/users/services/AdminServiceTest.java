@@ -12,11 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AdminServiceTest {
@@ -28,14 +28,17 @@ public class AdminServiceTest {
     transient Admin admin1;
     transient Admin admin2;
     transient AdminRequestModel adminRequestModel;
+    transient HttpService httpService;
 
     @BeforeEach
     public void setUp(){
         adminRepository = mock(AdminRepository.class);
         userRepository = mock(UserRepository.class);
         validatorConstructor = new ValidatorConstructor();
+
         adminBuilder = new AdminFactory();
-        adminService = new AdminService(adminRepository, userRepository, adminBuilder);
+        httpService = mock(HttpService.class);
+        adminService = new AdminService(adminRepository, userRepository, adminBuilder, httpService);
     }
 
     @BeforeEach
@@ -80,7 +83,7 @@ public class AdminServiceTest {
             throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
             UserNotFoundException, NotAuthorizedException {
         when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.empty());
-        when(adminRepository.saveAndFlush(adminBuilder.build(new Admin(), adminRequestModel))).thenReturn(admin1);
+        when(adminRepository.saveAndFlush(adminBuilder.build(adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);
     }
     @Test
@@ -293,5 +296,48 @@ public class AdminServiceTest {
             assertThat(e.fieldName).isEqualTo("surname");
             assertThat(e.getMessage()).isEqualTo("Field 'surname' with value 'null' is invalid");
         }
+    }
+
+    @Test
+    public void testGetRefundRequests() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+
+        List<Long> refundRequests = List.of(1L, 2L, 3L);
+        when(httpService.getOrdersToRefund(anyString())).thenReturn(refundRequests);
+
+        List<Long> orders = adminService.getRefundRequests(admin1.getId());
+
+        assertEquals(orders, refundRequests);
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusTrue() throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        Long orderId = 1L;
+        Long userId = admin1.getId();
+        Boolean choice = true;
+        String status = "refunded";
+
+        Long id = adminService.updateRefundRequestStatus(userId, orderId, choice);
+
+        assertEquals(orderId, id);
+        verify(httpService).updateRefundRequestStatus("http://localhost:8082", orderId, status);
+
+
+    }
+
+    @Test
+    public void testUpdateRefundRequestStatusFalse() throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        Long orderId = 1L;
+        Long userId = admin1.getId();
+        Boolean choice = false;
+        String status = "rejected";
+
+        Long id = adminService.updateRefundRequestStatus(userId, orderId, choice);
+
+        assertEquals(orderId, id);
+        verify(httpService).updateRefundRequestStatus("http://localhost:8082", orderId, status);
+
     }
 }

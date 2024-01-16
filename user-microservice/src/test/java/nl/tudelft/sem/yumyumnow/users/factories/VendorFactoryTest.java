@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VendorFactoryTest {
     transient VendorFactory vendorFactory;
     transient VendorRequestModel vendorRequestModel;
-    transient Vendor vendor;
-
     @BeforeEach
     public void setUp() {
         vendorFactory = new VendorFactory();
@@ -31,12 +29,11 @@ public class VendorFactoryTest {
                 "restaurantName",
                 "surNameOwner"
         );
-        vendor = new Vendor();
     }
 
     @Test
     public void testEmptyInitialVendor() {
-        Vendor resultVendor = vendorFactory.build(vendor, vendorRequestModel);
+        Vendor resultVendor = vendorFactory.build(vendorRequestModel);
         assertThat(resultVendor.getAddress()).isEqualTo(vendorRequestModel.getAddress());
         assertThat(resultVendor.getOpeningTimes()).isEqualTo(vendorRequestModel.getOpeningTimes());
         assertThat(resultVendor.getClosingTimes()).isEqualTo(vendorRequestModel.getClosingTimes());
@@ -46,24 +43,5 @@ public class VendorFactoryTest {
         assertThat(resultVendor.getRole()).isEqualTo(Vendor.RoleEnum.VENDOR);
         assertThat(resultVendor.getBlocked()).isEqualTo(false);
         assertThat(resultVendor.getActivated()).isEqualTo(false);
-    }
-
-    @Test
-    public void testFilledInitialVendor() {
-        vendor.setEmail("newEmail@email.com");
-        vendor.setBlocked(true);
-        vendor.setActivated(true);
-        vendor.setOpeningTimes("");
-
-        Vendor resultVendor = vendorFactory.build(vendor, vendorRequestModel);
-        assertThat(resultVendor.getAddress()).isEqualTo(vendorRequestModel.getAddress());
-        assertThat(resultVendor.getOpeningTimes()).isEqualTo(vendorRequestModel.getOpeningTimes());
-        assertThat(resultVendor.getClosingTimes()).isEqualTo(vendorRequestModel.getClosingTimes());
-        assertThat(resultVendor.getEmail()).isEqualTo(vendorRequestModel.getEmail());
-        assertThat(resultVendor.getName()).isEqualTo(vendorRequestModel.getName());
-        assertThat(resultVendor.getSurname()).isEqualTo(vendorRequestModel.getSurname());
-        assertThat(resultVendor.getRole()).isEqualTo(Vendor.RoleEnum.VENDOR);
-        assertThat(resultVendor.getBlocked()).isEqualTo(true);
-        assertThat(resultVendor.getActivated()).isEqualTo(true);
     }
 }

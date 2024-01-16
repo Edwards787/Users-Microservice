@@ -473,4 +473,110 @@ class CustomerControllerTest {
         assertThat(exception.getStatus().value()).isEqualTo(403);
         assertThat(exception.getReason()).isEqualTo("Not authorized");
     }
+
+    @Test
+    void testGetCurrentOrderIdsForUser_Success() throws UserNotFoundException {
+        // Arrange
+        Long userId = 1L;
+        List<Long> orderIds = List.of(101L, 102L, 103L);
+        when(customerService.getCurrentOrderIdsForUser(userId)).thenReturn(orderIds);
+
+        // Act
+        ResponseEntity<List<Long>> result = customerController.getCurrentOrderIdsForUser(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(orderIds, result.getBody());
+        verify(customerService, times(1)).getCurrentOrderIdsForUser(userId);
+    }
+
+    @Test
+    void testGetCurrentOrderIdsForUser_UserNotFoundException() throws UserNotFoundException {
+        // Arrange
+        Long userId = 2L;
+        when(customerService.getCurrentOrderIdsForUser(userId)).thenThrow(new UserNotFoundException(null));
+
+        // Act and Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> customerController.getCurrentOrderIdsForUser(userId));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("User not found", exception.getReason());
+        verify(customerService, times(1)).getCurrentOrderIdsForUser(userId);
+    }
+
+    @Test
+    void testRequestRefundByCustomerIdForOrderId_Success() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        // Arrange
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 3L;
+
+        // Mocking a void method
+        doNothing().when(customerService).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+
+        // Act
+        ResponseEntity<Void> result = customerController.requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        verify(customerService, times(1)).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+    }
+
+    @Test
+    void testRequestRefundByCustomerIdForOrderId_UserNotFoundException() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        // Arrange
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 3L;
+
+        // Mocking a void method that throws UserNotFoundException
+        doThrow(new UserNotFoundException(userId1)).when(customerService).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+
+        // Act and Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> customerController.requestRefundByCustomerIdForOrderId(userId1, userId2, orderId));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("User with id 1 Not found", exception.getReason());
+        verify(customerService, times(1)).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+    }
+
+    @Test
+    void testRequestRefundByCustomerIdForOrderId_NotAuthorizedException() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        // Arrange
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 3L;
+
+        // Mocking a void method that throws NotAuthorizedException
+        doThrow(new NotAuthorizedException()).when(customerService).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+
+        // Act and Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> customerController.requestRefundByCustomerIdForOrderId(userId1, userId2, orderId));
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+        assertEquals("Not authorized", exception.getReason());
+        verify(customerService, times(1)).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+    }
+
+    @Test
+    void testRequestRefundByCustomerIdForOrderId_MissingBodyException() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        // Arrange
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Long orderId = 3L;
+
+        // Mocking a void method that throws MissingBodyException
+        doThrow(new MissingBodyException()).when(customerService).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+
+        // Act and Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> customerController.requestRefundByCustomerIdForOrderId(userId1, userId2, orderId));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("Body is missing", exception.getReason());
+        verify(customerService, times(1)).requestRefundByCustomerIdForOrderId(userId1, userId2, orderId);
+    }
 }

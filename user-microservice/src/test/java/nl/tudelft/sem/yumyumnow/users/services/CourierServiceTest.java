@@ -23,7 +23,9 @@ public class CourierServiceTest {
     transient CourierRepository courierRepository = mock(CourierRepository.class);
     transient UserRepository userRepository  = mock(UserRepository.class);
     transient CourierFactory courierBuilder = mock(CourierFactory.class);
-    transient CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder);
+    transient HttpService httpService = mock(HttpService.class);
+    transient CourierService courierService = new CourierService(courierRepository, userRepository,
+            courierBuilder, httpService);
 
     @Test
     public void testGetCourierById_WhenCourierExists() throws UserNotFoundException {
@@ -53,7 +55,7 @@ public class CourierServiceTest {
         // Arrange
         CourierRequestModel requestModel = TestDataInitializer.createValidCourierRequestModel();
         Courier dummyCourier = TestDataInitializer.createDummyCourier();
-        when(courierBuilder.build(any(), any())).thenReturn(dummyCourier);
+        when(courierBuilder.build(any())).thenReturn(dummyCourier);
         when(courierRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(courierRepository.saveAndFlush(any())).thenReturn(dummyCourier);
 
@@ -62,7 +64,7 @@ public class CourierServiceTest {
 
         // Assert
         assertEquals(dummyCourier, result);
-        verify(courierBuilder).build(any(), any());
+        verify(courierBuilder).build(any());
         verify(courierRepository).findByEmail(any());
         verify(courierRepository).saveAndFlush(any());
     }
@@ -242,7 +244,6 @@ public class CourierServiceTest {
 
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(userRepository.findById(userId2)).thenReturn(Optional.empty());
-        when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
         assertThrows(UserNotFoundException.class, () -> courierService.updateCourier(userId1, userId2, courierRequestModel));
     }
@@ -267,13 +268,11 @@ public class CourierServiceTest {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
-        when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
         // Act
         courierService.updateCourier(userId1, userId2, courierRequestModel);
 
         // Assert
-        verify(courierBuilder).build(courierInitial, courierRequestModel);
         verify(courierRepository).saveAndFlush(courierInitial);
     }
 
@@ -292,13 +291,11 @@ public class CourierServiceTest {
 
         when(userRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
-        when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
         // Act
         courierService.updateCourier(userId1, userId2, courierRequestModel);
 
         // Assert
-        verify(courierBuilder).build(courierInitial, courierRequestModel);
         verify(courierRepository).saveAndFlush(courierInitial);
     }
 
@@ -629,5 +626,27 @@ public class CourierServiceTest {
 
         // Act and Assert
         assertThrows(UserNotFoundException.class, () -> courierService.updateCourierBlockStatus(userId1, userId2, blockStatus));
+    }
+
+    @Test
+    public void testGetPastOrderFromCourierId() throws UserNotFoundException {
+        Long userId1 = 1L;
+        List<Long> pastOrder = List.of(1L, 2L, 3L);
+
+        when(courierRepository.findById(userId1)).thenReturn(Optional.of(new Courier()));
+        when(httpService.getPastOrderIdsForCourier(anyString(), anyLong())).thenReturn(pastOrder);
+
+        List<Long> receivedValue = courierService.getPastOrderIdsForCourier(userId1);
+        assertEquals(receivedValue, pastOrder);
+    }
+
+    @Test
+    public void testGetPastOrderFromCourierIdNoUser() throws UserNotFoundException {
+        Long userId1 = 1L;
+        List<Long> pastOrder = List.of(1L, 2L, 3L);
+
+        when(courierRepository.findById(userId1)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> courierService.getPastOrderIdsForCourier(userId1));
     }
 }

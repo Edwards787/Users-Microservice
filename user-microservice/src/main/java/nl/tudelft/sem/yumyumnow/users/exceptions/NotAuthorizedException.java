@@ -10,4 +10,8 @@ public class NotAuthorizedException extends Exception {
     public NotAuthorizedException() {
         super("Not authorized");
     }
+
+    public String  customMessage(Long requester, String action, Long target) {
+        return "User with id " + requester + " not authorized to " + action + " vendor with id " + target;
+    }
 }

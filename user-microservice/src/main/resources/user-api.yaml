@@ -1751,6 +1751,65 @@ components:
         role: courier
         blocked: false
 
+    Order:
+      type: object
+      properties:
+        Id:
+          type: integer
+          format: int64
+        dishes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dish"
+        Location:
+          type: string
+        Requirements:
+          type: string
+        Price:
+          type: number
+          format: double
+        Status:
+          $ref: '#/components/schemas/Status'
+        customerId:
+          type: integer
+          format: int64
+        vendorId:
+          type: integer
+          format: int64
+    Dish:
+      type: object
+      properties:
+        Id:
+          type: integer
+          format: int64
+        Name:
+          type: string
+        Description:
+          type: string
+        Ingredients:
+          type: array
+          items:
+            type: string
+        Price:
+          type: number
+          format: double
+        Picture:
+          type: array
+          items:
+            type: string
+        Allergens:
+          type: array
+          items:
+            type: string
+        vendorId:
+          type: integer
+          format: int64
+    Status:
+      type: string
+      enum: [ "pending", "accepted", "rejected", "preparing", "ready for pickup", "on-transit", "delivered","to-be-refunded","refunded" ]
+
+
+
     #_______________OTHER_MODELS____________________
     PaymentMethod:
       type: object
