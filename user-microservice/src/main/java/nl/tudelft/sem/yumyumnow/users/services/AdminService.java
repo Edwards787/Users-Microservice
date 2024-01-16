@@ -18,6 +18,7 @@ import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.Validator;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
+import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationAdminOnlyStrategy;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationUserAndAdminStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class AdminService {
     private final transient UserRepository userRepository;
     private final transient ValidatorConstructor validatorConstructor;
     private final transient AdminBuilder adminBuilder;
+    private final transient HttpService httpService;
+
 
     /**
      * Constructor.
@@ -40,11 +43,13 @@ public class AdminService {
      * @param adminBuilder    admin builder
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder,
+                        HttpService httpService) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
         this.validatorConstructor = new ValidatorConstructor();
         this.userRepository = userRepository;
+        this.httpService = httpService;
     }
 
     /**
@@ -152,9 +157,57 @@ public class AdminService {
         adminRepository.saveAndFlush(admin);
     }
 
-    @SuppressWarnings("unused")
-    public ResponseEntity<List<Long>> getRefundRequests(Long userId) {
-        return ResponseEntity.ok(new ArrayList<>());
+    /**
+     * Service that handles gets the refund requests.
+     *
+     * @param userId id of user
+     * @return List of order id to refund
+     * @throws UserNotFoundException if user not found
+     * @throws NotAuthorizedException if user not authorized
+     * @throws MissingBodyException if body is missing
+     * @throws InvalidFieldException if invalid field
+     */
+    public List<Long> getRefundRequests(Long userId) throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
 
+
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(
+                new ValidationObject(
+                        null,
+                        new AuthorizationData(
+                                userId, userId, userRepository,
+                                new AuthorizationAdminOnlyStrategy()
+                        )));
+        return httpService.getOrdersToRefund("http://localhost:8082");
+    }
+
+
+    /**
+     * Service that handles operating the refund or not.
+     *
+     * @param userId id of user
+     * @param orderId order id
+     * @param body what to change to True if refunded False if not
+     * @return ID of order that was acted on
+     * @throws UserNotFoundException user not found
+     * @throws NotAuthorizedException not authorized
+     * @throws MissingBodyException  body missing
+     * @throws InvalidFieldException invalid field
+     */
+    public Long updateRefundRequestStatus(Long userId, Long orderId, Boolean body) throws UserNotFoundException,
+            NotAuthorizedException, MissingBodyException, InvalidFieldException {
+
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(
+                new ValidationObject(
+                        null,
+                        new AuthorizationData(
+                                userId, userId, userRepository,
+                                new AuthorizationAdminOnlyStrategy()
+                        )));
+        String status = body ? "refunded" : "rejected";
+        httpService.updateRefundRequestStatus("http://localhost:8082", orderId, status);
+        return orderId;
     }
 }

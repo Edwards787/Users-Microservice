@@ -32,7 +32,7 @@ public class AdminController implements AdminApi {
             Admin admin = adminService.getAdminById(adminId);
             return ResponseEntity.ok(admin);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
     }
@@ -56,15 +56,16 @@ public class AdminController implements AdminApi {
             adminService.deleteAdminById(userId1, userId2);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (InitialAdminException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Initial admin can not be deleted");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (MissingBodyException | InvalidFieldException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public ResponseEntity<Void> updateAdmin(Long userId1, Long userId2, AdminRequestModel adminRequestModel) {
@@ -72,18 +73,47 @@ public class AdminController implements AdminApi {
             adminService.updateAdminById(userId1, userId2, adminRequestModel);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (NotAuthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(403), "Unauthorized action");
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
         } catch (InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (MissingBodyException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body not present");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<List<Long>> getRefundRequests(Long userId) {
-        return adminService.getRefundRequests(userId);
+        try {
+            List<Long> orderToBeRefunded = adminService.getRefundRequests(userId);
+            return ResponseEntity.ok(orderToBeRefunded);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
+        } catch (InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
+
+    @Override
+    public ResponseEntity<Long> updateRefundRequestStatus(Long userId, Long orderId, Boolean body) {
+        try {
+            Long order = adminService.updateRefundRequestStatus(userId, orderId, body);
+            return ResponseEntity.ok(order);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+
+
+
 }

@@ -26,6 +26,8 @@ public class CourierService {
 
     private final transient CourierBuilder courierBuilder;
     private final transient ValidatorConstructor validatorConstructor;
+    private final transient HttpService httpService;
+
 
     /**
      * Constructor.
@@ -38,11 +40,13 @@ public class CourierService {
     public CourierService(
             CourierRepository courierRepository,
             UserRepository userRepository,
-            CourierBuilder courierBuilder) {
+            CourierBuilder courierBuilder,
+            HttpService httpService) {
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
         this.courierBuilder = courierBuilder;
         this.validatorConstructor = new ValidatorConstructor();
+        this.httpService = httpService;
     }
 
     /**
@@ -144,8 +148,7 @@ public class CourierService {
         if (courier.isEmpty()) {
             throw new UserNotFoundException();
         }
-        // TODO : MAKE SURE TO IMPLEMENT THIS WHEN WE AGREE ON HOW TO GET THEM
-        return List.of(1L, 2L, 3L);
+        return httpService.getPastOrderIdsForCourier("http://localhost:8083", userId);
     }
 
     /**

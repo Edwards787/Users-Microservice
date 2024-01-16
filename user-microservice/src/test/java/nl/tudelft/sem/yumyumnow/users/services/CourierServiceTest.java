@@ -23,7 +23,9 @@ public class CourierServiceTest {
     transient CourierRepository courierRepository = mock(CourierRepository.class);
     transient UserRepository userRepository  = mock(UserRepository.class);
     transient CourierBuilder courierBuilder = mock(CourierBuilder.class);
-    transient CourierService courierService = new CourierService(courierRepository, userRepository, courierBuilder);
+    transient HttpService httpService = mock(HttpService.class);
+    transient CourierService courierService = new CourierService(courierRepository, userRepository,
+            courierBuilder, httpService);
 
     @Test
     public void testGetCourierById_WhenCourierExists() throws UserNotFoundException {
@@ -629,5 +631,27 @@ public class CourierServiceTest {
 
         // Act and Assert
         assertThrows(UserNotFoundException.class, () -> courierService.updateCourierBlockStatus(userId1, userId2, blockStatus));
+    }
+
+    @Test
+    public void testGetPastOrderFromCourierId() throws UserNotFoundException {
+        Long userId1 = 1L;
+        List<Long> pastOrder = List.of(1L, 2L, 3L);
+
+        when(courierRepository.findById(userId1)).thenReturn(Optional.of(new Courier()));
+        when(httpService.getPastOrderIdsForCourier(anyString(), anyLong())).thenReturn(pastOrder);
+
+        List<Long> receivedValue = courierService.getPastOrderIdsForCourier(userId1);
+        assertEquals(receivedValue, pastOrder);
+    }
+
+    @Test
+    public void testGetPastOrderFromCourierIdNoUser() throws UserNotFoundException {
+        Long userId1 = 1L;
+        List<Long> pastOrder = List.of(1L, 2L, 3L);
+
+        when(courierRepository.findById(userId1)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> courierService.getPastOrderIdsForCourier(userId1));
     }
 }
