@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.builders;
+package nl.tudelft.sem.yumyumnow.users.factories;
 
 import nl.tudelft.sem.yumyumnow.users.model.Address;
 import nl.tudelft.sem.yumyumnow.users.model.Location;

@@ -2,7 +2,7 @@ package nl.tudelft.sem.yumyumnow.users.services;
 
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.yumyumnow.users.builders.VendorFactory;
+import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
 import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;

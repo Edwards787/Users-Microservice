@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import nl.tudelft.sem.yumyumnow.users.builders.CourierFactory;
+import nl.tudelft.sem.yumyumnow.users.factories.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
 import nl.tudelft.sem.yumyumnow.users.model.User;

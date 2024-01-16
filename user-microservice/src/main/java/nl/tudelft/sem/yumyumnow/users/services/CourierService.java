@@ -3,7 +3,7 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.CourierFactory;
+import nl.tudelft.sem.yumyumnow.users.factories.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;

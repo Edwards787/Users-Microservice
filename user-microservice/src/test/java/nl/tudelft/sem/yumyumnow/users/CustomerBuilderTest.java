@@ -1,6 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users;
 
-import nl.tudelft.sem.yumyumnow.users.builders.CustomerFactory;
+import nl.tudelft.sem.yumyumnow.users.factories.CustomerFactory;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

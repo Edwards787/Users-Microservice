@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.AdminFactory;
+import nl.tudelft.sem.yumyumnow.users.factories.AdminFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
