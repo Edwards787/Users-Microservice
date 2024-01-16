@@ -63,7 +63,7 @@ class HttpServiceTest {
         List<Delivery> orders = List.of(o1, o2);
 
         when(webClient.get()).thenReturn(uriSpec);
-        when(uriSpec.uri(anyString(), anyLong(), anyLong())).thenReturn(headersSpec);
+        when(uriSpec.uri(anyString(), anyInt(), anyLong())).thenReturn(headersSpec);
         when(headersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToFlux(Delivery.class)).thenReturn(Flux.fromIterable(orders));
 
@@ -73,7 +73,7 @@ class HttpServiceTest {
 
         verify(webClientBuilder, times(1)).build();
         verify(webClient, times(1)).get();
-        verify(uriSpec, times(1)).uri(anyString(), anyLong(), anyLong());
+        verify(uriSpec, times(1)).uri(anyString(), anyInt(), anyLong());
         verify(headersSpec, times(1)).retrieve();
         verify(responseSpec, times(1)).bodyToFlux(Delivery.class);
     }
