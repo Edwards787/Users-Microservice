@@ -3,10 +3,10 @@ package nl.tudelft.sem.yumyumnow.users.factories;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class AdminFactory extends UserFactory {
+@Component
+public class AdminFactory implements UserFactory<Admin, AdminRequestModel> {
     /**
      * Builds an admin object (sets needed fields).
      *
@@ -16,8 +16,12 @@ public class AdminFactory extends UserFactory {
      */
     public Admin build(AdminRequestModel adminRequestModel) {
 
-        Admin admin = (Admin) super.build(adminRequestModel);
+        Admin admin = new Admin();
+        admin.setName(adminRequestModel.getName());
+        admin.setSurname(adminRequestModel.getSurname());
+        admin.setEmail(adminRequestModel.getEmail());
         admin.setRole(User.RoleEnum.ADMIN);
+        admin.setBlocked(false);
 
         return admin;
     }

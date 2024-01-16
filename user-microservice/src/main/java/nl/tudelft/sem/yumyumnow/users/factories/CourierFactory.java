@@ -3,10 +3,10 @@ package nl.tudelft.sem.yumyumnow.users.factories;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.User;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class CourierFactory extends UserFactory {
+@Component
+public class CourierFactory implements UserFactory<Courier, CourierRequestModel> {
     /**
      * Builds a courier object.
      *
@@ -16,8 +16,12 @@ public class CourierFactory extends UserFactory {
     @SuppressWarnings("unused")
     public Courier build(CourierRequestModel courierRequestModel) {
 
-        Courier courier = (Courier) super.build(courierRequestModel);
+        Courier courier = new Courier();
+        courier.setName(courierRequestModel.getName());
+        courier.setSurname(courierRequestModel.getSurname());
+        courier.setEmail(courierRequestModel.getEmail());
         courier.setRole(User.RoleEnum.COURIER);
+        courier.setBlocked(false);
 
         return courier;
     }

@@ -3,8 +3,8 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.factories.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.factories.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
@@ -77,15 +77,12 @@ public class CourierService {
         Validator validator = validatorConstructor.courierWithoutAuthorization();
         validator.handle(new ValidationObject(courierRequestModel, null));
 
-        Courier courier = courierFactory.build(courierRequestModel);
-
         if (courierRepository.findByEmail(courierRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(courierRequestModel.getEmail());
         }
 
-        Courier response = courierRepository.saveAndFlush(courier);
-        courier.setId(response.getId());
-
+        Courier courier = courierFactory.build(courierRequestModel);
+        courier = courierRepository.saveAndFlush(courier);
         return courier;
     }
 

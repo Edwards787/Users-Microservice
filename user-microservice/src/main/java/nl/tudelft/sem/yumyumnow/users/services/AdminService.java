@@ -1,16 +1,15 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.factories.AdminFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.factories.AdminFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
 import nl.tudelft.sem.yumyumnow.users.repositories.AdminRepository;
@@ -23,7 +22,6 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.Authoriza
 import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationUserAndAdminStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,7 +40,8 @@ public class AdminService {
      * @param adminFactory    admin builder
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminFactory adminFactory, HttpService httpService) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository,
+                        AdminFactory adminFactory, HttpService httpService) {
         this.adminRepository = adminRepository;
         this.adminFactory = adminFactory;
         this.validatorConstructor = new ValidatorConstructor();
@@ -81,17 +80,13 @@ public class AdminService {
         Validator validator = validatorConstructor.userWithoutAuthorization();
         validator.handle(new ValidationObject(adminRequestModel, null));
 
-        Admin admin = adminFactory.build(adminRequestModel);
-
         if (adminRepository.findByEmail(adminRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(adminRequestModel.getEmail());
         }
 
-        Admin response = adminRepository.saveAndFlush(admin);
-        admin.setId(response.getId());
-
+        Admin admin = adminFactory.build(adminRequestModel);
+        admin = adminRepository.saveAndFlush(admin);
         return admin;
-
     }
 
     /**

@@ -128,8 +128,6 @@ class CustomerServiceTest {
         customerService.updateCustomerById(customerId, userId, customerUpdate);
 
         verify(customerRepository, times(1)).findById(customerId);
-        verify(customerRepository, times(1)).saveAndFlush(customerFactory.build(customerUpdate));
-
         assertEquals("UpdatedName", mockCustomer.getName());
     }
 

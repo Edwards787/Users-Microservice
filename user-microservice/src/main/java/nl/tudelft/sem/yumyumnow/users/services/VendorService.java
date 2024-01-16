@@ -3,8 +3,8 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
 import nl.tudelft.sem.yumyumnow.users.model.ValidationRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
@@ -33,9 +33,10 @@ public class VendorService {
     /**
      * Creates an instance of the VendorService.
      *
-     * @param vendorRepository     the vendor repository
-     * @param vendorFactory        the vendor builder
-     * @param vendorRepository the vendor repository
+     * @param vendorRepository   vendor repository
+     * @param userRepository     user repository
+     * @param vendorFactory      vendor factory object
+     * @param validationRepository validation repository
      */
     @Autowired
     public VendorService(VendorRepository vendorRepository,
@@ -131,7 +132,8 @@ public class VendorService {
      * @throws MissingBodyException   if the request model is null
      */
     public Void updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel)
-            throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
+            throws UserNotFoundException, NotAuthorizedException, InvalidFieldException,
+        MissingBodyException {
         Vendor vendor = getVendorById(userId1);
 
         Validator validator = validatorConstructor.vendorWithAuthorization();

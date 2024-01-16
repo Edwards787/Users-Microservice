@@ -6,6 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AdminFactoryTest {
@@ -24,6 +25,6 @@ public class AdminFactoryTest {
         assertEquals(adminRequestModel.getSurname(), resultAdmin.getSurname());
         assertEquals(adminRequestModel.getEmail(), resultAdmin.getEmail());
         assertEquals(resultAdmin.getRole(), User.RoleEnum.ADMIN);
-        assertEquals(resultAdmin.getBlocked(), false);
+        assertThat(resultAdmin.getBlocked()).isEqualTo(false);
     }
 }
