@@ -1,5 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
+import nl.tudelft.sem.yumyumnow.users.model.Delivery;
 import nl.tudelft.sem.yumyumnow.users.model.Order;
 import nl.tudelft.sem.yumyumnow.users.model.Status;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,16 +56,16 @@ class HttpServiceTest {
     void testGetPastOrderIdsForCourier() {
         Long courierId = 1L;
         String baseUrl = "http://example.com";
-        Order o1 = new Order();
-        o1.setId(1L);
-        Order o2 = new Order();
-        o2.setId(2L);
-        List<Order> orders = Arrays.asList(o1, o2);
+        Delivery o1 = new Delivery();
+        o1.setOrderId(1L);
+        Delivery o2 = new Delivery();
+        o2.setOrderId(2L);
+        List<Delivery> orders = List.of(o1, o2);
 
         when(webClient.get()).thenReturn(uriSpec);
-        when(uriSpec.uri(anyString(), anyLong())).thenReturn(headersSpec);
+        when(uriSpec.uri(anyString(), anyLong(), anyLong())).thenReturn(headersSpec);
         when(headersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToFlux(Order.class)).thenReturn(Flux.fromIterable(orders));
+        when(responseSpec.bodyToFlux(Delivery.class)).thenReturn(Flux.fromIterable(orders));
 
         List<Long> result = httpService.getPastOrderIdsForCourier(baseUrl, courierId);
 
@@ -72,9 +73,9 @@ class HttpServiceTest {
 
         verify(webClientBuilder, times(1)).build();
         verify(webClient, times(1)).get();
-        verify(uriSpec, times(1)).uri(anyString(), anyLong());
+        verify(uriSpec, times(1)).uri(anyString(), anyLong(), anyLong());
         verify(headersSpec, times(1)).retrieve();
-        verify(responseSpec, times(1)).bodyToFlux(Order.class);
+        verify(responseSpec, times(1)).bodyToFlux(Delivery.class);
     }
 
     @Test
