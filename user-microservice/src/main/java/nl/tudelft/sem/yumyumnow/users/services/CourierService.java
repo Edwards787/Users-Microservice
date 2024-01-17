@@ -199,7 +199,8 @@ public class CourierService {
      * @param rating rating
      * @throws UserNotFoundException if user not found
      */
-    public void rateCourier(Long userId, Rating rating) throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+    public void rateCourier(Long userId, Rating rating) throws UserNotFoundException,
+            InvalidFieldException, MissingBodyException {
         if (rating == null) {
             throw new MissingBodyException();
         }
