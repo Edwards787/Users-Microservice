@@ -364,6 +364,11 @@ public class CustomerService {
      */
     public void updateCustomerPaymentById(Long issuerId, Long customerId, List<PaymentMethod> paymentMethods)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+
+        if (paymentMethods == null) {
+            throw new MissingBodyException();
+        }
+
         Validator validator = validatorConstructor.userAuthorization();
         validator.handle(new ValidationObject(null, new AuthorizationData(customerId,
                 issuerId, userRepository, new AuthorizationUserAndAdminStrategy())));

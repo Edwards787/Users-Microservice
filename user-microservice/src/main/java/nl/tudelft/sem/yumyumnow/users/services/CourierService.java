@@ -199,7 +199,11 @@ public class CourierService {
      * @param rating rating
      * @throws UserNotFoundException if user not found
      */
-    public void rateCourier(Long userId, Rating rating) throws UserNotFoundException, InvalidFieldException {
+    public void rateCourier(Long userId, Rating rating) throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+        if (rating == null) {
+            throw new MissingBodyException();
+        }
+
         // Check if customer exists
         if (userRepository.findById(rating.getUserId())
                 .map(user -> !user.getRole().equals(User.RoleEnum.CUSTOMER))

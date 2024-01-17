@@ -828,5 +828,11 @@ class CustomerServiceTest {
         assertEquals(customerId, ex.getTargetId());
     }
 
+    @Test
+    void testUpdateCustomerPaymentByIdMissingBody() {
+        // Act and assert
+        assertThrows(MissingBodyException.class, () -> customerService.updateCustomerPaymentById(customerId, customerId, null));
+    }
+
 
 }

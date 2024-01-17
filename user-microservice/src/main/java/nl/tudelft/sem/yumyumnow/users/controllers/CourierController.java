@@ -163,7 +163,7 @@ public class CourierController implements CourierApi {
             return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
-        } catch (InvalidFieldException e) {
+        } catch (InvalidFieldException | MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

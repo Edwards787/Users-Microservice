@@ -375,7 +375,7 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testRateCourierSuccess() throws UserNotFoundException, InvalidFieldException {
+    public void testRateCourierSuccess() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         // Arrange
         Long courierId = 3L;
         Long issuerId = 4L;
@@ -394,7 +394,7 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testRateCourierNotFound() throws UserNotFoundException, InvalidFieldException {
+    public void testRateCourierNotFound() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         // Arrange
         Long courierId = 3L;
         Long issuerId = 4L;
@@ -411,7 +411,7 @@ public class CourierControllerTest {
     }
 
     @Test
-    public void testRateCourierInvalidField() throws UserNotFoundException, InvalidFieldException {
+    public void testRateCourierInvalidField() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         // Arrange
         Long courierId = 3L;
         Long issuerId = 4L;

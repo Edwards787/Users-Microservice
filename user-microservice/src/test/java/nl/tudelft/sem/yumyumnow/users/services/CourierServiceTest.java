@@ -653,7 +653,7 @@ public class CourierServiceTest {
     }
 
     @Test
-    public void testRateCourierSuccess1() throws UserNotFoundException, InvalidFieldException {
+    public void testRateCourierSuccess1() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         // Arrange
         Long courierId = 3L;
         Long issuerId = 4L;
@@ -683,7 +683,7 @@ public class CourierServiceTest {
     }
 
     @Test
-    public void testRateCourierSuccess2() throws UserNotFoundException, InvalidFieldException {
+    public void testRateCourierSuccess2() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         // Arrange
         Long courierId = 3L;
         Long issuerId = 4L;
@@ -713,7 +713,7 @@ public class CourierServiceTest {
     }
 
     @Test
-    public void testRateCourierSuccess3() throws UserNotFoundException, InvalidFieldException {
+    public void testRateCourierSuccess3() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         // Arrange
         Long courierId = 3L;
         Long issuerId = 4L;
@@ -858,6 +858,15 @@ public class CourierServiceTest {
 
         // Act and assert
         assertThrows(InvalidFieldException.class, () -> courierService.rateCourier(courierId, rating));
+    }
+
+    @Test
+    public void testRateCourierMissingBody() {
+        // Arrange
+        Long courierId = 3L;
+
+        // Act and assert
+        assertThrows(MissingBodyException.class, () -> courierService.rateCourier(courierId, null));
     }
 
 }
