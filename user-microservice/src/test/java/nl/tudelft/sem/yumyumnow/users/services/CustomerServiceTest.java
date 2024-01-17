@@ -21,6 +21,7 @@ class CustomerServiceTest {
     CustomerRepository customerRepository;
     UserRepository userRepository;
     private CustomerService customerService;
+    private EmailService emailService;
     Address adr;
     private List<Long> favs;
     Builder builder;
@@ -31,13 +32,14 @@ class CustomerServiceTest {
     Address address;
     HttpService httpService;
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         customerRepository = mock(CustomerRepository.class);
         userRepository  = mock(UserRepository.class);
         httpService = mock(HttpService.class);
         director = new Director();
         builder = new Ubuilder();
-        customerService = new CustomerService(customerRepository, userRepository, httpService);
+        emailService = mock(EmailService.class);
+        customerService = new CustomerService(customerRepository, userRepository, httpService, emailService);
         Location l = new Location();
         l.lat(12.1f);
         l._long(6.9f);
@@ -282,6 +284,7 @@ class CustomerServiceTest {
         Customer c = customerService.createCustomer(customerUpdate);
         assertEquals(c, cust);
         verify(customerRepository).saveAndFlush(cust);
+        verify(emailService).sendEmail(argThat(x -> x.getRecipient().equals(customerUpdate.getEmail())));
     }
 
 

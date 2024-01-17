@@ -1,6 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
 import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -23,13 +24,15 @@ class VendorServiceTest {
     transient VendorService vendorService;
     transient Vendor vendor;
     transient VendorRequestModel vendorRequestModel;
+    transient EmailService emailService;
     @BeforeEach
     public void setUp() {
         vendorRepository = mock(VendorRepository.class);
         validationRepository = mock(ValidationRepository.class);
         vendorBuilder = new VendorBuilder();
         userRepository = mock(UserRepository.class);
-        vendorService = new VendorService(vendorRepository, userRepository, vendorBuilder, validationRepository);
+        emailService = mock(EmailService.class);
+        vendorService = new VendorService(vendorRepository, userRepository, vendorBuilder, validationRepository, emailService);
 
         Address address = new Address()
                 .address("StreetName 1A")
@@ -66,6 +69,7 @@ class VendorServiceTest {
         when(vendorRepository.saveAndFlush(vendorBuilder.build(new Vendor(), vendorRequestModel))).thenReturn(vendor);
         assertThat(vendorService.createVendor(vendorRequestModel)).isEqualTo(vendor);
         verify(vendorRepository, times(1)).saveAndFlush(any());
+        verify(emailService).sendEmail(argThat(x -> x.getRecipient().equals(vendorRequestModel.getEmail())));
     }
 
     @Test
