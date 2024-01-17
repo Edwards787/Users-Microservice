@@ -3,7 +3,6 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
 import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;

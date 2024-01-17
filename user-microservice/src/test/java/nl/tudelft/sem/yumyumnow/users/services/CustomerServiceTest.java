@@ -35,7 +35,8 @@ class CustomerServiceTest {
         customerFactory = new CustomerFactory();
 
         httpService = mock(HttpService.class);
-        customerService = new CustomerService(customerRepository, userRepository, httpService, customerFactory, emailService);
+        emailService = mock(EmailService.class);
+        customerService = new CustomerService(customerRepository, userRepository, httpService, emailService, customerFactory);
 
         Location l = new Location();
         l.lat(12.1f);
@@ -55,12 +56,7 @@ class CustomerServiceTest {
         mockCustomer.setSurname("Doe");
         mockCustomer.setEmail("john.doe@example.com");
 
-        customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setEmail("email@g");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setSurname("Hello");
-        customerUpdate.setHomeAddress(new Address());
+        customerUpdate = new CustomerRequestModel(new Address(), new ArrayList<>(), "email@g", "UpdatedName", "Hello");
 
         address = new Address();
         address.setAddress("a");
@@ -293,7 +289,7 @@ class CustomerServiceTest {
     @Test
     public void createCustomerException2(){
         Long customerId = 1L;
-        CustomerRequestModel customer =new CustomerRequestModel();
+        CustomerRequestModel customer = new CustomerRequestModel(new Address(), null, "", "", "");
         assertThrows(InvalidFieldException.class, () ->{
             customerService.createCustomer(customer);
         });

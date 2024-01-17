@@ -3,7 +3,6 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
 import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
@@ -96,6 +95,9 @@ public class AdminService {
         Email welcomeEmail = new EmailBuilder().setRecipient(adminRequestModel.getEmail())
                 .setTemplate(new WelcomeEmailTemplate(admin.getName()))
                 .build();
+
+        emailService.sendEmail(welcomeEmail);
+
         return admin;
     }
 

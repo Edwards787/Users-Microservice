@@ -3,7 +3,6 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
 import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
