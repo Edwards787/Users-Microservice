@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
+import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
 import nl.tudelft.sem.yumyumnow.users.model.ValidationRequestModel;
@@ -29,6 +32,7 @@ public class VendorService {
     private final transient ValidationRepository validationRepository;
     private final transient VendorBuilder vendorBuilder;
     private final transient ValidatorConstructor validatorConstructor;
+    private final transient EmailService emailService;
 
     /**
      * Creates an instance of the VendorService.
@@ -40,10 +44,11 @@ public class VendorService {
     public VendorService(VendorRepository vendorRepository,
                          UserRepository userRepository,
                          VendorBuilder vendorBuilder,
-                         ValidationRepository validationRepository) {
+                         ValidationRepository validationRepository, EmailService emailService) {
         this.vendorRepository = vendorRepository;
         this.vendorBuilder = vendorBuilder;
         this.userRepository = userRepository;
+        this.emailService = emailService;
         this.validatorConstructor = new ValidatorConstructor();
         this.validationRepository = validationRepository;
     }
@@ -73,6 +78,12 @@ public class VendorService {
 
         Vendor response = vendorRepository.saveAndFlush(vendor);
         vendor.setId(response.getId());
+
+        Email welcomeEmail = new EmailBuilder().setRecipient(vendorRequestModel.getEmail())
+                .setTemplate(new WelcomeEmailTemplate(response.getName()))
+                .build();
+
+        emailService.sendEmail(welcomeEmail);
 
         return vendor;
     }

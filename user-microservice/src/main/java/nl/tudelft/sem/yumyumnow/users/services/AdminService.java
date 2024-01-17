@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
+import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
 import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
@@ -34,6 +37,7 @@ public class AdminService {
     private final transient ValidatorConstructor validatorConstructor;
     private final transient AdminBuilder adminBuilder;
     private final transient HttpService httpService;
+    private final transient EmailService emailService;
 
 
     /**
@@ -44,9 +48,10 @@ public class AdminService {
      */
     @Autowired
     public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminBuilder adminBuilder,
-                        HttpService httpService) {
+                        HttpService httpService, EmailService emailService) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
+        this.emailService = emailService;
         this.validatorConstructor = new ValidatorConstructor();
         this.userRepository = userRepository;
         this.httpService = httpService;
@@ -93,6 +98,12 @@ public class AdminService {
 
         Admin response = adminRepository.saveAndFlush(admin);
         admin.setId(response.getId());
+
+        Email welcomeEmail = new EmailBuilder().setRecipient(adminRequestModel.getEmail())
+                .setTemplate(new WelcomeEmailTemplate(response.getName()))
+                .build();
+
+        emailService.sendEmail(welcomeEmail);
 
         return admin;
 
