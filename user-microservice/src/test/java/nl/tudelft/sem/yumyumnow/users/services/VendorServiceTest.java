@@ -1,7 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.builders.VendorBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
+import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
@@ -19,8 +19,8 @@ import static org.mockito.Mockito.*;
 class VendorServiceTest {
     transient VendorRepository vendorRepository;
     transient UserRepository userRepository;
+    transient VendorFactory vendorFactory;
     transient ValidationRepository validationRepository;
-    transient VendorBuilder vendorBuilder;
     transient VendorService vendorService;
     transient Vendor vendor;
     transient VendorRequestModel vendorRequestModel;
@@ -28,11 +28,12 @@ class VendorServiceTest {
     @BeforeEach
     public void setUp() {
         vendorRepository = mock(VendorRepository.class);
+
         validationRepository = mock(ValidationRepository.class);
-        vendorBuilder = new VendorBuilder();
+        vendorFactory = new VendorFactory();
         userRepository = mock(UserRepository.class);
         emailService = mock(EmailService.class);
-        vendorService = new VendorService(vendorRepository, userRepository, vendorBuilder, validationRepository, emailService);
+        vendorService = new VendorService(vendorRepository, userRepository, vendorFactory, validationRepository, emailService);
 
         Address address = new Address()
                 .address("StreetName 1A")
@@ -66,7 +67,7 @@ class VendorServiceTest {
         throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
         UserNotFoundException, NotAuthorizedException {
         when(vendorRepository.findByEmail(vendorRequestModel.getEmail())).thenReturn(Optional.empty());
-        when(vendorRepository.saveAndFlush(vendorBuilder.build(new Vendor(), vendorRequestModel))).thenReturn(vendor);
+        when(vendorRepository.saveAndFlush(vendorFactory.build(vendorRequestModel))).thenReturn(vendor);
         assertThat(vendorService.createVendor(vendorRequestModel)).isEqualTo(vendor);
         verify(vendorRepository, times(1)).saveAndFlush(any());
         verify(emailService).sendEmail(argThat(x -> x.getRecipient().equals(vendorRequestModel.getEmail())));
@@ -128,7 +129,12 @@ class VendorServiceTest {
     void deleteVendor() throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
         when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(vendor));
-        assertThat(vendorService.deleteVendor(1L, 1L)).isNull();
+
+        try{
+            vendorService.deleteVendor(1L, 1L);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         verify(vendorRepository, times(1)).deleteById(1L);
     }
 
@@ -143,7 +149,11 @@ class VendorServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(vendor));
         when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
         vendorRequestModel.setEmail("newEmail@email.com");
-        assertThat(vendorService.updateVendor(1L, 1L, vendorRequestModel)).isNull();
+        try{
+            vendorService.updateVendor(1L, 1L, vendorRequestModel);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
         verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
         assertThat(vendorCaptor.getValue().getEmail()).isEqualTo("newEmail@email.com");
@@ -249,7 +259,11 @@ class VendorServiceTest {
         when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
         ValidationRequestModel vrm = new ValidationRequestModel();
         vrm.setDocument("document");
-        assertThat(vendorService.uploadValidationByVendor(1L, vrm)).isNull();
+        try{
+            vendorService.uploadValidationByVendor(1L, vrm);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Validation> validationCaptor = ArgumentCaptor.forClass(Validation.class);
         verify(validationRepository, times(1)).saveAndFlush(validationCaptor.capture());
         assertThat(validationCaptor.getValue().getVendorId()).isEqualTo(1L);
@@ -311,7 +325,11 @@ class VendorServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(vendor));
         ValidationRequestModel vrm = new ValidationRequestModel();
         vrm.setDocument("document");
-        assertThat(vendorService.updateValidationByVendor(1L, 1L, vrm)).isNull();
+        try{
+            vendorService.updateValidationByVendor(1L, 1L, vrm);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Validation> validationCaptor = ArgumentCaptor.forClass(Validation.class);
         verify(validationRepository, times(1)).saveAndFlush(validationCaptor.capture());
         assertThat(validationCaptor.getValue().getVendorId()).isEqualTo(1L);
@@ -321,7 +339,11 @@ class VendorServiceTest {
     @Test
     void deleteValidationByVendor() throws UserNotFoundException, NotAuthorizedException {
         when(userRepository.findById(1L)).thenReturn(Optional.of(vendor));
-        assertThat(vendorService.deleteValidationByVendor(1L, 1L)).isNull();
+        try{
+            vendorService.deleteValidationByVendor(1L, 1L);
+        } catch (Exception e) {
+            fail("should not throw errors");
+        }
         verify(validationRepository, times(1)).deleteById(1L);
     }
 
@@ -350,7 +372,11 @@ class VendorServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(
                 new User().id(2L).role(User.RoleEnum.ADMIN)
         ));
-        assertThat(vendorService.updateVendorActivationStatus(1L, 2L, true)).isNull();
+        try{
+            vendorService.updateVendorActivationStatus(1L, 2L, true);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
         verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
         assertThat(vendorCaptor.getValue().getActivated()).isEqualTo(true);
@@ -375,7 +401,11 @@ class VendorServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(
                 new User().id(2L).role(User.RoleEnum.ADMIN)
         ));
-        assertThat(vendorService.updateVendorBlockStatus(1L, 2L, true)).isNull();
+        try{
+            vendorService.updateVendorBlockStatus(1L, 2L, true);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
         verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
         assertThat(vendorCaptor.getValue().getBlocked()).isEqualTo(true);

@@ -10,6 +10,7 @@ import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
 import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.factories.CustomerFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
@@ -32,10 +33,9 @@ public class CustomerService {
     private final transient EmailService emailService;
 
     private final transient UserRepository userRepository;
-    private final transient Builder builder;
-    private final transient Director director;
     private final transient ValidatorConstructor validatorConstructor;
     private final transient HttpService httpService;
+    private final transient CustomerFactory customerFactory;
 
     /**
      * Customer service constructor.
@@ -45,13 +45,13 @@ public class CustomerService {
      */
     @Autowired
     public CustomerService(CustomerRepository customerRepository,
-                            UserRepository userRepository, HttpService httpService, EmailService emailService) {
+                           UserRepository userRepository, HttpService httpService,
+                           EmailService emailService, CustomerFactory customerFactory) {
         this.customerRepository = customerRepository;
         this.emailService = emailService;
         this.userRepository = userRepository;
-        this.director = new Director();
-        this.builder = new Ubuilder();
         this.validatorConstructor = new ValidatorConstructor();
+        this.customerFactory = customerFactory;
         this.httpService = httpService;
     }
 
@@ -72,19 +72,17 @@ public class CustomerService {
             throw new EmailAlreadyInUseException(customerRequestModel.getEmail());
         }
 
-        director.constructCustomer(builder, customerRequestModel);
-        Customer customerUpdated = (Customer) builder.build(new Customer());
-
-        customerRepository.saveAndFlush(customerUpdated);
+        Customer customer = customerFactory.build(customerRequestModel);
+        customerRepository.saveAndFlush(customer);
 
         Email welcome = new EmailBuilder()
                 .setRecipient(customerRequestModel.getEmail())
-                .setTemplate(new WelcomeEmailTemplate(customerUpdated.getName()))
                 .build();
+                .setTemplate(new WelcomeEmailTemplate(customer.getName()))
 
         emailService.sendEmail(welcome);
 
-        return customerUpdated;
+        return customer;
     }
 
     /**
@@ -150,11 +148,14 @@ public class CustomerService {
 
         //Make sure that we can find the customer to be updated
         Customer customer = getCustomerById(id1);
-        director.constructCustomer(builder, customerRequestModel);
 
-        //Set the right attributes for customer
-        Customer customerUpdated = (Customer) builder.build(customer);
-        customerRepository.saveAndFlush(customerUpdated);
+        customer.setName(customerRequestModel.getName());
+        customer.setSurname(customerRequestModel.getSurname());
+        customer.setEmail(customerRequestModel.getEmail());
+        customer.setHomeAddress(customer.getHomeAddress());
+        customer.setAllergens(customerRequestModel.getAllergens());
+
+        customerRepository.saveAndFlush(customer);
     }
 
     /**

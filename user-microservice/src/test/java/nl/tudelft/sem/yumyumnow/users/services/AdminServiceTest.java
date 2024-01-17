@@ -1,6 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.builders.AdminBuilder;
+import nl.tudelft.sem.yumyumnow.users.factories.AdminFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
 import nl.tudelft.sem.yumyumnow.users.model.AdminRequestModel;
@@ -23,7 +23,7 @@ public class AdminServiceTest {
     transient AdminRepository adminRepository;
     transient UserRepository userRepository;
     transient ValidatorConstructor validatorConstructor;
-    transient AdminBuilder adminBuilder;
+    transient AdminFactory adminBuilder;
     transient AdminService adminService;
     transient Admin admin1;
     transient Admin admin2;
@@ -36,7 +36,8 @@ public class AdminServiceTest {
         adminRepository = mock(AdminRepository.class);
         userRepository = mock(UserRepository.class);
         validatorConstructor = new ValidatorConstructor();
-        adminBuilder = new AdminBuilder();
+
+        adminBuilder = new AdminFactory();
         httpService = mock(HttpService.class);
         emailService = mock(EmailService.class);
         adminService = new AdminService(adminRepository, userRepository, adminBuilder, httpService, emailService);
@@ -84,7 +85,7 @@ public class AdminServiceTest {
             throws MissingBodyException, InvalidFieldException, EmailAlreadyInUseException,
             UserNotFoundException, NotAuthorizedException {
         when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.empty());
-        when(adminRepository.saveAndFlush(adminBuilder.build(new Admin(), adminRequestModel))).thenReturn(admin1);
+        when(adminRepository.saveAndFlush(adminBuilder.build(adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);
         verify(emailService).sendEmail(argThat(x -> x.getRecipient().equals(adminRequestModel.getEmail())));
     }

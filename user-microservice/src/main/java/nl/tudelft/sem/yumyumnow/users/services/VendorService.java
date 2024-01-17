@@ -8,6 +8,7 @@ import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
 import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
 import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
 import nl.tudelft.sem.yumyumnow.users.model.ValidationRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Vendor;
@@ -29,24 +30,27 @@ public class VendorService {
 
     private final transient VendorRepository vendorRepository;
     private final transient UserRepository userRepository;
+    private final transient VendorFactory vendorFactory;
     private final transient ValidationRepository validationRepository;
-    private final transient VendorBuilder vendorBuilder;
     private final transient ValidatorConstructor validatorConstructor;
     private final transient EmailService emailService;
 
     /**
      * Creates an instance of the VendorService.
      *
-     * @param vendorRepository the vendor repository
-     * @param vendorBuilder    the vendor builder
+     * @param vendorRepository   vendor repository
+     * @param userRepository     user repository
+     * @param vendorFactory      vendor factory object
+     * @param validationRepository validation repository
      */
     @Autowired
     public VendorService(VendorRepository vendorRepository,
                          UserRepository userRepository,
-                         VendorBuilder vendorBuilder,
-                         ValidationRepository validationRepository, EmailService emailService) {
+                         VendorFactory vendorFactory,
+                         ValidationRepository validationRepository,
+                         EmailService emailService) {
         this.vendorRepository = vendorRepository;
-        this.vendorBuilder = vendorBuilder;
+        this.vendorFactory = vendorFactory;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.validatorConstructor = new ValidatorConstructor();
@@ -69,8 +73,7 @@ public class VendorService {
         Validator validator = validatorConstructor.vendorWithoutAuthorization();
         validator.handle(new ValidationObject(vendorRequestModel, null));
 
-        Vendor dummy = new Vendor();
-        Vendor vendor = vendorBuilder.build(dummy, vendorRequestModel);
+        Vendor vendor = vendorFactory.build(vendorRequestModel);
 
         if (vendorRepository.findByEmail(vendor.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(vendor.getEmail());
@@ -109,11 +112,10 @@ public class VendorService {
      *
      * @param userid1 the vendor id being deleted
      * @param userid2 the user id requesting the deletion
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to delete the vendor
      */
-    public Void deleteVendor(Long userid1, Long userid2)
+    public void deleteVendor(Long userid1, Long userid2)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
 
@@ -122,7 +124,6 @@ public class VendorService {
                 userid2, userRepository, new AuthorizationUserAndAdminStrategy())));
 
         vendorRepository.deleteById(userid1);
-        return null;
     }
 
     public List<Vendor> getAllVendors() {
@@ -135,24 +136,29 @@ public class VendorService {
      * @param userId1            the vendor id being updated
      * @param userId2            the user id requesting the update
      * @param vendorRequestModel the vendor request model
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the vendor
      * @throws InvalidFieldException  if the request model contains invalid fields, specifying the field and the value
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel)
-            throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
-        Optional<Vendor> vendor = vendorRepository.findById(userId1);
+    public void updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel)
+            throws UserNotFoundException, NotAuthorizedException, InvalidFieldException,
+        MissingBodyException {
+        Vendor vendor = getVendorById(userId1);
 
         Validator validator = validatorConstructor.vendorWithAuthorization();
         validator.handle(new ValidationObject(vendorRequestModel,
                 new AuthorizationData(userId1, userId2, userRepository,
                         new AuthorizationUserAndAdminStrategy())));
 
-        Vendor updated = vendorBuilder.build(vendor.get(), vendorRequestModel);
-        vendorRepository.saveAndFlush(updated);
-        return null;
+        vendor.setName(vendorRequestModel.getName());
+        vendor.setSurname(vendorRequestModel.getSurname());
+        vendor.setEmail(vendorRequestModel.getEmail());
+        vendor.setOpeningTimes(vendorRequestModel.getOpeningTimes());
+        vendor.setClosingTimes(vendorRequestModel.getClosingTimes());
+        vendor.setAddress(vendorRequestModel.getAddress());
+
+        vendorRepository.saveAndFlush(vendor);
     }
 
     private double distance(double lat1,
@@ -219,12 +225,11 @@ public class VendorService {
      *
      * @param userId                 the vendor id
      * @param validationRequestModel the validation request model
-     * @return null
      * @throws UserNotFoundException if the vendor is not found, specifying the id
      * @throws InvalidFieldException if the request model contains invalid fields, specifying the field and the value
      * @throws MissingBodyException  if the request model is null
      */
-    public Void uploadValidationByVendor(Long userId, ValidationRequestModel validationRequestModel)
+    public void uploadValidationByVendor(Long userId, ValidationRequestModel validationRequestModel)
             throws UserNotFoundException, InvalidFieldException, MissingBodyException {
         if (userId == null) {
             throw new InvalidFieldException("userId", String.valueOf(userId));
@@ -247,7 +252,6 @@ public class VendorService {
         validation.setVendorId(userId);
         validation.setDocument(validationRequestModel.getDocument());
         validationRepository.saveAndFlush(validation);
-        return null;
     }
 
     /**
@@ -278,13 +282,12 @@ public class VendorService {
      * @param userId1                the vendor id
      * @param userId2                the user id requesting the update
      * @param validationRequestModel the validation request model
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the validation
      * @throws InvalidFieldException  if the request model contains invalid fields, specifying the field and the value
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateValidationByVendor(Long userId1, Long userId2, ValidationRequestModel validationRequestModel)
+    public void updateValidationByVendor(Long userId1, Long userId2, ValidationRequestModel validationRequestModel)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
         new AuthorizationUserAndAdminStrategy().authorize(userId1, userId2, userRepository);
         if (validationRequestModel == null) {
@@ -297,7 +300,6 @@ public class VendorService {
         validation.setVendorId(userId1);
         validation.setDocument(validationRequestModel.getDocument());
         validationRepository.saveAndFlush(validation);
-        return null;
     }
 
     /**
@@ -305,15 +307,13 @@ public class VendorService {
      *
      * @param userId1 the vendor id
      * @param userId2 the user id requesting the deletion
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to delete the validation
      */
-    public Void deleteValidationByVendor(Long userId1, Long userId2)
+    public void deleteValidationByVendor(Long userId1, Long userId2)
             throws UserNotFoundException, NotAuthorizedException {
         new AuthorizationUserAndAdminStrategy().authorize(userId1, userId2, userRepository);
         validationRepository.deleteById(userId1);
-        return null;
     }
 
     public List<Validation> getAllValidations() {
@@ -326,12 +326,11 @@ public class VendorService {
      * @param userId1 the vendor id
      * @param userId2 the user id requesting the update
      * @param body    the new activation status
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the activation status
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateVendorActivationStatus(Long userId1, Long userId2, Boolean body)
+    public void updateVendorActivationStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
         new AuthorizationAdminOnlyStrategy().authorize(userId1, userId2, userRepository);
         if (body == null) {
@@ -340,7 +339,6 @@ public class VendorService {
         Vendor vendor = vendorRepository.findById(userId1).get();
         vendor.setActivated(body);
         vendorRepository.saveAndFlush(vendor);
-        return null;
     }
 
     /**
@@ -349,12 +347,11 @@ public class VendorService {
      * @param userId1 the vendor id
      * @param userId2 the user id requesting the update
      * @param body    the new block status
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to update the block status
      * @throws MissingBodyException   if the request model is null
      */
-    public Void updateVendorBlockStatus(Long userId1, Long userId2, Boolean body)
+    public void updateVendorBlockStatus(Long userId1, Long userId2, Boolean body)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
         new AuthorizationAdminOnlyStrategy().authorize(userId1, userId2, userRepository);
         if (body == null) {
@@ -363,6 +360,5 @@ public class VendorService {
         Vendor vendor = vendorRepository.findById(userId1).get();
         vendor.setBlocked(body);
         vendorRepository.saveAndFlush(vendor);
-        return null;
     }
 }
