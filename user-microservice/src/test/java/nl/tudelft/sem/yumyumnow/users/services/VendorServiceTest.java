@@ -125,7 +125,12 @@ class VendorServiceTest {
     void deleteVendor() throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
         when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(vendor));
-        assertThat(vendorService.deleteVendor(1L, 1L)).isNull();
+
+        try{
+            vendorService.deleteVendor(1L, 1L);
+        } catch (Exception e){
+            fail("should not throw errors");
+        }
         verify(vendorRepository, times(1)).deleteById(1L);
     }
 
@@ -330,7 +335,11 @@ class VendorServiceTest {
     @Test
     void deleteValidationByVendor() throws UserNotFoundException, NotAuthorizedException {
         when(userRepository.findById(1L)).thenReturn(Optional.of(vendor));
-        assertThat(vendorService.deleteValidationByVendor(1L, 1L)).isNull();
+        try{
+            vendorService.deleteValidationByVendor(1L, 1L);
+        } catch (Exception e) {
+            fail("should not throw errors");
+        }
         verify(validationRepository, times(1)).deleteById(1L);
     }
 

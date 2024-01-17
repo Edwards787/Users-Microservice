@@ -41,7 +41,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> deleteVendor(Long userid1, Long userid2) {
         try {
-            return ResponseEntity.ok(vendorService.deleteVendor(userid1, userid2));
+            vendorService.deleteVendor(userid1, userid2);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
@@ -139,7 +140,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> deleteValidationByVendor(Long userId1, Long userId2) {
         try {
-            return ResponseEntity.ok(vendorService.deleteValidationByVendor(userId1, userId2));
+            vendorService.deleteValidationByVendor(userId1, userId2);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());

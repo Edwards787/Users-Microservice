@@ -99,11 +99,10 @@ public class VendorService {
      *
      * @param userid1 the vendor id being deleted
      * @param userid2 the user id requesting the deletion
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to delete the vendor
      */
-    public Void deleteVendor(Long userid1, Long userid2)
+    public void deleteVendor(Long userid1, Long userid2)
             throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
             InvalidFieldException {
 
@@ -112,7 +111,6 @@ public class VendorService {
                 userid2, userRepository, new AuthorizationUserAndAdminStrategy())));
 
         vendorRepository.deleteById(userid1);
-        return null;
     }
 
     public List<Vendor> getAllVendors() {
@@ -296,15 +294,13 @@ public class VendorService {
      *
      * @param userId1 the vendor id
      * @param userId2 the user id requesting the deletion
-     * @return null
      * @throws UserNotFoundException  if the vendor or the requester is not found, specifying the id
      * @throws NotAuthorizedException if the requester is not authorized to delete the validation
      */
-    public Void deleteValidationByVendor(Long userId1, Long userId2)
+    public void deleteValidationByVendor(Long userId1, Long userId2)
             throws UserNotFoundException, NotAuthorizedException {
         new AuthorizationUserAndAdminStrategy().authorize(userId1, userId2, userRepository);
         validationRepository.deleteById(userId1);
-        return null;
     }
 
     public List<Validation> getAllValidations() {
