@@ -102,7 +102,7 @@ public class VendorControllerTest {
     void deleteVendorNotFound()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(vendorService.deleteVendor(any(), any())).thenThrow(new UserNotFoundException(1L));
+        doThrow(new UserNotFoundException(1L)).when(vendorService).deleteVendor(any(), any());
         assertThatThrownBy(() -> vendorController.deleteVendor(1L, 10L))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 404)
@@ -113,7 +113,7 @@ public class VendorControllerTest {
     void deleteVendorNotAuthorized()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        when(vendorService.deleteVendor(any(), any())).thenThrow(new NotAuthorizedException());
+        doThrow(new NotAuthorizedException()).when(vendorService).deleteVendor(any(), any());
         assertThatThrownBy(() -> vendorController.deleteVendor(1L, 10L))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status.value", 403)

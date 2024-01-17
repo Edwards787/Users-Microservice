@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
+import nl.tudelft.sem.yumyumnow.users.factories.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
 import nl.tudelft.sem.yumyumnow.users.model.User;
@@ -22,7 +22,7 @@ public class CourierServiceTest {
 
     transient CourierRepository courierRepository = mock(CourierRepository.class);
     transient UserRepository userRepository  = mock(UserRepository.class);
-    transient CourierBuilder courierBuilder = mock(CourierBuilder.class);
+    transient CourierFactory courierBuilder = mock(CourierFactory.class);
     transient HttpService httpService = mock(HttpService.class);
     transient CourierService courierService = new CourierService(courierRepository, userRepository,
             courierBuilder, httpService);
@@ -55,7 +55,7 @@ public class CourierServiceTest {
         // Arrange
         CourierRequestModel requestModel = TestDataInitializer.createValidCourierRequestModel();
         Courier dummyCourier = TestDataInitializer.createDummyCourier();
-        when(courierBuilder.build(any(), any())).thenReturn(dummyCourier);
+        when(courierBuilder.build(any())).thenReturn(dummyCourier);
         when(courierRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(courierRepository.saveAndFlush(any())).thenReturn(dummyCourier);
 
@@ -64,7 +64,7 @@ public class CourierServiceTest {
 
         // Assert
         assertEquals(dummyCourier, result);
-        verify(courierBuilder).build(any(), any());
+        verify(courierBuilder).build(any());
         verify(courierRepository).findByEmail(any());
         verify(courierRepository).saveAndFlush(any());
     }
@@ -244,7 +244,6 @@ public class CourierServiceTest {
 
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(userRepository.findById(userId2)).thenReturn(Optional.empty());
-        when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
         assertThrows(UserNotFoundException.class, () -> courierService.updateCourier(userId1, userId2, courierRequestModel));
     }
@@ -269,13 +268,11 @@ public class CourierServiceTest {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(userRepository.findById(userId2)).thenReturn(Optional.of(adminUser));
-        when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
         // Act
         courierService.updateCourier(userId1, userId2, courierRequestModel);
 
         // Assert
-        verify(courierBuilder).build(courierInitial, courierRequestModel);
         verify(courierRepository).saveAndFlush(courierInitial);
     }
 
@@ -294,13 +291,11 @@ public class CourierServiceTest {
 
         when(userRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
         when(courierRepository.findById(userId1)).thenReturn(Optional.of(courierInitial));
-        when(courierBuilder.build(any(), any())).thenReturn(courierInitial);
 
         // Act
         courierService.updateCourier(userId1, userId2, courierRequestModel);
 
         // Assert
-        verify(courierBuilder).build(courierInitial, courierRequestModel);
         verify(courierRepository).saveAndFlush(courierInitial);
     }
 

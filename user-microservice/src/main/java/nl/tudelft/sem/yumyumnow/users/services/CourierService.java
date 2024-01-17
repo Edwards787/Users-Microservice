@@ -3,8 +3,8 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import nl.tudelft.sem.yumyumnow.users.builders.CourierBuilder;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
+import nl.tudelft.sem.yumyumnow.users.factories.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Courier;
 import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Rating;
@@ -24,7 +24,7 @@ public class CourierService {
     private final transient CourierRepository courierRepository;
     private final transient UserRepository userRepository;
 
-    private final transient CourierBuilder courierBuilder;
+    private final transient CourierFactory courierFactory;
     private final transient ValidatorConstructor validatorConstructor;
     private final transient HttpService httpService;
 
@@ -34,17 +34,18 @@ public class CourierService {
      *
      * @param courierRepository courier repository
      * @param userRepository    user repository
-     * @param courierBuilder    courier builder
+     * @param courierFactory    courier builder
      */
     @Autowired
     public CourierService(
             CourierRepository courierRepository,
             UserRepository userRepository,
-            CourierBuilder courierBuilder,
+            CourierFactory courierFactory,
             HttpService httpService) {
+
         this.courierRepository = courierRepository;
         this.userRepository = userRepository;
-        this.courierBuilder = courierBuilder;
+        this.courierFactory = courierFactory;
         this.validatorConstructor = new ValidatorConstructor();
         this.httpService = httpService;
     }
@@ -76,16 +77,12 @@ public class CourierService {
         Validator validator = validatorConstructor.courierWithoutAuthorization();
         validator.handle(new ValidationObject(courierRequestModel, null));
 
-        Courier courier = new Courier();
-        courierBuilder.build(courier, courierRequestModel);
-
         if (courierRepository.findByEmail(courierRequestModel.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException(courierRequestModel.getEmail());
         }
 
-        Courier response = courierRepository.saveAndFlush(courier);
-        courier.setId(response.getId());
-
+        Courier courier = courierFactory.build(courierRequestModel);
+        courier = courierRepository.saveAndFlush(courier);
         return courier;
     }
 
@@ -131,9 +128,11 @@ public class CourierService {
                 new AuthorizationData(userId1, userId2, userRepository,
                     new AuthorizationUserAndAdminStrategy())));
 
-        Courier courierInitial;
-        courierInitial = getCourierById(userId1);
-        Courier courier = courierBuilder.build(courierInitial, courierRequestModel);
+        Courier courier = getCourierById(userId1);
+        courier.setName(courierRequestModel.getName());
+        courier.setSurname(courierRequestModel.getSurname());
+        courier.setEmail(courier.getEmail());
+
         courierRepository.saveAndFlush(courier);
 
     }
