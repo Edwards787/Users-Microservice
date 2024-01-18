@@ -159,12 +159,15 @@ class HttpServiceTest {
         Long userId = 1L;
 
         Order o1 = new Order();
+        o1.setCustomerId(1L);
         o1.setId(1L);
         Order o2 = new Order();
+        o2.setCustomerId(1L);
         o2.setId(2L);
         o1.setStatus(Status.READY_FOR_PICKUP);
         o2.setStatus(Status.ACCEPTED);
         Order o3 = new Order();
+        o3.setCustomerId(1L);
         o3.setId(3L);
         o3.setStatus(Status.PREPARING);
 
