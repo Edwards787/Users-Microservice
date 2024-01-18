@@ -44,7 +44,7 @@ public class AddressValidator extends BaseValidator {
         }
         validateLocation(address.getCoordinates());
 
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 
     private void validateLocation(Location location) throws InvalidFieldException {

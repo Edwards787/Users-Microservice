@@ -18,6 +18,6 @@ public class ClosingTimesValidator extends BaseValidator {
         if (vendorRequestModel.getClosingTimes() == null || vendorRequestModel.getClosingTimes().isEmpty()) {
             throw new InvalidFieldException("closing times", vendorRequestModel.getClosingTimes());
         }
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

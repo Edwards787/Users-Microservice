@@ -1,10 +1,10 @@
 package nl.tudelft.sem.yumyumnow.users.validation.validators;
 
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.model.Address;
-import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
-import nl.tudelft.sem.yumyumnow.users.model.Location;
-import nl.tudelft.sem.yumyumnow.users.model.VendorRequestModel;
+import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationAdminOnlyStrategy;
@@ -15,10 +15,13 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Fail.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class AddressValidatorTest {
-    transient AddressValidator addressValidator = new AddressValidator();
+    transient AddressValidator addressValidator = spy(new AddressValidator());
     transient ValidationObject validationObject1;
     transient ValidationObject validationObject2;
     transient AuthorizationData authorizationData;
@@ -47,6 +50,35 @@ public class AddressValidatorTest {
         validationObject1 = new ValidationObject(vendorRequestModel, authorizationData);
         validationObject2 = new ValidationObject(customerRequestModel, authorizationData);
     }
+
+    @Test
+    void testAddressValidatorSuccess()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        boolean result = addressValidator.handle(validationObject1);
+        assertTrue(result);
+        verify(addressValidator).checkNext(validationObject1);
+    }
+
+    @Test
+    void testAddressValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        doReturn(false).when(addressValidator).checkNext(validationObject1);
+        boolean result = addressValidator.handle(validationObject1);
+        assertFalse(result);
+        verify(addressValidator).checkNext(validationObject1);
+    }
+
+    @Test
+    public void testRequestNoAddress() {
+        UserRequestModel urm = new AdminRequestModel("email@email.com", "Joe", "Biden");
+        ValidationObject validationObject = new ValidationObject(urm, authorizationData);
+        assertThatThrownBy(() -> addressValidator.handle(validationObject))
+                .isInstanceOf(InvalidFieldException.class)
+                .hasMessage("Field 'address' with value 'no content' is invalid");
+    }
+
     @Test
     public void testNoAddressField() {
         address.setAddress("");

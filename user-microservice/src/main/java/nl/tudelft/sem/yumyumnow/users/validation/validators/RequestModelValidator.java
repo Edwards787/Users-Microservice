@@ -18,6 +18,6 @@ public class RequestModelValidator extends BaseValidator {
             throw new MissingBodyException();
         }
 
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

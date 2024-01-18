@@ -46,6 +46,17 @@ public class BaseValidatorTest {
         when(ibanValidator.handle(validationObject)).thenReturn(false);
 
         validator.setNext(ibanValidator);
-        assertThat(validator.checkNext(validationObject)).isEqualTo(false);
+        assertThat(validator.checkNext(validationObject)).isFalse();
+    }
+
+    @Test
+    void testTrue() throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        IbanValidator ibanValidator = mock(IbanValidator.class);
+        ValidationObject validationObject = new ValidationObject(null, null);
+        when(ibanValidator.handle(validationObject)).thenReturn(true);
+
+        validator.setNext(ibanValidator);
+        assertThat(validator.checkNext(validationObject)).isTrue();
     }
 }

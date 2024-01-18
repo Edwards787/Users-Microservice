@@ -17,10 +17,12 @@ import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class AllergenValidatorTest {
-    transient AllergenValidator allergenValidator = new AllergenValidator();
+    transient AllergenValidator allergenValidator = spy(new AllergenValidator());
     transient ValidationObject validationObject;
     transient AuthorizationData authorizationData;
     transient CustomerRequestModel customerRequestModel;
@@ -35,15 +37,25 @@ public class AllergenValidatorTest {
 
     @Test
     void testAllergenValidatorSuccess()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
         customerRequestModel.setAllergens(new ArrayList<>());
-        try{
-            allergenValidator.handle(validationObject);
-        } catch (Exception e){
-            fail("exception should not be thrown");
-        }
+        boolean result = allergenValidator.handle(validationObject);
+        assertTrue(result);
+        verify(allergenValidator).checkNext(validationObject);
     }
+
+    @Test
+    void testAllergenValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        customerRequestModel.setAllergens(new ArrayList<>());
+        doReturn(false).when(allergenValidator).checkNext(validationObject);
+        boolean result = allergenValidator.handle(validationObject);
+        assertFalse(result);
+        verify(allergenValidator).checkNext(validationObject);
+    }
+
     @Test
     void testAllergenValidatorNull()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,

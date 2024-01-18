@@ -17,6 +17,6 @@ public class AuthorizationValidator extends BaseValidator {
         data.getAuthorizationStrategy().authorize(data.getId1(), data.getId2(),
             data.getUserRepository());
 
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

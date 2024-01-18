@@ -14,16 +14,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class IbanValidatorTest {
-    transient IbanValidator ibanValidator = new IbanValidator();
+    transient IbanValidator ibanValidator = spy(new IbanValidator());
     transient ValidationObject validationObject;
     transient AuthorizationData authorizationData;
     transient CourierRequestModel courierRequestModel;
 
     @BeforeEach
-    void setUp(){
+    void setUp() throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
         UserRepository userRepository = mock(UserRepository.class);
         authorizationData = new AuthorizationData(1L, 1L, userRepository, new AuthorizationAdminOnlyStrategy());
         courierRequestModel = new CourierRequestModel("email", "name", "surname");
@@ -34,13 +36,23 @@ public class IbanValidatorTest {
     void testIBANValidatorSuccess()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
-        try{
-            courierRequestModel.setIbanNumber("iban");
-            ibanValidator.handle(validationObject);
-        } catch (Exception e){
-            fail("exception should not be thrown");
-        }
+        courierRequestModel.setIbanNumber("iban");
+        boolean result = ibanValidator.handle(validationObject);
+        assertTrue(result);
+        verify(ibanValidator).checkNext(validationObject);
     }
+
+    @Test
+    void testIBANValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        courierRequestModel.setIbanNumber("iban");
+        doReturn(false).when(ibanValidator).checkNext(validationObject);
+        boolean result = ibanValidator.handle(validationObject);
+        assertFalse(result);
+        verify(ibanValidator).checkNext(validationObject);
+    }
+
     @Test
     void testIBANValidatorNull()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,

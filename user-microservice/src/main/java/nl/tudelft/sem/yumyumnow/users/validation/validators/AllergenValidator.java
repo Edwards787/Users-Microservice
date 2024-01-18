@@ -19,6 +19,6 @@ public class AllergenValidator extends BaseValidator {
         if (crm.getAllergens() == null) {
             throw new InvalidFieldException("allergens", "null");
         }
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

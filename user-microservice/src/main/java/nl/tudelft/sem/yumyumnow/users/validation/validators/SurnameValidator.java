@@ -19,6 +19,6 @@ public class SurnameValidator extends BaseValidator {
             throw new InvalidFieldException("surname", userRequestModel.getSurname());
         }
 
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

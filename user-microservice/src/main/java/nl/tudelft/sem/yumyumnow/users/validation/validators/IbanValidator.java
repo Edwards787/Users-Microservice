@@ -20,6 +20,6 @@ public class IbanValidator extends BaseValidator {
             throw new InvalidFieldException("iban", "null");
         }
 
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }
