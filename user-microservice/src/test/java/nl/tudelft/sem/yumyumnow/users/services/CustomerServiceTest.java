@@ -19,6 +19,7 @@ class CustomerServiceTest {
     CustomerRepository customerRepository;
     UserRepository userRepository;
     private CustomerService customerService;
+    private EmailService emailService;
     Address adr;
     private List<Long> favs;
     Customer mockCustomer;
@@ -28,13 +29,14 @@ class CustomerServiceTest {
     CustomerFactory customerFactory;
     HttpService httpService;
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         customerRepository = mock(CustomerRepository.class);
         userRepository  = mock(UserRepository.class);
         customerFactory = new CustomerFactory();
 
         httpService = mock(HttpService.class);
-        customerService = new CustomerService(customerRepository, userRepository, httpService, customerFactory);
+        emailService = mock(EmailService.class);
+        customerService = new CustomerService(customerRepository, userRepository, httpService, emailService, customerFactory);
 
         Location l = new Location();
         l.lat(12.1f);
@@ -54,12 +56,7 @@ class CustomerServiceTest {
         mockCustomer.setSurname("Doe");
         mockCustomer.setEmail("john.doe@example.com");
 
-        customerUpdate = new CustomerRequestModel();
-        customerUpdate.setName("UpdatedName");
-        customerUpdate.setEmail("email@g");
-        customerUpdate.setAllergens(new ArrayList<>());
-        customerUpdate.setSurname("Hello");
-        customerUpdate.setHomeAddress(new Address());
+        customerUpdate = new CustomerRequestModel(new Address(), new ArrayList<>(), "email@g", "UpdatedName", "Hello");
 
         address = new Address();
         address.setAddress("a");
@@ -276,6 +273,7 @@ class CustomerServiceTest {
         Customer c = customerService.createCustomer(customerUpdate);
         assertEquals(c, cust);
         verify(customerRepository).saveAndFlush(cust);
+        verify(emailService).sendEmail(argThat(x -> x.getRecipient().equals(customerUpdate.getEmail())));
     }
 
 
@@ -291,7 +289,7 @@ class CustomerServiceTest {
     @Test
     public void createCustomerException2(){
         Long customerId = 1L;
-        CustomerRequestModel customer =new CustomerRequestModel();
+        CustomerRequestModel customer = new CustomerRequestModel(new Address(), null, "", "", "");
         assertThrows(InvalidFieldException.class, () ->{
             customerService.createCustomer(customer);
         });

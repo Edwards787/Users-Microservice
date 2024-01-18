@@ -29,6 +29,7 @@ public class AdminServiceTest {
     transient Admin admin2;
     transient AdminRequestModel adminRequestModel;
     transient HttpService httpService;
+    private transient EmailService emailService;
 
     @BeforeEach
     public void setUp(){
@@ -38,7 +39,8 @@ public class AdminServiceTest {
 
         adminBuilder = new AdminFactory();
         httpService = mock(HttpService.class);
-        adminService = new AdminService(adminRepository, userRepository, adminBuilder, httpService);
+        emailService = mock(EmailService.class);
+        adminService = new AdminService(adminRepository, userRepository, adminBuilder, httpService, emailService);
     }
 
     @BeforeEach
@@ -85,6 +87,7 @@ public class AdminServiceTest {
         when(adminRepository.findByEmail("email1@mail.com")).thenReturn(Optional.empty());
         when(adminRepository.saveAndFlush(adminBuilder.build(adminRequestModel))).thenReturn(admin1);
         assertThat(adminService.createAdmin(adminRequestModel)).isEqualTo(admin1);
+        verify(emailService).sendEmail(argThat(x -> x.getRecipient().equals(adminRequestModel.getEmail())));
     }
     @Test
     public void testCreateAdminInvalid() {
