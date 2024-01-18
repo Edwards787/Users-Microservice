@@ -163,4 +163,53 @@ public class ValidatorConstructorTest {
         assertThat(addressValidator.getNext()).isNull();
     }
 
+    @Test
+    void testCustomerWithoutAuthorization() {
+        assertThat(validatorConstructor.customerWithoutAuthorization()).isInstanceOf(RequestModelValidator.class);
+
+        RequestModelValidator requestModelValidator = (RequestModelValidator) validatorConstructor.customerWithoutAuthorization();
+        assertThat(requestModelValidator.getNext()).isInstanceOf(NameValidator.class);
+
+        NameValidator nameValidator =  (NameValidator) requestModelValidator.getNext();
+        assertThat(nameValidator.getNext()).isInstanceOf(SurnameValidator.class);
+
+        SurnameValidator surnameValidator =  (SurnameValidator) nameValidator.getNext();
+        assertThat(surnameValidator.getNext()).isInstanceOf(EmailValidator.class);
+
+        EmailValidator emailValidator = (EmailValidator) surnameValidator.getNext();
+        assertThat(emailValidator.getNext()).isInstanceOf(AddressValidator.class);
+
+        AddressValidator addressValidator = (AddressValidator) emailValidator.getNext();
+        assertThat(addressValidator.getNext()).isInstanceOf(AllergenValidator.class);
+
+        AllergenValidator allergenValidator  = (AllergenValidator) addressValidator.getNext();
+        assertThat(allergenValidator.getNext()).isNull();
+    }
+
+    @Test
+    void testCustomerWithAuthorization() {
+        assertThat(validatorConstructor.customerWithAuthorization()).isInstanceOf(AuthorizationValidator.class);
+
+        AuthorizationValidator authorizationValidator = (AuthorizationValidator) validatorConstructor.customerWithAuthorization();
+        assertThat(authorizationValidator.getNext()).isInstanceOf(RequestModelValidator.class);
+
+        RequestModelValidator requestModelValidator = (RequestModelValidator) authorizationValidator.getNext();
+        assertThat(requestModelValidator.getNext()).isInstanceOf(NameValidator.class);
+
+        NameValidator nameValidator =  (NameValidator) requestModelValidator.getNext();
+        assertThat(nameValidator.getNext()).isInstanceOf(SurnameValidator.class);
+
+        SurnameValidator surnameValidator =  (SurnameValidator) nameValidator.getNext();
+        assertThat(surnameValidator.getNext()).isInstanceOf(EmailValidator.class);
+
+        EmailValidator emailValidator = (EmailValidator) surnameValidator.getNext();
+        assertThat(emailValidator.getNext()).isInstanceOf(AddressValidator.class);
+
+        AddressValidator addressValidator = (AddressValidator) emailValidator.getNext();
+        assertThat(addressValidator.getNext()).isInstanceOf(AllergenValidator.class);
+
+        AllergenValidator allergenValidator  = (AllergenValidator) addressValidator.getNext();
+        assertThat(allergenValidator.getNext()).isNull();
+    }
+
 }

@@ -22,6 +22,6 @@ public class EmailValidator extends BaseValidator {
                 .matches()) {
             throw new InvalidFieldException("email", userRequestModel.getEmail());
         }
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

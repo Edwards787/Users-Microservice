@@ -32,7 +32,6 @@ public class ValidatorConstructor {
         requestModelValidator.setNext(nameValidator);
         nameValidator.setNext(surnameValidator);
         surnameValidator.setNext(emailValidator);
-        emailValidator.setNext(null);
 
         return requestModelValidator;
     }
@@ -54,7 +53,6 @@ public class ValidatorConstructor {
         requestModelValidator.setNext(nameValidator);
         nameValidator.setNext(surnameValidator);
         surnameValidator.setNext(emailValidator);
-        emailValidator.setNext(null);
 
         return authorizationValidator;
     }
@@ -66,7 +64,6 @@ public class ValidatorConstructor {
      */
     public Validator userAuthorization() {
         AuthorizationValidator authorizationValidator = new AuthorizationValidator();
-        authorizationValidator.setNext(null);
         return authorizationValidator;
     }
 
@@ -86,7 +83,6 @@ public class ValidatorConstructor {
         nameValidator.setNext(surnameValidator);
         surnameValidator.setNext(emailValidator);
         emailValidator.setNext(ibanValidator);
-        ibanValidator.setNext(null);
 
         return requestModelValidator;
     }
@@ -109,7 +105,6 @@ public class ValidatorConstructor {
         nameValidator.setNext(surnameValidator);
         surnameValidator.setNext(emailValidator);
         emailValidator.setNext(ibanValidator);
-        ibanValidator.setNext(null);
 
         return authorizationValidator;
     }
@@ -136,7 +131,6 @@ public class ValidatorConstructor {
         emailValidator.setNext(openingTimesValidator);
         openingTimesValidator.setNext(closingTimesValidator);
         closingTimesValidator.setNext(addressValidator);
-        addressValidator.setNext(null);
 
         return authorizationValidator;
     }
@@ -161,7 +155,6 @@ public class ValidatorConstructor {
         emailValidator.setNext(openingTimesValidator);
         openingTimesValidator.setNext(closingTimesValidator);
         closingTimesValidator.setNext(addressValidator);
-        addressValidator.setNext(null);
 
         return requestModelValidator;
     }
@@ -184,7 +177,6 @@ public class ValidatorConstructor {
         surnameValidator.setNext(emailValidator);
         emailValidator.setNext(addressValidator);
         addressValidator.setNext(allergenValidator);
-        addressValidator.setNext(null);
 
         return requestModelValidator;
     }
@@ -210,7 +202,6 @@ public class ValidatorConstructor {
         surnameValidator.setNext(emailValidator);
         emailValidator.setNext(addressValidator);
         addressValidator.setNext(allergenValidator);
-        addressValidator.setNext(null);
 
         return authorizationValidator;
     }

@@ -19,6 +19,6 @@ public class OpeningTimesValidator extends BaseValidator {
             throw new InvalidFieldException("opening times", vendorRequestModel.getOpeningTimes());
         }
 
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

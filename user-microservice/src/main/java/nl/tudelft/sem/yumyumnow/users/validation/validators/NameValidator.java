@@ -18,6 +18,6 @@ public class NameValidator extends BaseValidator {
             throw new InvalidFieldException("name", userRequestModel.getName());
         }
 
-        return super.checkNext(validationObject);
+        return checkNext(validationObject);
     }
 }

@@ -13,12 +13,16 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.Authoriza
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class ClosingTimesValidatorTest {
-    transient ClosingTimesValidator closingTimesValidator = new ClosingTimesValidator();
+    transient ClosingTimesValidator closingTimesValidator = spy(new ClosingTimesValidator());
     transient ValidationObject validationObject;
     transient AuthorizationData authorizationData;
     transient VendorRequestModel vendorRequestModel;
@@ -33,15 +37,25 @@ public class ClosingTimesValidatorTest {
 
     @Test
     void testClosingTimesValidatorSuccess()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
-        try{
-            vendorRequestModel.setClosingTimes("1");
-            closingTimesValidator.handle(validationObject);
-        } catch (Exception e){
-            fail("exception should not be thrown");
-        }
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        vendorRequestModel.setClosingTimes("1");
+        boolean result = closingTimesValidator.handle(validationObject);
+        assertTrue(result);
+        verify(closingTimesValidator).checkNext(validationObject);
     }
+
+    @Test
+    void testClosingTimesValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        vendorRequestModel.setClosingTimes("1");
+        doReturn(false).when(closingTimesValidator).checkNext(validationObject);
+        boolean result = closingTimesValidator.handle(validationObject);
+        assertFalse(result);
+        verify(closingTimesValidator).checkNext(validationObject);
+    }
+
     @Test
     void testClosingTimesValidatorNull()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,

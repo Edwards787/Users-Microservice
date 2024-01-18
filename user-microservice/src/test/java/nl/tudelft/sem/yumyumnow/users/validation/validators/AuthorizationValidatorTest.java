@@ -1,5 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.validation.validators;
 
+import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.NotAuthorizedException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
 import nl.tudelft.sem.yumyumnow.users.model.Admin;
@@ -14,12 +16,13 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class AuthorizationValidatorTest {
 
-    transient AuthorizationValidator authorizationValidator = new AuthorizationValidator();
+    transient AuthorizationValidator authorizationValidator = spy(new AuthorizationValidator());
     transient ValidationObject validationObject;
     transient AuthorizationData authorizationData;
     transient UserRepository userRepository;
@@ -35,6 +38,31 @@ public class AuthorizationValidatorTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
         when(userRepository.findById(3L)).thenReturn(Optional.empty());
+    }
+
+    @Test
+    void testAuthorizationValidatorSuccess()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        authorizationData = new AuthorizationData(2L, 1L, userRepository, new AuthorizationAdminOnlyStrategy());
+        validationObject = new ValidationObject(null, authorizationData);
+
+        boolean result = authorizationValidator.handle(validationObject);
+        assertTrue(result);
+        verify(authorizationValidator).checkNext(validationObject);
+    }
+
+    @Test
+    void testAuthorizationValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        authorizationData = new AuthorizationData(2L, 1L, userRepository, new AuthorizationAdminOnlyStrategy());
+        validationObject = new ValidationObject(null, authorizationData);
+
+        doReturn(false).when(authorizationValidator).checkNext(validationObject);
+        boolean result = authorizationValidator.handle(validationObject);
+        assertFalse(result);
+        verify(authorizationValidator).checkNext(validationObject);
     }
 
     @Test

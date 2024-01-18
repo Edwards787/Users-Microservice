@@ -15,10 +15,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class OpeningTimesValidatorTest {
-    transient OpeningTimesValidator openingTimesValidator = new OpeningTimesValidator();
+    transient OpeningTimesValidator openingTimesValidator = spy(new OpeningTimesValidator());
     transient ValidationObject validationObject;
     transient AuthorizationData authorizationData;
     transient VendorRequestModel vendorRequestModel;
@@ -33,15 +35,25 @@ public class OpeningTimesValidatorTest {
 
     @Test
     void testOpeningTimesValidatorSuccess()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
-        try{
-            vendorRequestModel.setOpeningTimes("1");
-            openingTimesValidator.handle(validationObject);
-        } catch (Exception e){
-            fail("exception should not be thrown");
-        }
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        vendorRequestModel.setOpeningTimes("1");
+        boolean result = openingTimesValidator.handle(validationObject);
+        assertTrue(result);
+        verify(openingTimesValidator).checkNext(validationObject);
     }
+
+    @Test
+    void testOpeningTimesValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        vendorRequestModel.setOpeningTimes("1");
+        doReturn(false).when(openingTimesValidator).checkNext(validationObject);
+        boolean result = openingTimesValidator.handle(validationObject);
+        assertFalse(result);
+        verify(openingTimesValidator).checkNext(validationObject);
+    }
+
     @Test
     void testOpeningTimesValidatorNull()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,

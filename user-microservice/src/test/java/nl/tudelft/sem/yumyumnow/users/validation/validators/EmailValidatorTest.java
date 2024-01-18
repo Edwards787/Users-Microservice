@@ -14,10 +14,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class EmailValidatorTest {
-    transient EmailValidator emailValidator = new EmailValidator();
+    transient EmailValidator emailValidator = spy(new EmailValidator());
     transient ValidationObject validationObject;
     transient AuthorizationData authorizationData;
     transient UserRequestModel userRequestModel;
@@ -31,15 +33,24 @@ public class EmailValidatorTest {
     }
 
     @Test
-    void testNameValidatorSuccess()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
-        try{
-            emailValidator.handle(validationObject);
-        } catch (Exception e){
-            fail("exception should not be thrown");
-        }
+    void testEmailValidatorSuccess()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        boolean result = emailValidator.handle(validationObject);
+        assertTrue(result);
+        verify(emailValidator).checkNext(validationObject);
     }
+
+    @Test
+    void testEmailValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        doReturn(false).when(emailValidator).checkNext(validationObject);
+        boolean result = emailValidator.handle(validationObject);
+        assertFalse(result);
+        verify(emailValidator).checkNext(validationObject);
+    }
+
     @Test
     void testEmailValidatorNull()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,

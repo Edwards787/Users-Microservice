@@ -14,11 +14,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class SurnameValidatorTest {
-    transient SurnameValidator surnameValidator = new SurnameValidator();
+    transient SurnameValidator surnameValidator = spy(new SurnameValidator());
     transient ValidationObject validationObject;
     transient AuthorizationData authorizationData;
     transient UserRequestModel userRequestModel;
@@ -33,14 +34,23 @@ public class SurnameValidatorTest {
 
     @Test
     void testSurnameValidatorSuccess()
-        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
-        InvalidFieldException {
-        try{
-            surnameValidator.handle(validationObject);
-        } catch (Exception e){
-            fail("exception should not be thrown");
-        }
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        boolean result = surnameValidator.handle(validationObject);
+        assertTrue(result);
+        verify(surnameValidator).checkNext(validationObject);
     }
+
+    @Test
+    void testSurnameValidatorSuccessNextFail()
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+            InvalidFieldException {
+        doReturn(false).when(surnameValidator).checkNext(validationObject);
+        boolean result = surnameValidator.handle(validationObject);
+        assertFalse(result);
+        verify(surnameValidator).checkNext(validationObject);
+    }
+
     @Test
     void testSurnameValidatorNull()
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
