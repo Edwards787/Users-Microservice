@@ -155,4 +155,16 @@ public class CourierController implements CourierApi {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public ResponseEntity<Void> rateCourier(Long userId, Rating rating) {
+        try {
+            courierService.rateCourier(userId, rating);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
+        } catch (InvalidFieldException | MissingBodyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 }

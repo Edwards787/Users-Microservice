@@ -677,4 +677,154 @@ class CustomerServiceTest {
         assertThrows(NotAuthorizedException.class, () -> customerService.requestRefundByCustomerIdForOrderId(customerId, user.getId(), orderId));
         verifyNoInteractions(httpService);
     }
+
+    @Test
+    void testGetCustomerPaymentByIdSuccessSelf() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        // Arrange
+        List<PaymentMethod> expected = List.of(new PaymentMethod());
+        mockCustomer.setPaymentMethods(expected);
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+
+        // Act
+        List<PaymentMethod> actual = customerService.getCustomerPaymentById(customerId, customerId);
+
+        // Assert
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testGetCustomerPaymentByIdSuccessAdmin() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        // Arrange
+        Admin admin = new Admin();
+        admin.setId(10L);
+        admin.setRole(User.RoleEnum.ADMIN);
+
+        List<PaymentMethod> expected = List.of(new PaymentMethod());
+        mockCustomer.setPaymentMethods(expected);
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+
+        // Act
+        List<PaymentMethod> actual = customerService.getCustomerPaymentById(admin.getId(), customerId);
+
+        // Assert
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testGetCustomerPaymentByIdNotAuthorized() {
+        // Arrange
+        User user = new User();
+        user.setId(10327894574354L);
+        user.setRole(User.RoleEnum.CUSTOMER);
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        // Act and assert
+        assertThrows(NotAuthorizedException.class, () -> customerService.getCustomerPaymentById(user.getId(), customerId));
+    }
+
+    @Test
+    void testGetCustomerPaymentByIdNotFound() {
+        // Arrange
+        when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+
+        // Act and assert
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> customerService.getCustomerPaymentById(customerId, customerId));
+        assertEquals(customerId, ex.getTargetId());
+    }
+
+
+    @Test
+    void testUpdateCustomerPaymentByIdSuccessSelf() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        // Arrange
+        mockCustomer.setPaymentMethods(List.of(new PaymentMethod().creditCardNumber("64")));
+        List<PaymentMethod> expected = List.of(new PaymentMethod().creditCardNumber("54"));
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+
+        // Act
+        customerService.updateCustomerPaymentById(customerId, customerId, expected);
+
+        // Assert
+        List<PaymentMethod> actual = customerService.getCustomerPaymentById(customerId, customerId);
+        assertEquals(expected, actual);
+        verify(customerRepository, times(1)).saveAndFlush(mockCustomer);
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdSuccessAdmin() throws UserNotFoundException, NotAuthorizedException,
+            MissingBodyException, InvalidFieldException {
+        // Arrange
+        Admin admin = new Admin();
+        admin.setId(10L);
+        admin.setRole(User.RoleEnum.ADMIN);
+
+        mockCustomer.setPaymentMethods(List.of(new PaymentMethod().creditCardNumber("64")));
+        List<PaymentMethod> expected = List.of(new PaymentMethod().creditCardNumber("54"));
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+
+        // Act
+        customerService.updateCustomerPaymentById(customerId, customerId, expected);
+
+        // Assert
+        List<PaymentMethod> actual = customerService.getCustomerPaymentById(customerId, customerId);
+        assertEquals(expected, actual);
+        verify(customerRepository, times(1)).saveAndFlush(mockCustomer);
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdNotAuthorized() {
+        // Arrange
+        User user = new User();
+        user.setId(10327894574354L);
+        user.setRole(User.RoleEnum.CUSTOMER);
+
+        List<PaymentMethod> dummy = List.of(new PaymentMethod());
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        // Act and assert
+        assertThrows(NotAuthorizedException.class, () -> customerService.updateCustomerPaymentById(user.getId(), customerId, dummy));
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdNotFound() {
+        // Arrange
+        List<PaymentMethod> dummy = List.of(new PaymentMethod());
+
+        List<PaymentMethod> expected = List.of(new PaymentMethod());
+        mockCustomer.setPaymentMethods(expected);
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
+        when(userRepository.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+
+        // Act and assert
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> customerService.updateCustomerPaymentById(customerId, customerId, dummy));
+        assertEquals(customerId, ex.getTargetId());
+    }
+
+    @Test
+    void testUpdateCustomerPaymentByIdMissingBody() {
+        // Act and assert
+        assertThrows(MissingBodyException.class, () -> customerService.updateCustomerPaymentById(customerId, customerId, null));
+    }
+
+
 }

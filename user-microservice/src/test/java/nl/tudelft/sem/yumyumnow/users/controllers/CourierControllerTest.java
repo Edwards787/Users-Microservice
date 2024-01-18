@@ -373,4 +373,58 @@ public class CourierControllerTest {
         // Act and Assert
         assertThrows(ResponseStatusException.class, () -> courierController.updateCourierBlockStatus(userId1, userId2, blockStatus));
     }
+
+    @Test
+    public void testRateCourierSuccess() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(3L);
+        rating.setUserId(issuerId);
+
+        doNothing().when(courierService).rateCourier(courierId, rating);
+
+        // Act
+        ResponseEntity<Void> result = courierController.rateCourier(courierId, rating);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        verify(courierService, times(1)).rateCourier(courierId, rating);
+    }
+
+    @Test
+    public void testRateCourierNotFound() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(3L);
+        rating.setUserId(issuerId);
+
+        doThrow(new UserNotFoundException()).when(courierService).rateCourier(courierId, rating);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> courierController.rateCourier(courierId, rating));
+
+        // Act and Assert
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+    }
+
+    @Test
+    public void testRateCourierInvalidField() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(3L);
+        rating.setUserId(issuerId);
+
+        doThrow(new InvalidFieldException("field", "value")).when(courierService).rateCourier(courierId, rating);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> courierController.rateCourier(courierId, rating));
+
+        // Act and Assert
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+    }
+
 }

@@ -3,7 +3,6 @@ package nl.tudelft.sem.yumyumnow.users.validation.objects.authorization;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 
 public class AuthorizationData {
-
     private final Long id1;
     private final Long id2;
     private final UserRepository userRepository;

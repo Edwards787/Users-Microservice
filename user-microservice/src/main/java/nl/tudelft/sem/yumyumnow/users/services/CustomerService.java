@@ -11,6 +11,7 @@ import nl.tudelft.sem.yumyumnow.users.factories.CustomerFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
+import nl.tudelft.sem.yumyumnow.users.model.PaymentMethod;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
@@ -335,6 +336,64 @@ public class CustomerService {
     }
 
 
+    /**
+     * Retrieves the payment methods of a customer.
+     *
+     * @param issuerId id of the issuer
+     * @param customerId id of the customer
+     * @return a list of payment methods
+     * @throws UserNotFoundException if either of the user IDs (userId1 or userId2) is not found
+     * @throws NotAuthorizedException if the user initiating the refund (userId1) is not authorized
+     * @throws MissingBodyException if the request body is missing or invalid
+     * @throws InvalidFieldException if any field in the request body is invalid
+     */
+    public List<PaymentMethod> getCustomerPaymentById(Long issuerId, Long customerId)
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(new ValidationObject(null, new AuthorizationData(customerId,
+                issuerId, userRepository, new AuthorizationUserAndAdminStrategy())));
 
+        Optional<Customer> optCustomer = customerRepository.findById(customerId);
+
+        if (optCustomer.isEmpty()) {
+            throw new UserNotFoundException(customerId);
+        }
+
+        return optCustomer.get().getPaymentMethods();
+    }
+
+    /**
+     * Updates the payment methods of a customer.
+     *
+     * @param issuerId  id of the issuer
+     * @param customerId id of the customer
+     * @param paymentMethods list of payment methods
+     * @throws UserNotFoundException if either of the user IDs (userId1 or userId2) is not found
+     * @throws NotAuthorizedException if the user initiating the refund (userId1) is not authorized
+     * @throws MissingBodyException if the request body is missing or invalid
+     * @throws InvalidFieldException if any field in the request body is invalid
+     */
+    public void updateCustomerPaymentById(Long issuerId, Long customerId, List<PaymentMethod> paymentMethods)
+            throws UserNotFoundException, NotAuthorizedException, MissingBodyException, InvalidFieldException {
+
+        if (paymentMethods == null) {
+            throw new MissingBodyException();
+        }
+
+        Validator validator = validatorConstructor.userAuthorization();
+        validator.handle(new ValidationObject(null, new AuthorizationData(customerId,
+                issuerId, userRepository, new AuthorizationUserAndAdminStrategy())));
+
+        Optional<Customer> optCustomer = customerRepository.findById(customerId);
+
+        if (optCustomer.isEmpty()) {
+            throw new UserNotFoundException(customerId);
+        }
+
+        Customer customer = optCustomer.get();
+        customer.setPaymentMethods(paymentMethods);
+        customerRepository.saveAndFlush(customer);
+
+    }
 }
 

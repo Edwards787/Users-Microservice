@@ -180,7 +180,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentMethod'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentMethod'
         '404':
           description: Customer not found
         '403':
@@ -196,7 +198,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PaymentMethod'
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentMethod'
       responses:
         '200':
           description: Successful
@@ -1688,6 +1692,10 @@ components:
           items:
             type: integer
             format: int64
+        paymentMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
       example:
         name: John
         surname: Doe
@@ -1709,6 +1717,11 @@ components:
         favRestaurants:
           - 1
           - 2
+        paymentMethods:
+          - creditCardNumber: "1234567890123456"
+            cardholderName: "John Doe"
+            date: "01/01/2021"
+            cvvCode: 123
     Vendor:
       allOf:
         - $ref: '#/components/schemas/User'

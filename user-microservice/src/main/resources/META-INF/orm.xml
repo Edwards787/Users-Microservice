@@ -29,6 +29,12 @@
                     <join-column name="customer_id"/>
                 </collection-table>
             </element-collection>
+            <element-collection name="paymentMethods">
+                <column name="paymentmethods"/>
+                <collection-table name="customer_paymentmethods">
+                    <join-column name="customer_id"/>
+                </collection-table>
+            </element-collection>
         </attributes>
     </entity>
 
@@ -74,4 +80,5 @@
     <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Location"/>
     <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Wallet"/>
     <embeddable class="nl.tudelft.sem.yumyumnow.users.model.Rating"/>
+    <embeddable class="nl.tudelft.sem.yumyumnow.users.model.PaymentMethod"/>
 </entity-mappings>

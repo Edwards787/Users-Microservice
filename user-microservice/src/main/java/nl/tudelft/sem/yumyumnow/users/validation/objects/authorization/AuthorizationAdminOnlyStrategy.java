@@ -6,7 +6,6 @@ import nl.tudelft.sem.yumyumnow.users.model.User;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 
 public class AuthorizationAdminOnlyStrategy implements AuthorizationStrategy {
-
     @Override
     public void authorize(Long target, Long requester, UserRepository userRepository)
         throws NotAuthorizedException, UserNotFoundException {

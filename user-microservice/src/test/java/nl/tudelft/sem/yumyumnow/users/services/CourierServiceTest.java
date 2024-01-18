@@ -6,13 +6,10 @@ import static org.mockito.Mockito.*;
 
 import nl.tudelft.sem.yumyumnow.users.factories.CourierFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
-import nl.tudelft.sem.yumyumnow.users.model.Rating;
-import nl.tudelft.sem.yumyumnow.users.model.User;
+import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import nl.tudelft.sem.yumyumnow.users.repositories.CourierRepository;
-import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
-import nl.tudelft.sem.yumyumnow.users.model.Courier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -651,4 +648,222 @@ public class CourierServiceTest {
 
         assertThrows(UserNotFoundException.class, () -> courierService.getPastOrderIdsForCourier(userId1));
     }
+
+    @Test
+    public void testRateCourierSuccess1() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(3L);
+        rating.setUserId(issuerId);
+
+        Courier courier = new Courier();
+        courier.setId(courierId);
+        courier.setRatings(new ArrayList<>());
+        courier.setRole(User.RoleEnum.COURIER);
+
+        Customer issuer = new Customer();
+        issuer.setId(issuerId);
+        issuer.setRole(User.RoleEnum.CUSTOMER);
+
+        when(userRepository.findById(courierId)).thenReturn(Optional.of(courier));
+        when(userRepository.findById(issuerId)).thenReturn(Optional.of(issuer));
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(courier));
+
+        // Act
+        courierService.rateCourier(courierId, rating);
+
+        // Assert
+        assertEquals(1, courier.getRatings().size());
+        assertEquals(rating, courier.getRatings().get(0));
+    }
+
+    @Test
+    public void testRateCourierSuccess2() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(1L);
+        rating.setUserId(issuerId);
+
+        Courier courier = new Courier();
+        courier.setId(courierId);
+        courier.setRatings(new ArrayList<>());
+        courier.setRole(User.RoleEnum.COURIER);
+
+        Customer issuer = new Customer();
+        issuer.setId(issuerId);
+        issuer.setRole(User.RoleEnum.CUSTOMER);
+
+        when(userRepository.findById(courierId)).thenReturn(Optional.of(courier));
+        when(userRepository.findById(issuerId)).thenReturn(Optional.of(issuer));
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(courier));
+
+        // Act
+        courierService.rateCourier(courierId, rating);
+
+        // Assert
+        assertEquals(1, courier.getRatings().size());
+        assertEquals(rating, courier.getRatings().get(0));
+    }
+
+    @Test
+    public void testRateCourierSuccess3() throws UserNotFoundException, InvalidFieldException, MissingBodyException {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(5L);
+        rating.setUserId(issuerId);
+
+        Courier courier = new Courier();
+        courier.setId(courierId);
+        courier.setRatings(new ArrayList<>());
+        courier.setRole(User.RoleEnum.COURIER);
+
+        Customer issuer = new Customer();
+        issuer.setId(issuerId);
+        issuer.setRole(User.RoleEnum.CUSTOMER);
+
+        when(userRepository.findById(courierId)).thenReturn(Optional.of(courier));
+        when(userRepository.findById(issuerId)).thenReturn(Optional.of(issuer));
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(courier));
+
+        // Act
+        courierService.rateCourier(courierId, rating);
+
+        // Assert
+        assertEquals(1, courier.getRatings().size());
+        assertEquals(rating, courier.getRatings().get(0));
+    }
+
+    @Test
+    public void testRateCourierIssuerNotFound() {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(3L);
+        rating.setUserId(issuerId);
+
+        Courier courier = new Courier();
+        courier.setId(courierId);
+        courier.setRatings(new ArrayList<>());
+        courier.setRole(User.RoleEnum.COURIER);
+
+        when(userRepository.findById(courierId)).thenReturn(Optional.of(courier));
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(courier));
+
+        // Act and assert
+        assertThrows(UserNotFoundException.class, () -> courierService.rateCourier(courierId, rating));
+    }
+
+    @Test
+    public void testRateCourierIssuerNonCustomer() {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(3L);
+        rating.setUserId(issuerId);
+
+        Courier courier = new Courier();
+        courier.setId(courierId);
+        courier.setRatings(new ArrayList<>());
+        courier.setRole(User.RoleEnum.COURIER);
+
+        Vendor issuer = new Vendor();
+        issuer.setId(issuerId);
+        issuer.setRole(User.RoleEnum.VENDOR);
+
+        when(userRepository.findById(courierId)).thenReturn(Optional.of(courier));
+        when(userRepository.findById(issuerId)).thenReturn(Optional.of(issuer));
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(courier));
+
+        // Act and assert
+        assertThrows(UserNotFoundException.class, () -> courierService.rateCourier(courierId, rating));
+    }
+
+    @Test
+    public void testRateCourierNotFound() {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(3L);
+        rating.setUserId(issuerId);
+
+        Customer issuer = new Customer();
+        issuer.setId(issuerId);
+        issuer.setRole(User.RoleEnum.CUSTOMER);
+
+        when(userRepository.findById(issuerId)).thenReturn(Optional.of(issuer));
+
+        // Act and assert
+        assertThrows(UserNotFoundException.class, () -> courierService.rateCourier(courierId, rating));
+    }
+
+    @Test
+    public void testRateCourierRatingInvalid1() {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(0L);
+        rating.setUserId(issuerId);
+
+        Courier courier = new Courier();
+        courier.setId(courierId);
+        courier.setRatings(new ArrayList<>());
+        courier.setRole(User.RoleEnum.COURIER);
+
+        Customer issuer = new Customer();
+        issuer.setId(issuerId);
+        issuer.setRole(User.RoleEnum.CUSTOMER);
+
+        when(userRepository.findById(courierId)).thenReturn(Optional.of(courier));
+        when(userRepository.findById(issuerId)).thenReturn(Optional.of(issuer));
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(courier));
+
+        // Act and assert
+        assertThrows(InvalidFieldException.class, () -> courierService.rateCourier(courierId, rating));
+    }
+
+    @Test
+    public void testRateCourierRatingInvalid2() {
+        // Arrange
+        Long courierId = 3L;
+        Long issuerId = 4L;
+        Rating rating = new Rating();
+        rating.setRating(6L);
+        rating.setUserId(issuerId);
+
+        Courier courier = new Courier();
+        courier.setId(courierId);
+        courier.setRatings(new ArrayList<>());
+        courier.setRole(User.RoleEnum.COURIER);
+
+        Customer issuer = new Customer();
+        issuer.setId(issuerId);
+        issuer.setRole(User.RoleEnum.CUSTOMER);
+
+        when(userRepository.findById(courierId)).thenReturn(Optional.of(courier));
+        when(userRepository.findById(issuerId)).thenReturn(Optional.of(issuer));
+        when(courierRepository.findById(courierId)).thenReturn(Optional.of(courier));
+
+        // Act and assert
+        assertThrows(InvalidFieldException.class, () -> courierService.rateCourier(courierId, rating));
+    }
+
+    @Test
+    public void testRateCourierMissingBody() {
+        // Arrange
+        Long courierId = 3L;
+
+        // Act and assert
+        assertThrows(MissingBodyException.class, () -> courierService.rateCourier(courierId, null));
+    }
+
 }

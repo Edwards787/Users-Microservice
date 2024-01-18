@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 public class UserController implements UserApi {
-
     private final transient UserService userService;
 
     @Autowired

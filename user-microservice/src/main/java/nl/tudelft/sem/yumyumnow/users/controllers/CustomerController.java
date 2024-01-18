@@ -6,6 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Customer;
 import nl.tudelft.sem.yumyumnow.users.model.CustomerRequestModel;
 import nl.tudelft.sem.yumyumnow.users.model.Location;
+import nl.tudelft.sem.yumyumnow.users.model.PaymentMethod;
 import nl.tudelft.sem.yumyumnow.users.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -183,6 +184,34 @@ public class CustomerController implements CustomerApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId1 + " Not found");
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(403), e.getMessage());
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<PaymentMethod>> getCustomerPaymentById(Long userId1, Long userId2) {
+        try {
+            List<PaymentMethod> paymentMethods = customerService.getCustomerPaymentById(userId2, userId1);
+            return ResponseEntity.ok(paymentMethods);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (MissingBodyException | InvalidFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> updateCustomerPaymentById(Long userId1, Long userId2, List<PaymentMethod> paymentMethod) {
+        try {
+            customerService.updateCustomerPaymentById(userId2, userId1, paymentMethod);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
+        } catch (NotAuthorizedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (MissingBodyException | InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
