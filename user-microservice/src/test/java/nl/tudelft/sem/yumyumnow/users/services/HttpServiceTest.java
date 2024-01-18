@@ -56,16 +56,15 @@ class HttpServiceTest {
     void testGetPastOrderIdsForCourier() {
         Long courierId = 1L;
         String baseUrl = "http://example.com";
-        Delivery o1 = new Delivery();
-        o1.setOrderId(1L);
-        Delivery o2 = new Delivery();
-        o2.setOrderId(2L);
-        List<Delivery> orders = List.of(o1, o2);
+        Long deliveryId = 40L;
+        Delivery d1 = new Delivery(deliveryId, 1L);
+        Delivery d2 = new Delivery(deliveryId, 2L);
+        List<Delivery> deliveries = List.of(d1, d2);
 
         when(webClient.get()).thenReturn(uriSpec);
         when(uriSpec.uri(anyString(), anyInt(), anyLong())).thenReturn(headersSpec);
         when(headersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToFlux(Delivery.class)).thenReturn(Flux.fromIterable(orders));
+        when(responseSpec.bodyToFlux(Delivery.class)).thenReturn(Flux.fromIterable(deliveries));
 
         List<Long> result = httpService.getPastOrderIdsForCourier(baseUrl, courierId);
 
