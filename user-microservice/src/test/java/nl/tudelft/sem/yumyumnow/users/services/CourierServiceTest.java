@@ -24,8 +24,9 @@ public class CourierServiceTest {
     transient UserRepository userRepository  = mock(UserRepository.class);
     transient CourierFactory courierBuilder = mock(CourierFactory.class);
     transient HttpService httpService = mock(HttpService.class);
+    transient EmailService emailService = mock(EmailService.class);
     transient CourierService courierService = new CourierService(courierRepository, userRepository,
-            courierBuilder, httpService);
+            emailService, courierBuilder, httpService);
 
     @Test
     public void testGetCourierById_WhenCourierExists() throws UserNotFoundException {
@@ -67,6 +68,7 @@ public class CourierServiceTest {
         verify(courierBuilder).build(any());
         verify(courierRepository).findByEmail(any());
         verify(courierRepository).saveAndFlush(any());
+        verify(emailService).sendEmail(argThat(x -> x.getRecipient().equals(requestModel.getEmail())));
     }
 
     @Test

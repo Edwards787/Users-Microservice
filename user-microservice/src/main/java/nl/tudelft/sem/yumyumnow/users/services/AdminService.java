@@ -3,6 +3,9 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
+import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
+import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
 import nl.tudelft.sem.yumyumnow.users.exceptions.EmailAlreadyInUseException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InitialAdminException;
 import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
@@ -32,6 +35,7 @@ public class AdminService {
     private final transient ValidatorConstructor validatorConstructor;
     private final transient AdminFactory adminFactory;
     private final transient HttpService httpService;
+    private final transient EmailService emailService;
 
     /**
      * Constructor.
@@ -40,10 +44,11 @@ public class AdminService {
      * @param adminFactory    admin builder
      */
     @Autowired
-    public AdminService(AdminRepository adminRepository, UserRepository userRepository,
-                        AdminFactory adminFactory, HttpService httpService) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository, AdminFactory adminFactory,
+                        HttpService httpService, EmailService emailService) {
         this.adminRepository = adminRepository;
         this.adminFactory = adminFactory;
+        this.emailService = emailService;
         this.validatorConstructor = new ValidatorConstructor();
         this.userRepository = userRepository;
         this.httpService = httpService;
@@ -86,6 +91,13 @@ public class AdminService {
 
         Admin admin = adminFactory.build(adminRequestModel);
         admin = adminRepository.saveAndFlush(admin);
+        
+        Email welcomeEmail = new EmailBuilder().setRecipient(adminRequestModel.getEmail())
+                .setTemplate(new WelcomeEmailTemplate(admin.getName()))
+                .build();
+
+        emailService.sendEmail(welcomeEmail);
+
         return admin;
     }
 

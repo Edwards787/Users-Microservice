@@ -3,6 +3,9 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
+import nl.tudelft.sem.yumyumnow.users.builders.email.EmailBuilder;
+import nl.tudelft.sem.yumyumnow.users.builders.email.templates.WelcomeEmailTemplate;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
@@ -29,6 +32,7 @@ public class VendorService {
     private final transient VendorFactory vendorFactory;
     private final transient ValidationRepository validationRepository;
     private final transient ValidatorConstructor validatorConstructor;
+    private final transient EmailService emailService;
 
     /**
      * Creates an instance of the VendorService.
@@ -42,10 +46,12 @@ public class VendorService {
     public VendorService(VendorRepository vendorRepository,
                          UserRepository userRepository,
                          VendorFactory vendorFactory,
-                         ValidationRepository validationRepository) {
+                         ValidationRepository validationRepository,
+                         EmailService emailService) {
         this.vendorRepository = vendorRepository;
         this.vendorFactory = vendorFactory;
         this.userRepository = userRepository;
+        this.emailService = emailService;
         this.validatorConstructor = new ValidatorConstructor();
         this.validationRepository = validationRepository;
     }
@@ -74,6 +80,12 @@ public class VendorService {
 
         Vendor response = vendorRepository.saveAndFlush(vendor);
         vendor.setId(response.getId());
+
+        Email welcomeEmail = new EmailBuilder().setRecipient(vendorRequestModel.getEmail())
+                .setTemplate(new WelcomeEmailTemplate(response.getName()))
+                .build();
+
+        emailService.sendEmail(welcomeEmail);
 
         return vendor;
     }
