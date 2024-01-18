@@ -10,7 +10,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-public class HttpService {
+public class
+HttpService {
 
     private final transient WebClient webClient;
 

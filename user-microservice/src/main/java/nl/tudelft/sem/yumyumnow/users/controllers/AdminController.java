@@ -112,8 +112,4 @@ public class AdminController implements AdminApi {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
-
-
-
 }
