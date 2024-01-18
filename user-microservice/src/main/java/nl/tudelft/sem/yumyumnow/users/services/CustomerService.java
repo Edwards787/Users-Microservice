@@ -29,7 +29,6 @@ public class CustomerService {
 
     private final transient CustomerRepository customerRepository;
     private final transient EmailService emailService;
-
     private final transient UserRepository userRepository;
     private final transient ValidatorConstructor validatorConstructor;
     private final transient HttpService httpService;
