@@ -115,9 +115,9 @@ public class HttpService {
         }
         ArrayList<Long> ids = new ArrayList<>();
         for (Order order : orders) {
-            if ( (order.getId().equals(userId)) && order.getStatus() == Status.READY_FOR_PICKUP || order.getStatus() == Status.ACCEPTED
+            if ( (order.getCustomerId().equals(userId)) && (order.getStatus() == Status.READY_FOR_PICKUP || order.getStatus() == Status.ACCEPTED
                     || order.getStatus() == Status.ON_TRANSIT || order.getStatus() == Status.PREPARING
-                    || order.getStatus() == Status.PENDING) {
+                    || order.getStatus() == Status.PENDING)) {
                 ids.add(order.getId());
             }
         }
