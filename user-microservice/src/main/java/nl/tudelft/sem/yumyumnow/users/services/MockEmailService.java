@@ -1,8 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
 
-import lombok.extern.slf4j.Slf4j;
-import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
+import nl.tudelft.sem.yumyumnow.users.emailService.Email;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;

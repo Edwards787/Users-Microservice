@@ -161,7 +161,7 @@ public class VendorController implements VendorApi {
         } catch (NotAuthorizedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     e.customMessage(userId2, "update activation status for", userId1));
-        } catch (MissingBodyException e) {
+        } catch (MissingBodyException | InvalidFieldException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -179,6 +179,8 @@ public class VendorController implements VendorApi {
                     e.customMessage(userId2, "update block status for", userId1));
         } catch (MissingBodyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (InvalidFieldException e) {
+            throw new RuntimeException(e);
         }
     }
 }

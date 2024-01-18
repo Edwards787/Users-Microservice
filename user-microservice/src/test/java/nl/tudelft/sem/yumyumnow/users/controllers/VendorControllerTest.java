@@ -323,7 +323,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorActivationStatusSuccess() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorActivationStatusSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doNothing().when(vendorService).updateVendorActivationStatus(any(), any(), any());
         ResponseEntity<Void> res = vendorController.updateVendorActivationStatus(1L, 1L, true);
         assertThat(res.getStatusCodeValue()).isEqualTo(200);
@@ -331,7 +333,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorActivationStatusNotFound() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorActivationStatusNotFound()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new UserNotFoundException(1L)).when(vendorService).updateVendorActivationStatus(any(), any(), any());
         assertThatThrownBy(() -> vendorController.updateVendorActivationStatus(1L, 1L, true))
                 .isInstanceOf(ResponseStatusException.class)
@@ -340,7 +344,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorActivationStatusUnauthorized() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorActivationStatusUnauthorized()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new NotAuthorizedException()).when(vendorService).updateVendorActivationStatus(any(), any(), any());
         assertThatThrownBy(() -> vendorController.updateVendorActivationStatus(1L, 9L, true))
                 .isInstanceOf(ResponseStatusException.class)
@@ -349,7 +355,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorActivationStatusMissingBody() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorActivationStatusMissingBody()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new MissingBodyException()).when(vendorService).updateVendorActivationStatus(any(), any(), any());
         assertThatThrownBy(() -> vendorController.updateVendorActivationStatus(1L, 1L, true))
                 .isInstanceOf(ResponseStatusException.class)
@@ -358,7 +366,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorBlockStatusSuccess() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorBlockStatusSuccess()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doNothing().when(vendorService).updateVendorBlockStatus(any(), any(), any());
         ResponseEntity<Void> res = vendorController.updateVendorBlockStatus(1L, 1L, true);
         assertThat(res.getStatusCodeValue()).isEqualTo(200);
@@ -366,7 +376,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorBlockStatusNotFound() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorBlockStatusNotFound()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new UserNotFoundException(1L)).when(vendorService).updateVendorBlockStatus(any(), any(), any());
         assertThatThrownBy(() -> vendorController.updateVendorBlockStatus(1L, 1L, true))
                 .isInstanceOf(ResponseStatusException.class)
@@ -375,7 +387,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorBlockStatusUnauthorized() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorBlockStatusUnauthorized()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new NotAuthorizedException()).when(vendorService).updateVendorBlockStatus(any(), any(), any());
         assertThatThrownBy(() -> vendorController.updateVendorBlockStatus(1L, 9L, true))
                 .isInstanceOf(ResponseStatusException.class)
@@ -384,7 +398,9 @@ public class VendorControllerTest {
     }
 
     @Test
-    void updateVendorBlockStatusMissingBody() throws UserNotFoundException, NotAuthorizedException, MissingBodyException {
+    void updateVendorBlockStatusMissingBody()
+        throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
+        InvalidFieldException {
         doThrow(new MissingBodyException()).when(vendorService).updateVendorBlockStatus(any(), any(), any());
         assertThatThrownBy(() -> vendorController.updateVendorBlockStatus(1L, 1L, true))
                 .isInstanceOf(ResponseStatusException.class)

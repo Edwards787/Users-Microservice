@@ -1,6 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
+import nl.tudelft.sem.yumyumnow.users.emailService.Email;
 
 public abstract class EmailService {
 

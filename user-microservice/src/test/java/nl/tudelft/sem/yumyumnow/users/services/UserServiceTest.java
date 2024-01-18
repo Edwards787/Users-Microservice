@@ -28,9 +28,13 @@ public class UserServiceTest {
 
     @Test
     public void testGetAllUsers() {
-        when(userRepository.findAll()).thenReturn(new ArrayList<>());
+        List<User> list = new ArrayList<>();
+        list.add(new User());
+
+        when(userRepository.findAll()).thenReturn(list);
         List<User> users = userService.getAllUsers();
         assertNotNull(users);
+        assertThat(users).isEqualTo(list);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.builders.email.Email;
 import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
@@ -11,6 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -25,6 +27,7 @@ class VendorServiceTest {
     transient Vendor vendor;
     transient VendorRequestModel vendorRequestModel;
     transient EmailService emailService;
+    transient Address address;
     @BeforeEach
     public void setUp() {
         vendorRepository = mock(VendorRepository.class);
@@ -35,7 +38,7 @@ class VendorServiceTest {
         emailService = mock(EmailService.class);
         vendorService = new VendorService(vendorRepository, userRepository, vendorFactory, validationRepository, emailService);
 
-        Address address = new Address()
+        address = new Address()
                 .address("StreetName 1A")
                 .city("CityName")
                 .country("CountryName")
@@ -148,7 +151,15 @@ class VendorServiceTest {
     void updateVendorValid() throws UserNotFoundException, NotAuthorizedException, InvalidFieldException, MissingBodyException {
         when(userRepository.findById(1L)).thenReturn(Optional.of(vendor));
         when(vendorRepository.findById(1L)).thenReturn(Optional.of(vendor));
+
         vendorRequestModel.setEmail("newEmail@email.com");
+        vendorRequestModel.setName("name");
+        vendorRequestModel.setSurname("surname");
+        vendorRequestModel.setClosingTimes("close");
+        vendorRequestModel.setOpeningTimes("open");
+        address.setPostalCode("new");
+        vendorRequestModel.setAddress(address);
+
         try{
             vendorService.updateVendor(1L, 1L, vendorRequestModel);
         } catch (Exception e){
@@ -156,7 +167,13 @@ class VendorServiceTest {
         }
         ArgumentCaptor<Vendor> vendorCaptor = ArgumentCaptor.forClass(Vendor.class);
         verify(vendorRepository, times(1)).saveAndFlush(vendorCaptor.capture());
+
         assertThat(vendorCaptor.getValue().getEmail()).isEqualTo("newEmail@email.com");
+        assertThat(vendorCaptor.getValue().getName()).isEqualTo("name");
+        assertThat(vendorCaptor.getValue().getSurname()).isEqualTo("surname");
+        assertThat(vendorCaptor.getValue().getClosingTimes()).isEqualTo("close");
+        assertThat(vendorCaptor.getValue().getOpeningTimes()).isEqualTo("open");
+        assertThat(vendorCaptor.getValue().getAddress()).isEqualTo(address);
     }
 
     @Test
@@ -349,7 +366,14 @@ class VendorServiceTest {
 
     @Test
     void getAllValidations() {
-        vendorService.getAllValidations();
+        Validation val = new Validation();
+        val.setVendorId(1L);
+
+        List<Validation> list = new ArrayList<>();
+        list.add(val);
+        when(validationRepository.findAll()).thenReturn(list);
+
+        assertThat(vendorService.getAllValidations()).isEqualTo(list);
         verify(validationRepository, times(1)).findAll();
     }
 

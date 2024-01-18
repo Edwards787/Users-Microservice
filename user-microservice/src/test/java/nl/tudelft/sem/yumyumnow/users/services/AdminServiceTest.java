@@ -147,6 +147,9 @@ public class AdminServiceTest {
 
         verify(adminRepository).saveAndFlush(admin1);
         assertThat(admin1).isEqualTo(admin2);
+        assertThat(admin1.getName()).isEqualTo("name 1");
+        assertThat(admin2.getSurname()).isEqualTo("surname 1");
+        assertThat(admin2.getEmail()).isEqualTo("email1@mail.com");
     }
 
     @Test
@@ -341,6 +344,5 @@ public class AdminServiceTest {
 
         assertEquals(orderId, id);
         verify(httpService).updateRefundRequestStatus("http://localhost:8082", orderId, status);
-
     }
 }
