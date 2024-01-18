@@ -41,7 +41,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> deleteVendor(Long userid1, Long userid2) {
         try {
-            return ResponseEntity.ok(vendorService.deleteVendor(userid1, userid2));
+            vendorService.deleteVendor(userid1, userid2);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
@@ -70,7 +71,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> updateVendor(Long userId1, Long userId2, VendorRequestModel vendorRequestModel) {
         try {
-            return ResponseEntity.ok(vendorService.updateVendor(userId1, userId2, vendorRequestModel));
+            vendorService.updateVendor(userId1, userId2, vendorRequestModel);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
@@ -97,7 +99,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> uploadValidationByVendor(Long userId, ValidationRequestModel validationRequestModel) {
         try {
-            return ResponseEntity.ok(vendorService.uploadValidationByVendor(userId, validationRequestModel));
+            vendorService.uploadValidationByVendor(userId, validationRequestModel);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         } catch (InvalidFieldException | MissingBodyException e) {
@@ -108,7 +111,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Validation> getValidationByVendor(Long userId) {
         try {
-            return ResponseEntity.ok(vendorService.getValidationByVendor(userId));
+            Validation validation = vendorService.getValidationByVendor(userId);
+            return ResponseEntity.ok(validation);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getCustomMessage());
         } catch (ContentNotFoundException e) {
@@ -120,7 +124,8 @@ public class VendorController implements VendorApi {
     public ResponseEntity<Void> updateValidationByVendor(Long userId1, Long userId2,
                                                          ValidationRequestModel validationRequestModel) {
         try {
-            return ResponseEntity.ok(vendorService.updateValidationByVendor(userId1, userId2, validationRequestModel));
+            vendorService.updateValidationByVendor(userId1, userId2, validationRequestModel);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
@@ -135,7 +140,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> deleteValidationByVendor(Long userId1, Long userId2) {
         try {
-            return ResponseEntity.ok(vendorService.deleteValidationByVendor(userId1, userId2));
+            vendorService.deleteValidationByVendor(userId1, userId2);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
@@ -148,7 +154,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> updateVendorActivationStatus(Long userId1, Long userId2, Boolean body) {
         try {
-            return ResponseEntity.ok(vendorService.updateVendorActivationStatus(userId1, userId2, body));
+            vendorService.updateVendorActivationStatus(userId1, userId2, body);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());
@@ -163,7 +170,8 @@ public class VendorController implements VendorApi {
     @Override
     public ResponseEntity<Void> updateVendorBlockStatus(Long userId1, Long userId2, Boolean body) {
         try {
-            return ResponseEntity.ok(vendorService.updateVendorBlockStatus(userId1, userId2, body));
+            vendorService.updateVendorBlockStatus(userId1, userId2, body);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     e.getCustomMessage());

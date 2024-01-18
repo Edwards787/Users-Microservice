@@ -1,8 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.builders.Builder;
-import nl.tudelft.sem.yumyumnow.users.builders.Director;
-import nl.tudelft.sem.yumyumnow.users.builders.Ubuilder;
+import nl.tudelft.sem.yumyumnow.users.factories.CustomerFactory;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.*;
 import nl.tudelft.sem.yumyumnow.users.repositories.CustomerRepository;
@@ -23,21 +21,21 @@ class CustomerServiceTest {
     private CustomerService customerService;
     Address adr;
     private List<Long> favs;
-    Builder builder;
-    Director director;
     Customer mockCustomer;
     Long customerId;
     CustomerRequestModel customerUpdate;
     Address address;
+    CustomerFactory customerFactory;
     HttpService httpService;
     @BeforeEach
     public void setUp(){
         customerRepository = mock(CustomerRepository.class);
         userRepository  = mock(UserRepository.class);
+        customerFactory = new CustomerFactory();
+
         httpService = mock(HttpService.class);
-        director = new Director();
-        builder = new Ubuilder();
-        customerService = new CustomerService(customerRepository, userRepository, httpService);
+        customerService = new CustomerService(customerRepository, userRepository, httpService, customerFactory);
+
         Location l = new Location();
         l.lat(12.1f);
         l._long(6.9f);
@@ -130,9 +128,6 @@ class CustomerServiceTest {
         customerService.updateCustomerById(customerId, userId, customerUpdate);
 
         verify(customerRepository, times(1)).findById(customerId);
-        director.constructCustomer(builder, customerUpdate);
-        verify(customerRepository, times(1)).saveAndFlush((Customer)builder.build(mockCustomer));
-
         assertEquals("UpdatedName", mockCustomer.getName());
     }
 
@@ -273,8 +268,7 @@ class CustomerServiceTest {
             NotAuthorizedException, UserNotFoundException, EmailAlreadyInUseException {
         Customer k = new Customer();
 
-        director.constructCustomer(builder, customerUpdate);
-        Customer cust = (Customer) builder.build(k);
+        Customer cust = customerFactory.build(customerUpdate);
 
         cust.setHomeAddress(address);
         customerUpdate.setHomeAddress(address);
