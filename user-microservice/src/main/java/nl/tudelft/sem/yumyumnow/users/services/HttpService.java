@@ -6,6 +6,7 @@ import nl.tudelft.sem.yumyumnow.users.model.Delivery;
 import nl.tudelft.sem.yumyumnow.users.model.Order;
 import nl.tudelft.sem.yumyumnow.users.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -56,7 +57,8 @@ public class HttpService {
      */
     public List<Long> getOrdersToRefund(String baseUrl) {
 
-        String status = "to-be-refunded";
+        String status = "TO_BE_REFUNDED";
+
         List<Order> orders = webClient.get()
                 .uri(baseUrl + "/order/status/" + status)
                 .retrieve()
@@ -86,6 +88,7 @@ public class HttpService {
     public void updateRefundRequestStatus(String baseUrl, Long orderId, String status) {
         webClient.put()
                 .uri(baseUrl + "/order/status/{orderId}", orderId)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(status))
                 .exchange()
                 .block();
@@ -101,7 +104,7 @@ public class HttpService {
      */
     public List<Long> getCurrentOrderIdsForUser(String baseUrl, Long userId) {
         List<Order> orders = webClient.get()
-                .uri(baseUrl + "/order/history/user/{userId}", userId)
+                .uri(baseUrl + "/order/all")
                 .retrieve()
                 .bodyToFlux(Order.class)
                 .collectList()
@@ -112,9 +115,10 @@ public class HttpService {
         }
         ArrayList<Long> ids = new ArrayList<>();
         for (Order order : orders) {
-            if (order.getStatus() == Status.READY_FOR_PICKUP || order.getStatus() == Status.ACCEPTED
+            if ((order.getCustomerId().equals(userId)) && (order.getStatus() == Status.READY_FOR_PICKUP
+                    || order.getStatus() == Status.ACCEPTED
                     || order.getStatus() == Status.ON_TRANSIT || order.getStatus() == Status.PREPARING
-                    || order.getStatus() == Status.PENDING) {
+                    || order.getStatus() == Status.PENDING)) {
                 ids.add(order.getId());
             }
         }
@@ -132,6 +136,7 @@ public class HttpService {
         String status = "to-be-refunded";
         webClient.put()
                 .uri(baseUrl + "/order/status/{orderId}", orderId)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(status))
                 .exchange()
                 .block();
