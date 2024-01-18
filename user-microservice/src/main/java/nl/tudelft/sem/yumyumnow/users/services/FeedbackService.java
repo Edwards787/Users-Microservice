@@ -1,8 +1,6 @@
 package nl.tudelft.sem.yumyumnow.users.services;
 
-import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.factories.CustomerFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Feedback;
 import nl.tudelft.sem.yumyumnow.users.model.FeedbackRequestModel;
@@ -14,6 +12,7 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidatorConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,6 +41,24 @@ public class FeedbackService {
 
         return feedbackRepository.saveAndFlush(feedback);
     }
+    public void deleteFeedback(Long feedbackId, Long userId)
+        throws InvalidFieldException, MissingBodyException, UserNotFoundException,
+        FeedbackNotFoundException, NotAuthorizedException {
+        Feedback feedback = getFeedbackById(feedbackId);
+        User user = findUser(userId);
+
+        if (feedback.getUserId() == userId || user.getRole() == User.RoleEnum.ADMIN) {
+            feedbackRepository.delete(feedback);
+        } else throw new NotAuthorizedException();
+    }
+    public List<Feedback> getAllFeedbacks() {
+        return feedbackRepository.findAll();
+    }
+    public Feedback getFeedbackById(Long id) throws FeedbackNotFoundException {
+        Optional<Feedback> feedback = feedbackRepository.findById(id);
+        if (feedback.isEmpty()) throw new FeedbackNotFoundException(id);
+        else return feedback.get();
+    }
 
     public void validateFeedback(FeedbackRequestModel feedbackRequestModel)
         throws InvalidFieldException, MissingBodyException {
@@ -60,11 +77,12 @@ public class FeedbackService {
             throw new InvalidFieldException("stars", feedbackRequestModel.getStars().toString());
         }
     }
-    public void findUser(Long id)
+    public User findUser(Long id)
         throws InvalidFieldException, MissingBodyException, UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()){
             throw new UserNotFoundException(id);
         }
+        return user.get();
     }
 }

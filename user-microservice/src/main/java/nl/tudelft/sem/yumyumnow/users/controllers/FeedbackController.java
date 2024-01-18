@@ -1,9 +1,7 @@
 package nl.tudelft.sem.yumyumnow.users.controllers;
 
 import nl.tudelft.sem.yumyumnow.users.api.FeedbackApi;
-import nl.tudelft.sem.yumyumnow.users.exceptions.InvalidFieldException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.MissingBodyException;
-import nl.tudelft.sem.yumyumnow.users.exceptions.UserNotFoundException;
+import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.model.Feedback;
 import nl.tudelft.sem.yumyumnow.users.model.FeedbackRequestModel;
 import nl.tudelft.sem.yumyumnow.users.services.FeedbackService;
@@ -40,16 +38,39 @@ public class FeedbackController implements FeedbackApi {
 
     @Override
     public ResponseEntity<Void> deleteFeedback(Long feedbackId, Long userId) {
-        return FeedbackApi.super.deleteFeedback(feedbackId, userId);
+        try {
+            feedbackService.deleteFeedback(feedbackId, userId);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NotAuthorizedException e) {
+            throw new RuntimeException(e);
+        } catch (MissingBodyException e) {
+            throw new RuntimeException(e);
+        } catch (FeedbackNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public ResponseEntity<List<Feedback>> getAllFeedbacks() {
-        return FeedbackApi.super.getAllFeedbacks();
+        try {
+            return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public ResponseEntity<Feedback> getFeedbackById(Long feedbackId) {
-        return FeedbackApi.super.getFeedbackById(feedbackId);
+    public ResponseEntity<Feedback> getFeedbackById(Long feedbackId)
+        throws FeedbackNotFoundException {
+        try {
+            Feedback feedback = feedbackService.getFeedbackById(feedbackId);
+            return ResponseEntity.ok(feedback);
+        } catch (FeedbackNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }
