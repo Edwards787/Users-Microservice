@@ -2,6 +2,7 @@ package nl.tudelft.sem.yumyumnow.users.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import nl.tudelft.sem.yumyumnow.users.model.Delivery;
 import nl.tudelft.sem.yumyumnow.users.model.Order;
 import nl.tudelft.sem.yumyumnow.users.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class HttpService {
+
     private final transient WebClient webClient;
 
     @Autowired
@@ -27,19 +29,21 @@ public class HttpService {
      */
     public List<Long> getPastOrderIdsForCourier(String baseUrl, Long courierId) {
 
-        List<Order> orders = webClient.get()
-                .uri(baseUrl + "/delivery/{courierId}", courierId)
+        // there is a 0 because the Delivery microservice didn't account for teh case in which a
+        // courier wants to see his own past orders and is not an admin
+        List<Delivery> deliveries = webClient.get()
+                .uri(baseUrl + "/couriers/{userId}/{courierId}/deliveries", 0, courierId)
                 .retrieve()
-                .bodyToFlux(Order.class)
+                .bodyToFlux(Delivery.class)
                 .collectList()
                 .block();
 
-        if (orders == null) {
+        if (deliveries == null) {
             return List.of();
         }
         ArrayList<Long> ids = new ArrayList<>();
-        for (Order order : orders) {
-            ids.add(order.getId());
+        for (Delivery delivery : deliveries) {
+            ids.add(delivery.getOrderId());
         }
         return ids;
     }
@@ -85,6 +89,7 @@ public class HttpService {
                 .body(BodyInserters.fromValue(status))
                 .exchange()
                 .block();
+
     }
 
     /**
@@ -95,7 +100,6 @@ public class HttpService {
      * @return a List of Long representing the current order IDs for the user
      */
     public List<Long> getCurrentOrderIdsForUser(String baseUrl, Long userId) {
-
         List<Order> orders = webClient.get()
                 .uri(baseUrl + "/order/history/user/{userId}", userId)
                 .retrieve()
@@ -133,4 +137,9 @@ public class HttpService {
                 .block();
 
     }
+
+
+
+
+
 }
