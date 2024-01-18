@@ -3,9 +3,9 @@ package nl.tudelft.sem.yumyumnow.users.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.yumyumnow.users.emailService.Email;
-import nl.tudelft.sem.yumyumnow.users.emailService.EmailBuilder;
-import nl.tudelft.sem.yumyumnow.users.emailService.templates.WelcomeEmailTemplate;
+import nl.tudelft.sem.yumyumnow.users.emailservice.Email;
+import nl.tudelft.sem.yumyumnow.users.emailservice.EmailBuilder;
+import nl.tudelft.sem.yumyumnow.users.emailservice.templates.WelcomeEmailTemplate;
 import nl.tudelft.sem.yumyumnow.users.exceptions.*;
 import nl.tudelft.sem.yumyumnow.users.factories.VendorFactory;
 import nl.tudelft.sem.yumyumnow.users.model.Validation;
@@ -333,7 +333,9 @@ public class VendorService {
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
         Validator validator = validatorConstructor.userAuthorization();
-        validator.handle(new ValidationObject(null, new AuthorizationData(userId1, userId2,userRepository, new AuthorizationAdminOnlyStrategy())));
+        validator.handle(new ValidationObject(null,
+            new AuthorizationData(userId1, userId2, userRepository,
+                new AuthorizationAdminOnlyStrategy())));
 
         if (body == null) {
             throw new MissingBodyException();
@@ -357,7 +359,9 @@ public class VendorService {
         throws UserNotFoundException, NotAuthorizedException, MissingBodyException,
         InvalidFieldException {
         Validator validator = validatorConstructor.userAuthorization();
-        validator.handle(new ValidationObject(null, new AuthorizationData(userId1, userId2,userRepository, new AuthorizationAdminOnlyStrategy())));
+        validator.handle(new ValidationObject(null,
+            new AuthorizationData(userId1, userId2, userRepository,
+                new AuthorizationAdminOnlyStrategy())));
 
         if (body == null) {
             throw new MissingBodyException();

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.yumyumnow.users.emailService;
+package nl.tudelft.sem.yumyumnow.users.emailservice;
 
 import lombok.Getter;
 import lombok.Setter;

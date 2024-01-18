@@ -1,8 +1,8 @@
-package nl.tudelft.sem.yumyumnow.users.emailService.templates;
+package nl.tudelft.sem.yumyumnow.users.emailservice.templates;
 
 import lombok.Getter;
 import lombok.Setter;
-import nl.tudelft.sem.yumyumnow.users.emailService.EmailTemplate;
+import nl.tudelft.sem.yumyumnow.users.emailservice.EmailTemplate;
 
 @Getter
 @Setter
