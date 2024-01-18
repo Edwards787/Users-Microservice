@@ -1918,3 +1918,53 @@ components:
       example:
         userId: 1
         rating: 5
+    Delivery:
+      type: object
+      required:
+        - deliveryId
+        - orderId
+      properties:
+        deliveryId:
+          type: integer
+          format: int64
+        Status:
+          $ref: '#/components/schemas/Status'
+        courierId:
+          type: integer
+          format: int64
+        orderId:
+          type: integer
+          format: int64
+        orderPlaced:
+          type: string
+          format: date-time
+        outForDelivery:
+          type: string
+          format: date-time
+        deliveryTime:
+          type: string
+          format: date-time
+        estimatedPreparationTime:
+          type: string
+          format: date-time
+        estimatedDeliveryTime:
+          type: string
+          format: date-time
+        orderAccepted:
+          type: string
+          format: date-time
+        problemsEncountered:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+          x-field-extra-annotation: "@javax.persistence.ElementCollection"
+        pickupLocation:
+          $ref: '#/components/schemas/Location'
+    Issue:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        problem:
+          type: string
