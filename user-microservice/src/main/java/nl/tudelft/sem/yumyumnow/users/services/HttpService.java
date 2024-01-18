@@ -10,9 +10,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-public class
-HttpService {
-
+public class HttpService {
     private final transient WebClient webClient;
 
     @Autowired
@@ -28,7 +26,6 @@ HttpService {
      * @return a List of Long representing the past order IDs for the courier
      */
     public List<Long> getPastOrderIdsForCourier(String baseUrl, Long courierId) {
-
 
         List<Order> orders = webClient.get()
                 .uri(baseUrl + "/delivery/{courierId}", courierId)
@@ -88,7 +85,6 @@ HttpService {
                 .body(BodyInserters.fromValue(status))
                 .exchange()
                 .block();
-
     }
 
     /**
@@ -99,6 +95,7 @@ HttpService {
      * @return a List of Long representing the current order IDs for the user
      */
     public List<Long> getCurrentOrderIdsForUser(String baseUrl, Long userId) {
+
         List<Order> orders = webClient.get()
                 .uri(baseUrl + "/order/history/user/{userId}", userId)
                 .retrieve()
@@ -136,9 +133,4 @@ HttpService {
                 .block();
 
     }
-
-
-
-
-
 }

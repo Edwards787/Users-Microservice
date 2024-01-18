@@ -8,7 +8,6 @@ import nl.tudelft.sem.yumyumnow.users.model.CourierRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 
 public class IbanValidator extends BaseValidator {
-
     @Override
     public boolean handle(ValidationObject validationObject)
             throws InvalidFieldException, NotAuthorizedException, MissingBodyException,

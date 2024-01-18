@@ -4,7 +4,6 @@ import nl.tudelft.sem.yumyumnow.users.model.UserRequestModel;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
 
 public class ValidationObject {
-
     private final UserRequestModel userRequestModel;
     private final AuthorizationData authorizationData;
 

@@ -8,7 +8,6 @@ import nl.tudelft.sem.yumyumnow.users.validation.objects.ValidationObject;
 import nl.tudelft.sem.yumyumnow.users.validation.objects.authorization.AuthorizationData;
 
 public class AuthorizationValidator extends BaseValidator {
-
     @Override
     public boolean handle(ValidationObject validationObject)
         throws InvalidFieldException, NotAuthorizedException, MissingBodyException,

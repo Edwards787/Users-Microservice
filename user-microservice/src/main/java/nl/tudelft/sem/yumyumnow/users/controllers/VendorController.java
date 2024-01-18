@@ -17,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 public class VendorController implements VendorApi {
-
     private final transient VendorService vendorService;
 
     @Autowired
